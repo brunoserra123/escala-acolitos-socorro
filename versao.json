@@ -1,5 +1,5 @@
 {
-  "versao": "1.49",
-  "mensagem": "Versao inicial no GitHub",
+  "versao": "1.50",
+  "mensagem": "Verificação de versão agora consulta o GitHub (versao.json)",
   "url_atualizacao": "https://sites.google.com/view/acolitos-socorro"
 }
