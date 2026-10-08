@@ -189,7 +189,7 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
 .btn-atualizar-topo:active { transform: scale(.94); }
 </style>
 </head>
-<body data-versao="1.67">
+<body data-versao="1.68">
 <div class="atualizar-fundo" id="telaAtualizar"><div class="atualizar-caixa"><div class="ic">🔄</div><h2>Tem versão nova do app!</h2><p id="textoAtualizar">Quer atualizar agora?</p><div class="atualizar-acoes"><button onclick="naoAtualizar()">Agora não</button><a href="./?p=coord" target="_blank" rel="noopener">Atualizar</a></div></div></div>
 <div class="login oculto" id="telaLogin">
 <a class="voltar" href="./" target="_top">← Ver a escala</a>
@@ -377,6 +377,8 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
 <label class="switch"><input type="checkbox" id="chkAcessosDiscord"><span></span></label></div>
 <div class="linha-switch"><span>Vigiar o site e avisar aqui <strong>se ele cair</strong> (e quando voltar)</span>
 <label class="switch"><input type="checkbox" id="chkVigiaDiscord"><span></span></label></div>
+<div class="linha-switch"><span><strong>Lembrete na véspera</strong> no celular dos acólitos (19h) <small id="textoLembreteInscritos" style="color:var(--text-muted)"></small></span>
+<label class="switch"><input type="checkbox" id="chkLembrete"><span></span></label></div>
 <div class="linha-switch"><span><strong>Resumo das visitas</strong> todo dia às 21h (quantas e quem entrou)</span>
 <label class="switch"><input type="checkbox" id="chkResumoDiario"><span></span></label></div>
 <div class="linha-switch"><span>Mandar também, <strong>todo dia às 8h</strong>, "✅ Site funcionando"</span>
@@ -472,6 +474,7 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
 <div id="blocoDesistencias"></div>
 <div class="painel" style="padding:12px 14px">
 <select id="mesAjustar" onchange="carregarMes()"></select>
+<button class="btn sec full" style="margin-top:10px" id="btnImagemMes" onclick="imagemDoMes()">📷 Imagem do mês (para o WhatsApp)</button>
 </div>
 <div id="resumoFuncoes"></div>
 <div class="lista" id="listaAjustar"></div>
@@ -1356,6 +1359,79 @@ function mostrarChaveChamada(ativa) {
     : "Desativada: ninguém faz chamada e os relatórios mostram só a escala.";
   document.getElementById("tileChamada").classList.toggle("oculto", !ativa);
 }
+/* ---------- Imagem da escala do mês (para mandar no WhatsApp) ---------- */
+function imagemDoMes() {
+  const sel = document.getElementById("mesAjustar");
+  const mes = sel.value, nomeMes = sel.options[sel.selectedIndex].text;
+  const btn = document.getElementById("btnImagemMes");
+  ocupado(btn, "Montando a imagem...");
+  chamar("painelEscalaDoMes", [mes], itens => {
+    btn.disabled = false; btn.removeAttribute("data-ocupado"); btn.textContent = "📷 Imagem do mês (para o WhatsApp)";
+    itens = (itens || []).slice().sort((a, b) => (a.data.split("/").reverse().join("") + a.horario).localeCompare(b.data.split("/").reverse().join("") + b.horario));
+    if (!itens.length) { toast("Esse mês ainda não tem escala.", true); return; }
+    desenharImagemMes(itens, nomeMes);
+  });
+}
+function desenharImagemMes(itens, nomeMes) {
+  const L = 1080, M = 48, linhaH = 46, diaH = 58;
+  const dias = [];
+  itens.forEach(i => { const d = dias[dias.length - 1]; if (d && d.data === i.data) d.itens.push(i); else dias.push({ data: i.data, dia: i.dia, itens: [i] }); });
+  const ctxTeste = document.createElement("canvas").getContext("2d");
+  ctxTeste.font = "26px Arial";
+  // quebra os nomes em linhas que cabem na largura
+  const linhasDe = i => {
+    const nomes = String(i.acolitos || "").split(",").map(n => n.trim()).filter(n => n).map(n => n.indexOf("Vaga Aberta") >= 0 ? "🟠 vaga aberta" : n).join(", ");
+    const largura = L - M * 2 - 150, palavras = nomes.split(" "), out = [];
+    let atual = "";
+    palavras.forEach(p => { const t = atual ? atual + " " + p : p; if (ctxTeste.measureText(t).width > largura && atual) { out.push(atual); atual = p; } else atual = t; });
+    if (atual) out.push(atual);
+    return out.length ? out : ["—"];
+  };
+  let altura = 230;
+  dias.forEach(d => { altura += diaH; d.itens.forEach(i => { altura += Math.max(1, linhasDe(i).length) * 34 + 18; }); });
+  altura += 90;
+  const cv = document.createElement("canvas");
+  cv.width = L; cv.height = altura;
+  const g = cv.getContext("2d");
+  const fundo = g.createLinearGradient(0, 0, 0, altura);
+  fundo.addColorStop(0, "#0b1633"); fundo.addColorStop(1, "#070b18");
+  g.fillStyle = fundo; g.fillRect(0, 0, L, altura);
+  g.textAlign = "center";
+  g.fillStyle = "#e2ba64"; g.font = "bold 30px Arial"; g.fillText("✝  ESCALA DE ACÓLITOS  ✝", L / 2, 78);
+  g.fillStyle = "#ffffff"; g.font = "bold 52px Georgia"; g.fillText(nomeMes, L / 2, 145);
+  g.fillStyle = "#aab3d3"; g.font = "24px Arial"; g.fillText("Paróquia Nossa Senhora do Perpétuo Socorro", L / 2, 190);
+  g.textAlign = "left";
+  let y = 230;
+  dias.forEach(d => {
+    g.fillStyle = "#1b2a55"; g.fillRect(M, y + 8, L - M * 2, diaH - 14);
+    g.fillStyle = "#e2ba64"; g.font = "bold 28px Arial";
+    g.fillText(d.dia + ", " + d.data.slice(0, 5), M + 18, y + diaH - 18);
+    y += diaH;
+    d.itens.forEach(i => {
+      const ls = linhasDe(i);
+      g.fillStyle = "#ffffff"; g.font = "bold 28px Arial";
+      g.fillText(i.horario.replace(":00", "h"), M + 18, y + 34);
+      g.font = "26px Arial"; g.fillStyle = "#dbe2f5";
+      ls.forEach((t, k) => g.fillText(t, M + 150, y + 34 + k * 34));
+      if (i.observacao) { g.fillStyle = "#93b4ff"; g.font = "italic 20px Arial"; g.textAlign = "right"; g.fillText(i.observacao, L - M - 12, y + 34); g.textAlign = "left"; }
+      y += ls.length * 34 + 18;
+      g.fillStyle = "#24305a"; g.fillRect(M + 18, y - 6, L - M * 2 - 36, 1);
+    });
+  });
+  g.textAlign = "center"; g.fillStyle = "#6f7896"; g.font = "22px Arial";
+  g.fillText("Veja e escolha vagas no site da escala", L / 2, altura - 40);
+  cv.toBlob(blob => {
+    const arquivo = new File([blob], "escala-" + nomeMes.toLowerCase().replace(/\s+/g, "-") + ".png", { type: "image/png" });
+    if (navigator.canShare && navigator.canShare({ files: [arquivo] })) {
+      navigator.share({ files: [arquivo], title: "Escala " + nomeMes }).catch(() => {});
+    } else {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob); a.download = arquivo.name; document.body.appendChild(a); a.click(); a.remove();
+      toast("Imagem baixada ✓ Agora é só mandar no WhatsApp.");
+    }
+  }, "image/png");
+}
+
 /* ---------- Discord ---------- */
 let discord = null;
 const DIAS_DISCORD = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
@@ -1383,6 +1459,8 @@ function mostrarDiscord(d) {
   document.getElementById("chkVigiaDiscord").checked = d.vigia;
   document.getElementById("chkVigiaDiario").checked = d.vigiaDiario;
   document.getElementById("chkResumoDiario").checked = !!d.resumo;
+  document.getElementById("chkLembrete").checked = d.lembrete !== false;
+  document.getElementById("textoLembreteInscritos").textContent = d.lembreteInscritos ? "• " + d.lembreteInscritos + " inscrito(s)" : "• ninguém inscrito ainda";
   mostrarNtfy(d);
   mostrarVigia(d);
   document.getElementById("inHoraDiscord").innerHTML = Array.from({ length: 24 }, (_, h) => '<option value="' + h + '"' + (h === d.hora ? " selected" : "") + '>' + h + 'h</option>').join("");
@@ -1454,7 +1532,7 @@ function desenharDiscordAgenda() {
 let discordSalvo = "";
 function estadoDiscord() {
   return JSON.stringify([document.getElementById("inWebhook").value.trim(),
-    ...["chkSemanal", "chkVagasDiscord", "chkAcessosDiscord", "chkVigiaDiscord", "chkVigiaDiario", "chkResumoDiario"].map(id => document.getElementById(id).checked),
+    ...["chkSemanal", "chkVagasDiscord", "chkAcessosDiscord", "chkVigiaDiscord", "chkVigiaDiario", "chkResumoDiario", "chkLembrete"].map(id => document.getElementById(id).checked),
     discord ? discord.dia : 0, document.getElementById("inHoraDiscord").value]);
 }
 function conferirSalvarDiscord() {
@@ -1475,6 +1553,7 @@ function salvarDiscord(extra) {
     vigia: document.getElementById("chkVigiaDiscord").checked || document.getElementById("chkVigiaDiario").checked,
     vigiaDiario: document.getElementById("chkVigiaDiario").checked,
     resumo: document.getElementById("chkResumoDiario").checked,
+    lembrete: document.getElementById("chkLembrete").checked,
     dia: discord.dia,
     hora: +document.getElementById("inHoraDiscord").value
   }, extra || {});
