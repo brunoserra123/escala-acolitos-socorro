@@ -1,0 +1,38 @@
+name: Verificar versão da escala
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comparar GitHub com o site
+        run: |
+          curl --fail --silent --show-error --location \
+            "https://raw.githubusercontent.com/brunoserra123/escala-acolitos-socorro/main/versao.json" \
+            -o repositorio.json
+          curl --fail --silent --show-error --location \
+            "https://brunoserra123.github.io/escala-acolitos-socorro/versao.json?t=$(date +%s)" \
+            -o site.json
+          python3 - <<'PY'
+          import json
+          import os
+
+          with open("repositorio.json") as f:
+              repo = json.load(f)["versao"]
+          with open("site.json") as f:
+              site = json.load(f)["versao"]
+
+          resultado = (
+              "As versões são iguais."
+              if repo == site
+              else "As versões estão diferentes. Confira a publicação."
+          )
+          texto = f"GitHub: {repo}\n\nSite publicado: {site}\n\n{resultado}"
+          print(texto)
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as f:
+              f.write(texto + "\n")
+          PY
