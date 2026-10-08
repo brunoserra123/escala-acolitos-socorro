@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<script>window.addEventListener('load', function () { try { google.script.run.registrarUso('coord_aberto'); } catch (e) {} });</script>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b1633">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Acólitos">
+<script src="api.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Coordenadores • Escala de Acólitos</title>
+<style>
+:root {
+--bg: #090d16;
+--card-bg: #101726;
+--card-border: #1e293b;
+--accent: #3b82f6;
+--accent-gradient: linear-gradient(135deg, #2563eb, #7c3aed);
+--text-main: #f1f5f9;
+--text-muted: #94a3b8;
+--pill-bg: #0f172a;
+--green: #10b981;
+--red: #ef4444;
+--amber: #f59e0b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+body { background: var(--bg); color: var(--text-main); padding: 16px; padding-bottom: 100px; max-width: 720px; margin: 0 auto; }
+button { font: inherit; cursor: pointer; }
+.header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-top: 4px; }
+.header-icon { font-size: 26px; background: #182234; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 14px; border: 1px solid var(--card-border); }
+.header h1 { font-size: 19px; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+.header p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.nav-tabs { display: flex; background: var(--pill-bg); border: 1px solid var(--card-border); padding: 4px; border-radius: 14px; margin-bottom: 16px; gap: 4px; position: sticky; top: 8px; z-index: 5; }
+.tab-btn { flex: 1; padding: 10px 4px; border: none; background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 600; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.tab-btn .ic { font-size: 17px; }
+.tab-btn.active { background: #1e293b; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin: 4px 4px 12px; gap: 10px; }
+.section-title { font-size: 15px; font-weight: 700; color: #f8fafc; }
+.section-sub { font-size: 12px; color: var(--text-muted); }
+.lista { display: flex; flex-direction: column; gap: 10px; }
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.card.clicavel { cursor: pointer; }
+.card.clicavel:active { transform: scale(0.99); }
+.card.inativo { opacity: 0.55; }
+.card-info { min-width: 0; flex: 1; }
+.card-title { font-size: 14px; font-weight: 600; color: #f1f5f9; }
+.card-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; display: flex; flex-wrap: wrap; gap: 5px; }
+.tag { background: #182238; border: 1px solid #223253; color: #93c5fd; font-size: 11px; padding: 2px 7px; border-radius: 7px; font-weight: 600; }
+.tag.amber { background: #2a2012; color: var(--amber); border-color: #453215; }
+.tag.green { background: #0f231d; color: #34d399; border-color: #134e48; }
+.tag.red { background: #2a1215; color: #f87171; border-color: #4c1d24; }
+.card-time { font-size: 17px; font-weight: 800; color: #fff; letter-spacing: -0.5px; text-align: right; }
+.card-time small { display: block; font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0; }
+.chev { color: #475569; font-size: 18px; }
+.btn { border: none; border-radius: 12px; padding: 12px 16px; font-size: 14px; font-weight: 700; color: #fff; background: var(--accent-gradient); }
+.btn:disabled { opacity: 0.5; }
+.btn.sec { background: #1e293b; border: 1px solid #2b3a52; }
+.btn.perigo { background: transparent; color: #f87171; border: 1px solid #4c1d24; }
+.btn.small { padding: 8px 12px; font-size: 13px; }
+.btn.full { width: 100%; }
+.fab { position: fixed; right: 18px; bottom: 22px; border-radius: 16px; padding: 14px 18px; box-shadow: 0 8px 24px rgba(37,99,235,0.35); z-index: 6; }
+.painel { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; margin-bottom: 14px; }
+.painel p { font-size: 13px; color: #cbd5e1; line-height: 1.5; }
+label.campo { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin: 14px 0 6px; }
+input[type=text], input[type=time], input[type=month], select { width: 100%; background: #0b1220; border: 1px solid var(--card-border); padding: 12px 14px; border-radius: 12px; color: #fff; font-size: 15px; outline: none; color-scheme: dark; }
+input:focus, select:focus { border-color: var(--accent); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 1px solid #2b3a52; background: #0b1220; color: #cbd5e1; padding: 8px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+.chip.on { background: #1d3a6b; border-color: #3b82f6; color: #fff; }
+.chip.fora { border-style: dashed; color: #64748b; }
+.chip.fora.on { color: #fff; }
+.linha-switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; padding: 12px 14px; background: #0b1220; border: 1px solid var(--card-border); border-radius: 12px; font-size: 14px; }
+.switch { position: relative; width: 46px; height: 26px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch span { position: absolute; inset: 0; background: #334155; border-radius: 26px; transition: .2s; }
+.switch span:before { content: ""; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: .2s; }
+.switch input:checked + span { background: var(--green); }
+.switch input:checked + span:before { transform: translateX(20px); }
+.stepper { display: flex; align-items: center; gap: 12px; }
+.stepper button { width: 42px; height: 42px; border-radius: 12px; border: 1px solid #2b3a52; background: #0b1220; color: #fff; font-size: 20px; }
+.stepper b { font-size: 20px; min-width: 24px; text-align: center; }
+.marcar-todas { display: flex; align-items: center; gap: 10px; margin-top: 14px; font-size: 14px; cursor: pointer; }
+.marcar-todas input { width: 22px; height: 22px; accent-color: #3b82f6; flex: none; }
+.stepper input.num-vagas { width: 64px; height: 42px; padding: 0 4px; text-align: center; font-size: 20px; font-weight: 800; background: #0b1220; border: 1px solid #2b3a52; border-radius: 12px; color: #fff; -moz-appearance: textfield; }
+.stepper input.num-vagas::-webkit-outer-spin-button, .stepper input.num-vagas::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.modal-fundo { position: fixed; inset: 0; background: rgba(2,6,15,0.78); display: none; align-items: center; justify-content: center; z-index: 20; padding: 16px; box-sizing: border-box; }
+.modal-fundo.aberto { display: flex; }
+.modal { background: #0f1626; border: 1px solid var(--card-border); border-radius: 20px; width: 100%; max-width: 720px; max-height: calc(90vh - 32px); max-height: calc(90dvh - 32px); overflow-y: auto; padding: 20px 18px 24px; margin: auto; animation: sobe .18s ease-out; }
+@keyframes sobe { from { transform: translateY(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+.modal h2 { font-size: 17px; margin-bottom: 4px; }
+.modal .sub { font-size: 12px; color: var(--text-muted); }
+.modal-acoes { display: flex; gap: 10px; margin-top: 22px; }
+.modal-acoes .btn { flex: 1; }
+.resumo-barra { display: flex; align-items: center; gap: 10px; font-size: 13px; margin-top: 8px; }
+.resumo-barra .nome { width: 120px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.resumo-barra .trilho { flex: 1; height: 8px; background: #1e293b; border-radius: 8px; overflow: hidden; }
+.resumo-barra .trilho i { display: block; height: 100%; background: var(--accent-gradient); border-radius: 8px; }
+.resumo-barra b { width: 26px; text-align: right; }
+.vazio, .carregando { text-align: center; padding: 30px 15px; color: var(--text-muted); font-size: 13px; background: var(--card-bg); border-radius: 14px; border: 1px dashed var(--card-border); }
+.toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: #111c30; border: 1px solid #2b3a52; color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; z-index: 30; display: none; max-width: 90%; text-align: center; }
+.toast.erro { border-color: #7f1d1d; color: #fecaca; }
+.dia-grupo { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; margin: 10px 4px 2px; }
+.oculto { display: none !important; }
+.presenca { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-top: 1px solid #1e293b; }
+.presenca:first-of-type { border-top: none; }
+.presenca span { flex: 1; font-size: 14px; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.presenca button { border: 1px solid #2b3a52; background: #0b1220; color: #94a3b8; border-radius: 10px; padding: 8px 10px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.presenca button.veio.on { background: #065f46; border-color: #10b981; color: #fff; }
+.presenca button.faltou.on { background: #7f1d1d; border-color: #ef4444; color: #fff; }
+.chamada-nav { display: flex; gap: 8px; align-items: center; }
+.chamada-nav input { flex: 1; }
+.tile { position: relative; }
+.tile .badge { position: absolute; top: 12px; right: 12px; background: #dc2626; color: #fff; font-size: 12px; font-weight: 800; min-width: 24px; height: 24px; border-radius: 12px; display: flex; align-items: center; justify-content: center; padding: 0 7px; }
+.link-copiar { display: flex; gap: 8px; margin-top: 8px; }
+.link-copiar input { flex: 1; min-width: 0; font-size: 13px; padding: 10px 12px; }
+.tag.azul { background: #1e1b4b; color: #c4b5fd; border-color: #3730a3; }
+.modo { background: linear-gradient(135deg, #0f2a22, #102033); border: 1px solid #1f5f4d; border-radius: 18px; padding: 16px; margin-bottom: 14px; }
+.modo h3 { font-size: 15px; color: #fff; margin-bottom: 10px; }
+.modo .seg button { padding: 12px 8px; font-size: 13px; }
+.modo .seg button.on { background: #065f46; color: #fff; }
+.modo p { font-size: 12px; color: #a7f3d0; margin-top: 10px; line-height: 1.5; }
+.tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (min-width: 560px) { .tiles { grid-template-columns: repeat(3, 1fr); } }
+.tile { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px 14px; text-align: left; color: var(--text-main); cursor: pointer; display: flex; flex-direction: column; gap: 8px; min-height: 118px; text-decoration: none; }
+.tile:active { transform: scale(0.98); }
+.tile .ti { font-size: 26px; width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: #182238; border: 1px solid #223253; }
+.tile b { font-size: 14px; }
+.tile small { font-size: 11px; color: var(--text-muted); line-height: 1.35; }
+.tile.destaque { background: linear-gradient(135deg, #1d3a8a, #4c1d95); border-color: #3b4fa8; }
+.tile.destaque .ti { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); }
+.tile.destaque small { color: #c7d2fe; }
+.barra-secao { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 8px 0; }
+.barra-secao b { font-size: 16px; }
+.seg.quatro { flex-wrap: wrap; }
+.seg.quatro button { flex: 1 1 45%; }
+.cal-g { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; margin-top: 8px; }
+.cal-g .sem { font-size: 10px; color: var(--text-muted); font-weight: 700; padding: 4px 0; }
+.cal-g button { border: 1px solid transparent; background: #0b1220; color: #cbd5e1; font-size: 13px; font-weight: 600; padding: 9px 0; border-radius: 10px; cursor: pointer; }
+.cal-g button.on { background: #2563eb; color: #fff; }
+.cal-g button.passado { color: #475569; }
+.cal-nav { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+.cal-nav b { font-size: 14px; }
+.numeros { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+.numeros div { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 12px; text-align: center; }
+.numeros b { display: block; font-size: 22px; }
+.numeros span { font-size: 11px; color: var(--text-muted); }
+.tag a { color: inherit; text-decoration: none; }
+.chip.nao { background: #2a1215; border-color: #7f1d1d; color: #fca5a5; text-decoration: line-through; }
+.tabela-func { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+.tabela-func th, .tabela-func td { padding: 6px 4px; text-align: center; border-bottom: 1px solid #1e293b; }
+.tabela-func th:first-child, .tabela-func td:first-child { text-align: left; }
+.tabela-func th { color: var(--text-muted); font-weight: 600; }
+.tabela-func td.alto { color: #fbbf24; font-weight: 800; }
+.tabela-rolagem { overflow-x: auto; }
+input[type=date] { width: 100%; background: #0b1220; border: 1px solid var(--card-border); padding: 12px 14px; border-radius: 12px; color: #fff; font-size: 15px; outline: none; color-scheme: dark; }
+.login { position: fixed; inset: 0; background: var(--bg); z-index: 40; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.login-caixa { width: 100%; max-width: 360px; text-align: center; }
+.login-caixa .header-icon { margin: 0 auto 14px; width: 64px; height: 64px; font-size: 32px; border-radius: 18px; }
+.login-caixa h1 { font-size: 21px; color: #fff; }
+.login-caixa p { font-size: 13px; color: var(--text-muted); margin: 6px 0 20px; line-height: 1.5; }
+.login-caixa input { text-align: center; font-size: 17px; letter-spacing: 1px; }
+.voltar { display: inline-block; color: var(--text-muted); font-size: 13px; font-weight: 600; text-decoration: none; margin-bottom: 12px; }
+.login .voltar { position: absolute; top: 18px; left: 18px; }
+.login-erro { color: #f87171; font-size: 13px; min-height: 20px; margin-top: 10px; line-height: 1.4; }
+input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(--card-border); padding: 12px 14px; border-radius: 12px; color: #fff; font-size: 15px; outline: none; }
+.seg { display: flex; background: #0b1220; border: 1px solid var(--card-border); border-radius: 12px; padding: 4px; gap: 4px; }
+.seg button { flex: 1; border: none; background: transparent; color: var(--text-muted); padding: 10px 6px; border-radius: 9px; font-size: 13px; font-weight: 600; }
+.seg button.on { background: #1e293b; color: #fff; }
+.func-linha { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.func-linha span { flex: 1; font-size: 14px; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.func-linha select { width: 55%; padding: 10px 12px; font-size: 14px; }
+.chip.rem:after { content: " \2715"; color: #64748b; }
+.atualizar-fundo { position: absolute; top: 0; left: 0; right: 0; min-height: 100%; z-index: 60; background: rgba(2,6,15,.75); display: none; align-items: flex-start; justify-content: center; padding: 0 20px; }
+.atualizar-caixa { width: 100%; max-width: 380px; background: #0f1626; border: 1px solid #3b82f6; border-radius: 20px; padding: 22px 20px; text-align: center; color: #e2e8f0; box-shadow: 0 20px 50px rgba(0,0,0,.6); }
+.atualizar-caixa .ic { font-size: 40px; }
+.atualizar-caixa h2 { font-size: 19px; color: #fff; margin: 8px 0 6px; }
+.atualizar-caixa p { font-size: 14px; color: #94a3b8; line-height: 1.5; }
+.atualizar-acoes { display: flex; gap: 10px; margin-top: 18px; }
+.atualizar-acoes a, .atualizar-acoes button { flex: 1; border: none; border-radius: 12px; padding: 13px 10px; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; font-family: inherit; }
+.atualizar-acoes button { background: #1e293b; color: #cbd5e1; }
+.atualizar-acoes a { background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff; }
+.btn-verificar { margin-top: 8px; background: transparent; border: 1px solid #2b3a52; color: #94a3b8; border-radius: 10px; padding: 7px 12px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.msg-versao { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); z-index: 9999; background: #0f172a; border: 1px solid #10b981; color: #34d399; border-radius: 12px; padding: 10px 16px; font-size: 13px; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,.5); max-width: 90vw; text-align: center; }
+.msg-versao:empty { display: none; }
+.btn-atualizar-topo { width: 38px; height: 38px; flex-shrink: 0; border-radius: 12px; border: 1px solid #2b3a52; background: #0b1220; color: #cbd5e1; font-size: 17px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+.btn-atualizar-topo:active { transform: scale(.94); }
+</style>
+</head>
+<body data-versao="1.66">
+<div class="atualizar-fundo" id="telaAtualizar"><div class="atualizar-caixa"><div class="ic">🔄</div><h2>Tem versão nova do app!</h2><p id="textoAtualizar">Quer atualizar agora?</p><div class="atualizar-acoes"><button onclick="naoAtualizar()">Agora não</button><a href="./?p=coord" target="_blank" rel="noopener">Atualizar</a></div></div></div>
+<div class="login oculto" id="telaLogin">
+<a class="voltar" href="./" target="_top">← Ver a escala</a>
+<form class="login-caixa" onsubmit="entrar(event)">
+<div class="header-icon">🔐</div>
+<h1>Coordenadores</h1>
+<p id="loginTexto">Carregando...</p>
+<input type="password" id="inSenha" placeholder="Senha" autocomplete="current-password">
+<input type="password" id="inSenha2" class="oculto" style="margin-top:10px" placeholder="Repita a senha" autocomplete="new-password">
+<button class="btn full" style="margin-top:12px" id="btnEntrar" type="submit">Entrar</button>
+<div class="login-erro" id="loginErro"></div>
+</form>
+</div>
+
+<a class="voltar" href="./" target="_top">← Ver a escala</a>
+<div class="header">
+<div>
+<h1>Coordenadores</h1>
+<p id="subtitulo">Carregando...</p>
+</div>
+<span style="margin-left:auto"></span><button class="btn-atualizar-topo" onclick="conferirVersao(true, this)" title="Verificar atualização" aria-label="Verificar atualização">🔄</button>
+</div>
+
+<div class="barra-secao oculto" id="barraSecao">
+<button class="btn sec small" onclick="mudarAba('inicio')">← Início</button>
+<b id="tituloPainel"></b>
+</div>
+
+<!-- Início -->
+<section id="aba-inicio">
+<div class="modo">
+<h3>📋 Quem escolhe os dias das missas?</h3>
+<div class="seg" id="segModoHome">
+<button data-v="0" onclick="definirTrocas(false)">👤 O coordenador monta</button>
+<button data-v="1" onclick="definirTrocas(true)">🙋 Liberado: cada acólito escolhe</button>
+</div>
+<p id="textoModoHome">Carregando...</p>
+</div>
+<div class="modo" style="background:linear-gradient(135deg,#0f1a33,#1a1530);border-color:#3b4fa8">
+<h3>🚪 Tela de entrada do site <span style="font-size:11px;font-weight:700;color:#fbbf24;border:1px solid #fbbf24;border-radius:8px;padding:1px 6px;margin-left:4px">EM TESTE</span></h3>
+<div class="seg" id="segEntradaHome">
+<button data-v="nao" onclick="definirTelaEntrada('nao')">Desativada</button>
+<button class="on" data-v="demo" onclick="definirTelaEntrada('demo')">Demonstração</button>
+<button data-v="sim" onclick="definirTelaEntrada('sim')">Ativada</button>
+</div>
+<p id="textoEntradaHome" style="color:#c7d2fe">Carregando...</p>
+</div>
+<div class="modo" style="background:linear-gradient(135deg,#131a2e,#1a1433);border-color:#3b3470">
+<h3>✅ Chamada de presença</h3>
+<div class="seg" id="segChamadaHome">
+<button class="on" data-v="0" onclick="definirChamada(false)">Desativada</button>
+<button data-v="1" onclick="definirChamada(true)">Ativada</button>
+</div>
+<p id="textoChamadaHome" style="color:#c4b5fd">Desativada: ninguém faz chamada e os relatórios mostram só a escala.</p>
+</div>
+<div class="modo" style="background:linear-gradient(135deg,#0f1f33,#101a2e);border-color:#1e3a5f">
+<h3>📧 E-mail a cada movimentação</h3>
+<div class="seg" id="segEmail">
+<button data-v="0" onclick="definirEmailAviso(false)">Não receber</button>
+<button data-v="1" onclick="definirEmailAviso(true)">Receber e-mail</button>
+</div>
+<label class="campo" for="inEmailDestino">E-mail que recebe os avisos</label>
+<input type="email" id="inEmailDestino" placeholder="seuemail@gmail.com" autocomplete="email">
+<button class="btn sec small" style="margin-top:10px" onclick="salvarEmailDestino()">Salvar e-mail</button>
+<p style="margin-top:8px;font-size:12px;color:#93c5fd">Quando alguém desiste, troca de horário, assume vaga ou se registra pelo site, chega um e-mail para conferir. Se deixar o e-mail em branco, o aviso vai para a conta dona da planilha.</p>
+</div>
+<div class="tiles">
+<button class="tile destaque" onclick="mudarAba('gerar')"><span class="ti">✨</span><b>Gerar escala</b><small>Mês, semana, domingos ou dias escolhidos</small></button>
+<button class="tile" onclick="mudarAba('ajustar')"><span class="ti">✏️</span><b>Ajustar escala</b><small id="subAjustar">Trocar quem serve e as funções</small></button>
+<button class="tile" onclick="mudarAba('acolitos')"><span class="ti">🙋</span><b>Acólitos</b><small id="subAcolitos">Cadastro</small></button>
+<button class="tile" onclick="mudarAba('missas')"><span class="ti">🕯️</span><b>Missas</b><small id="subMissas">Horários, funções e datas especiais</small></button>
+<button class="tile" onclick="mudarAba('servindo')"><span class="ti">👥</span><b>Acólitos por missa</b><small id="subServindo">Quantos servem em cada missa</small></button>
+<button class="tile" onclick="mudarAba('limpeza')"><span class="ti">🧽</span><b>Missas que já passaram</b><small id="subLimpeza">Tirar da escala os dias que passaram</small></button>
+<button class="tile" onclick="mudarAba('discord')"><span class="ti">🔔</span><b>Notificações</b><small id="subDiscord">Discord e celular (ntfy)</small></button>
+<button class="tile" onclick="mudarAba('acessos')"><span class="ti">📈</span><b>Acessos</b><small>O que está sendo usado e o que não</small></button>
+<button class="tile oculto" id="tileChamada" onclick="mudarAba('chamada')"><span class="ti">✅</span><b>Chamada</b><small>Quem veio e quem faltou em cada missa</small></button>
+<button class="tile" onclick="mudarAba('inscricoes')"><span class="ti">📝</span><b>Inscrições</b><small>Aprovar quem se inscreveu pelo site</small><span class="badge oculto" id="badgeInscricoes"></span></button>
+<button class="tile" onclick="mudarAba('trocas')"><span class="ti">🔁</span><b>Trocas</b><small>Desistências e vagas assumidas</small></button>
+<button class="tile" onclick="mudarAba('relatorio')"><span class="ti">📊</span><b>Relatórios</b><small>Participação de cada acólito</small></button>
+<a class="tile" href="./" target="_top"><span class="ti">📅</span><b>Ver escala</b><small>Como os acólitos veem</small></a>
+<button class="tile" onclick="mudarAba('coord')"><span class="ti">⚙️</span><b>Configurações</b><small>Senha, zerar dados e sair</small></button>
+</div>
+</section>
+
+<!-- Acólitos -->
+<section id="aba-acolitos" class="oculto">
+<div class="section-header">
+<span class="section-title">Acólitos e coroinhas</span>
+<span class="section-sub" id="contaAcolitos"></span>
+</div>
+<button class="btn sec full" style="margin-bottom:12px" onclick="abrirColarNomes()">📋 Colar lista de nomes</button>
+<div class="seg" id="segFiltroGrupo" style="margin-bottom:12px">
+<button class="on" data-g="" onclick="filtrarGrupo(this)">Todos</button>
+<button data-g="Acólito" onclick="filtrarGrupo(this)">Acólitos</button>
+<button data-g="Coroinha" onclick="filtrarGrupo(this)">Coroinhas</button>
+</div>
+<div class="lista" id="listaAcolitos"><div class="carregando">Carregando...</div></div>
+<button class="btn fab oculto" id="fabAcolito" onclick="editarAcolito(-1)">+ Acólito</button>
+</section>
+
+<!-- Missas -->
+<section id="aba-missas" class="oculto">
+<div class="section-header">
+<span class="section-title">Funções</span>
+<span class="section-sub">na ordem de prioridade</span>
+</div>
+<div class="painel">
+<div class="chips" id="chipsFuncoes"></div>
+<button class="btn sec small" style="margin-top:12px" onclick="novaFuncao()">+ Função</button>
+</div>
+<div class="section-header">
+<span class="section-title">Missas da semana</span>
+<span class="section-sub" id="contaMissas"></span>
+</div>
+<div class="lista" id="listaMissas"></div>
+<div class="section-header" style="margin-top:22px">
+<span class="section-title">⭐ Missas especiais</span>
+<span class="section-sub">datas especiais</span>
+</div>
+<div class="lista" id="listaEspeciais"></div>
+<button class="btn sec full" style="margin-top:10px" onclick="editarEspecial(-1)">+ Missa especial</button>
+<button class="btn fab oculto" id="fabMissa" onclick="editarMissa(-1)">+ Missa</button>
+</section>
+
+<!-- Acólitos por missa -->
+<section id="aba-servindo" class="oculto">
+<div class="painel">
+<p>Quantos acólitos servem em cada missa (use − / + ou digite o número, até 99). A próxima escala gerada já sai com esse número de lugares (quem não for escalado vira vaga aberta).</p>
+<label class="campo">Padrão para todas as missas</label>
+<div class="stepper"><button onclick="mudarPadrao(-1)">−</button><input type="number" inputmode="numeric" min="1" max="99" class="num-vagas" id="vagasPadrao" value="2" onchange="definirPadrao(this.value)"><button onclick="mudarPadrao(1)">+</button></div>
+<label class="marcar-todas"><input type="checkbox" id="chkTodas" onchange="marcarTodas(this.checked)"><span>Mudar <strong>todas as missas</strong> junto com o padrão</span></label>
+<p style="margin:6px 0 0;font-size:12px;color:var(--text-muted)">Marcado: cada vez que você muda o padrão, todas as missas da semana ficam com esse número. Depois dá pra ajustar qualquer missa separada.</p>
+</div>
+<div class="section-header" style="margin-top:22px">
+<span class="section-title">Cada missa da semana</span>
+<span class="section-sub">ajuste só onde for diferente</span>
+</div>
+<div class="lista" id="listaServindo"></div>
+<p style="margin:10px 4px 0;font-size:12px;color:var(--text-muted)">Missas especiais (Natal, Páscoa...) têm o número próprio, em Missas.</p>
+<button class="btn full" style="margin-top:16px" id="btnSalvarServindo" onclick="salvarServindo()">Salvar</button>
+</section>
+
+<!-- Missas que já passaram -->
+<section id="aba-limpeza" class="oculto">
+<div class="modo">
+<h3>🧽 Tirar sozinho as missas que já passaram</h3>
+<div class="seg" id="segLimpeza">
+<button class="on" data-v="0" onclick="definirLimpeza(false)">Desativado</button>
+<button data-v="1" onclick="definirLimpeza(true)">Ativado</button>
+</div>
+<p id="textoLimpeza">Carregando...</p>
+</div>
+<div class="painel">
+<p><strong>Limpar agora</strong><br><span id="textoPassadas">Carregando...</span></p>
+<button class="btn full" style="margin-top:12px" id="btnLimparAgora" onclick="limparAgora()">🧽 Limpar agora</button>
+</div>
+<p style="margin:10px 4px 0;font-size:12px;color:var(--text-muted)">Nada é apagado de vez: as missas que saem da escala vão para a aba <strong>Historico</strong> da planilha. Os relatórios, a frequência de cada acólito e a chamada de dias anteriores continuam contando com elas.</p>
+</section>
+
+<!-- Discord -->
+<section id="aba-discord" class="oculto">
+<div class="painel">
+<p><strong>💬 Link do canal (webhook)</strong><br><span id="textoWebhook">Carregando...</span></p>
+<input type="text" id="inWebhook" placeholder="https://discord.com/api/webhooks/..." autocomplete="off" style="margin-top:10px">
+<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+<button class="btn sec small" id="btnTesteDiscord" onclick="testeDiscord()">Enviar teste</button>
+<button class="btn sec small" id="btnEscalaDiscord" onclick="enviarEscalaDiscord()">Enviar a escala da semana agora</button>
+<button class="btn perigo small oculto" id="btnApagarWebhook" onclick="apagarWebhook()">Tirar o link</button>
+<button class="btn sec small oculto" id="btnLimparDiscord" onclick="limparDiscord()">🧹 Apagar mensagens do app</button>
+</div>
+</div>
+<div class="painel">
+<div class="linha-switch"><span>Mandar a <strong>escala da semana</strong> sozinho</span>
+<label class="switch"><input type="checkbox" id="chkSemanal" onchange="desenharDiscordAgenda()"><span></span></label></div>
+<div id="agendaDiscord">
+<label class="campo">Em que dia</label>
+<div class="chips" id="chipsDiaDiscord"></div>
+<label class="campo" for="inHoraDiscord">A que horas</label>
+<select id="inHoraDiscord"></select>
+<p style="margin:6px 0 0;font-size:12px;color:var(--text-muted)">Manda as missas dos 7 dias seguintes, com as vagas abertas em destaque e o link do site.</p>
+</div>
+<div class="linha-switch"><span>Avisar quando <strong>abrir vaga</strong> (alguém tocou em "Não vou poder ir")</span>
+<label class="switch"><input type="checkbox" id="chkVagasDiscord"><span></span></label></div>
+<div class="linha-switch"><span>Avisar quando <strong>alguém entrar no site</strong> (com total de acessos)</span>
+<label class="switch"><input type="checkbox" id="chkAcessosDiscord"><span></span></label></div>
+<div class="linha-switch"><span>Vigiar o site e avisar aqui <strong>se ele cair</strong> (e quando voltar)</span>
+<label class="switch"><input type="checkbox" id="chkVigiaDiscord"><span></span></label></div>
+<div class="linha-switch"><span><strong>Resumo das visitas</strong> todo dia às 21h (quantas e quem entrou)</span>
+<label class="switch"><input type="checkbox" id="chkResumoDiario"><span></span></label></div>
+<div class="linha-switch"><span>Mandar também, <strong>todo dia às 8h</strong>, "✅ Site funcionando"</span>
+<label class="switch"><input type="checkbox" id="chkVigiaDiario"><span></span></label></div>
+<p style="margin:6px 0 0;font-size:12px;color:var(--text-muted)"><span id="textoVigia">O app abre o próprio site a cada 15 minutos. Só manda mensagem quando cair e quando voltar.</span>
+<button class="btn sec small" style="margin-left:6px" id="btnChecarSite" onclick="checarSiteAgora()">Checar agora</button></p>
+</div>
+<div class="painel">
+<p><strong>📱 Notificação no celular (app ntfy)</strong><br><span id="textoNtfy" style="font-size:13px;color:var(--text-muted)">Carregando...</span></p>
+<div id="topicoNtfy" class="oculto" style="margin-top:10px;padding:12px 14px;background:#0b1220;border:1px solid var(--card-border);border-radius:12px;font-family:monospace;font-size:15px;word-break:break-all;user-select:all"></div>
+<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+<button class="btn sec small" id="btnCriarNtfy" onclick="acaoNtfy('criar')">Criar tópico</button>
+<button class="btn sec small oculto" id="btnCopiarNtfy" onclick="copiarNtfy()">Copiar</button>
+<button class="btn sec small oculto" id="btnTesteNtfy" onclick="acaoNtfy('teste')">Enviar teste para o celular</button>
+<button class="btn perigo small oculto" id="btnApagarNtfy" onclick="if(confirm('Parar de mandar avisos para o celular?'))acaoNtfy('apagar')">Desligar</button>
+</div>
+</div>
+<button class="btn full" style="margin-top:6px" id="btnSalvarDiscord" onclick="salvarDiscord()">Salvar</button>
+<details class="painel" style="margin-top:14px"><summary style="cursor:pointer;font-weight:700">Como pegar o link no Discord</summary>
+<ol style="margin:10px 0 0 18px;font-size:13px;line-height:1.6;color:var(--text-muted)">
+<li>No Discord (computador ou celular), abra o canal onde os avisos vão aparecer.</li>
+<li>Toque na engrenagem <strong>Editar canal</strong> &gt; <strong>Integrações</strong> &gt; <strong>Webhooks</strong> &gt; <strong>Novo webhook</strong>.</li>
+<li>Dê um nome (ex.: Escala de Acólitos) e toque em <strong>Copiar URL do webhook</strong>.</li>
+<li>Cole aqui em cima, toque em <strong>Salvar</strong> e depois em <strong>Enviar teste</strong>.</li>
+</ol>
+<p style="margin-top:8px;font-size:12px;color:var(--text-muted)">Quem tiver esse link consegue mandar mensagem no canal: não compartilhe. Se vazar, apague o webhook no Discord e crie outro.</p>
+</details>
+</section>
+
+<!-- Acessos -->
+<section id="aba-acessos" class="oculto">
+<div class="seg" id="segAcessos" style="margin-bottom:12px">
+<button class="on" data-d="7" onclick="carregarAcessos(7)">7 dias</button>
+<button data-d="30" onclick="carregarAcessos(30)">30 dias</button>
+<button data-d="90" onclick="carregarAcessos(90)">90 dias</button>
+</div>
+<div id="conteudoAcessos"><div class="carregando">Carregando...</div></div>
+<p style="margin:10px 4px 0;font-size:12px;color:var(--text-muted)">Só números, sem saber quem foi. Cada aba conta uma vez por visita. A contagem começou na versão 1.28; os dias anteriores ficam guardados na aba <strong>Acessos</strong> da planilha.</p>
+</section>
+
+<!-- Gerar -->
+<section id="aba-gerar" class="oculto">
+<div class="painel">
+<p>Escolha para quando e toque em <strong>Gerar escala</strong>. Quem serviu menos vezes é escalado primeiro, respeitando a disponibilidade de cada um.</p>
+<label class="campo">Gerar escala para</label>
+<div class="seg quatro" id="segAlvo">
+<button class="on" data-m="mes" onclick="escolherAlvo(this)">🗓️ Mês inteiro</button>
+<button data-m="semana" onclick="escolherAlvo(this)">📆 Semana atual</button>
+<button data-m="domingos" onclick="escolherAlvo(this)">⛪ Domingos do próximo mês</button>
+<button data-m="dias" onclick="escolherAlvo(this)">👆 Escolher dias</button>
+</div>
+<div id="alvoMes" style="margin-top:10px"><select id="mesGerar" onchange="resumirAlvo()"></select></div>
+<div id="alvoDias" class="oculto">
+<div class="cal-nav"><button class="btn sec small" onclick="mudarMesGer(-1)">‹</button><b id="calGerTitulo"></b><button class="btn sec small" onclick="mudarMesGer(1)">›</button></div>
+<div class="cal-g" id="calGer"></div>
+</div>
+<p class="sub" id="alvoResumo" style="margin-top:10px"></p>
+<label class="campo">Quem preenche as vagas?</label>
+<div class="seg" id="segPreenche">
+<button class="on" data-v="0" onclick="escolherPreenche(this)">🤖 O sistema escolhe</button>
+<button data-v="1" onclick="escolherPreenche(this)">🙋 Deixar vagas abertas</button>
+</div>
+<p class="sub" id="textoPreenche" style="margin-top:6px">O sistema escolhe os acólitos pela disponibilidade e por quem serviu menos.</p>
+<div id="opcoesSistema">
+<label class="campo">Quem entra nesta escala <span id="contaIncluidos" style="font-weight:400"></span></label>
+<div class="chips" id="chipsIncluidos"></div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
+<button class="btn sec small" onclick="marcarTodos(true)">Marcar todos</button>
+<button class="btn sec small" onclick="marcarTodos(false)">Desmarcar todos</button>
+<button class="btn sec small" onclick="marcarGrupo('Acólito')">Só acólitos</button>
+<button class="btn sec small" onclick="marcarGrupo('Coroinha')">Só coroinhas</button>
+</div>
+<label class="campo">Funções (Missal, Microfone...)</label>
+<div class="seg" id="segFuncoes">
+<button class="on" data-v="0" onclick="escolherModo(this)">🤝 Decidir na hora</button>
+<button data-v="1" onclick="escolherModo(this)">🔄 Distribuir automático</button>
+</div>
+<label class="campo">Todos podem servir em mais de uma missa no mesmo dia?</label>
+<div class="seg" id="segRepetir">
+<button class="on" data-v="0" onclick="escolherRepetir(this)">🚫 Não</button>
+<button data-v="1" onclick="escolherRepetir(this)">✅ Sim, se faltar gente</button>
+</div>
+<p class="sub" style="margin-top:6px">Quem marcou "mais de uma missa no mesmo dia" no cadastro pode repetir mesmo com "Não" aqui.</p>
+</div>
+<p style="margin-top:12px;font-size:12px;color:var(--text-muted)">A escala das datas escolhidas é refeita. O resto da escala não muda.</p>
+<button class="btn full" style="margin-top:16px" id="btnGerar" onclick="gerar()">✨ Gerar escala</button>
+</div>
+<div id="resultadoGerar"></div>
+</section>
+
+<!-- Ajustar -->
+<section id="aba-ajustar" class="oculto">
+<div id="blocoDesistencias"></div>
+<div class="painel" style="padding:12px 14px">
+<select id="mesAjustar" onchange="carregarMes()"></select>
+</div>
+<div id="resumoFuncoes"></div>
+<div class="lista" id="listaAjustar"></div>
+</section>
+
+<!-- Chamada -->
+<section id="aba-chamada" class="oculto">
+<div class="painel" style="padding:12px 14px">
+<div class="chamada-nav">
+<button class="btn sec small" onclick="mudarDiaChamada(-1)">‹</button>
+<input type="date" id="dataChamada" onchange="carregarChamada()">
+<button class="btn sec small" onclick="mudarDiaChamada(1)">›</button>
+</div>
+</div>
+<p class="sub" style="margin:0 4px 12px">Marque quem veio e quem faltou e toque em Salvar. Dá para acrescentar quem veio sem estar na escala.</p>
+<div class="lista" id="listaChamada"></div>
+</section>
+
+<!-- Inscrições -->
+<section id="aba-inscricoes" class="oculto">
+<div class="painel">
+<p><strong>📝 Link de inscrição</strong><br>Mande no grupo. Cada coroinha ou acólito preenche, e a inscrição aparece aqui para aprovar.</p>
+<div class="link-copiar"><input type="text" id="linkInscricao" readonly onclick="this.select()"><button class="btn small" onclick="copiarLink()">Copiar</button></div>
+</div>
+<div class="painel">
+<p><strong>📄 Planilha</strong><br>Tudo fica guardado na planilha (aba "Inscricoes" para as inscrições). Ela só abre para quem tem acesso a ela no Google.</p>
+<a class="btn sec full" id="linkPlanilha" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;margin-top:10px">Abrir a planilha</a>
+</div>
+<div class="section-header"><span class="section-title">Esperando aprovação</span><span class="section-sub" id="contaInscricoes"></span></div>
+<div class="lista" id="listaInscricoes"></div>
+</section>
+
+<!-- Trocas -->
+<section id="aba-trocas" class="oculto">
+<div class="painel">
+<p><strong>Quem pode mexer na escala pelo site?</strong></p>
+<div class="seg" id="segTrocas" style="margin-top:10px">
+<button data-v="0" onclick="definirTrocas(false)">🔐 Só coordenadores</button>
+<button data-v="1" onclick="definirTrocas(true)">🙋 Acólitos e coordenadores</button>
+</div>
+<p class="sub" id="textoTrocas" style="margin-top:10px">Carregando...</p>
+</div>
+<p class="sub" style="margin:0 4px 12px">Quando alguém toca em "Não vou poder ir" ou "Quero essa vaga" no site, aparece aqui. Para colocar alguém numa vaga aberta, use Ajustar escala.</p>
+<div class="lista" id="listaTrocas"></div>
+</section>
+
+<!-- Relatórios -->
+<section id="aba-relatorio" class="oculto">
+<div class="painel" style="padding:12px 14px">
+<select id="periodoRel" onchange="carregarRelatorio()"></select>
+</div>
+<div id="conteudoRel"></div>
+</section>
+
+<!-- Coordenadores -->
+<section id="aba-coord" class="oculto">
+<div class="painel">
+<p><strong>✅ Chamada de presença</strong><br>Com a chamada ligada, aparece o botão Chamada na tela inicial e os relatórios mostram quem veio e quem faltou de verdade.</p>
+<div class="seg" id="segChamada" style="margin-top:10px">
+<button data-v="0" onclick="definirChamada(false)">Não usar</button>
+<button data-v="1" onclick="definirChamada(true)">Usar chamada</button>
+</div>
+</div>
+<div class="painel">
+<p><strong>Trocar a senha dos coordenadores</strong><br>Quando alguém sair da coordenação, troque a senha e passe a nova só para quem continua. Todo mundo que estiver no painel sai na hora.</p>
+<label class="campo" for="senhaAtual">Senha atual</label>
+<input type="password" id="senhaAtual" autocomplete="current-password">
+<label class="campo" for="senhaNova">Nova senha (mínimo 6 caracteres)</label>
+<input type="password" id="senhaNova" autocomplete="new-password">
+<label class="campo" for="senhaNova2">Repita a nova senha</label>
+<input type="password" id="senhaNova2" autocomplete="new-password">
+<button class="btn full" style="margin-top:16px" id="btnTrocar" onclick="trocarSenha()">Trocar senha</button>
+</div>
+<div class="painel" style="border-color:#4c1d24">
+<p><strong style="color:#f87171">🧹 Zerar dados</strong><br>Para começar do zero ou tirar os dados de teste. Antes de apagar, uma cópia fica guardada escondida na planilha.</p>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+<button class="btn perigo full" onclick="zerar('escala', 'toda a escala')">Apagar toda a escala</button>
+<button class="btn perigo full" onclick="zerar('acolitos', 'todos os acólitos cadastrados')">Apagar todos os acólitos</button>
+<button class="btn perigo full" onclick="zerar('trocas', 'o histórico de trocas e desistências')">Apagar o histórico de trocas</button>
+</div>
+</div>
+<div class="painel">
+<p>Esqueceu a senha? O dono da planilha pode criar outra no menu <strong>Escala Pastoral › Definir senha do painel</strong>.</p>
+<button class="btn perigo full" style="margin-top:14px" onclick="sair()">Sair do painel</button>
+</div>
+</section>
+
+<div class="modal-fundo" id="modalFundo" onclick="if (event.target === this) fecharModal()">
+<div class="modal" id="modal"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<footer style="text-align:center;font-size:12px;color:#64748b;margin:28px 0 8px">Desenvolvido por <strong style="color:#94a3b8">Bruninho Acólito</strong> ⛪<br><span style="font-size:11px;color:#475569">Versão <span id="numeroVersao"></span> - teste</span><div class="msg-versao" id="msgVersao"></div></footer>
+<script>
+const DIAS = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
+const ORDEM_DIAS = [0, 1, 2, 3, 4, 5, 6];
+let acolitos = [];
+let grade = [];
+let escalaMes = [];
+let funcoes = [];
+let especiais = [];
+let frequencia = {};
+let distribuirFuncoes = false;
+let permitirRepetir = false;
+let vagasAbertas = false;
+let incluidos = null; // nomes marcados para a próxima geração
+let conhecidos = new Set();
+let rascunho = null;
+let rascunhoColar = null;
+let vagasPadrao = 2;
+let servindo = null; // rascunho da tela "Acólitos por missa": { padrao, vagas: [por índice da grade] }
+
+/* ---------- utilitários ---------- */
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function normalizar(v) {
+  return String(v || "").trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+}
+function diaDaSemana(v) {
+  const s = normalizar(v);
+  const mapa = { dom: 0, seg: 1, ter: 2, qua: 3, qui: 4, sex: 5, sab: 6 };
+  if (s.slice(0, 3) in mapa) return mapa[s.slice(0, 3)];
+  const n = s.match(/^([2-6])\s*a/);
+  return n ? parseInt(n[1], 10) - 1 : null;
+}
+function formatarHora(v) {
+  const m = String(v || "").match(/(\d{1,2})\s*[:hH]\s*(\d{2})?/);
+  return m ? ("0" + m[1]).slice(-2) + ":" + (m[2] || "00") : "";
+}
+function diaCurto(dow) { return DIAS[dow].replace("-feira", ""); }
+function horaCurta(h) { return h.replace(":00", "h").replace(":", "h"); }
+function toast(msg, erro) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast" + (erro ? " erro" : "");
+  t.style.display = "block";
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.style.display = "none", erro ? 5000 : 2500);
+}
+/* ---------- senha / sessão ---------- */
+let token = null;
+// a entrada vale só enquanto a aba estiver aberta: fechou, pede a senha de novo
+try { localStorage.removeItem("painel_token"); token = sessionStorage.getItem("painel_token"); } catch (e) {}
+function guardarToken(t) {
+  token = t;
+  try { if (t) sessionStorage.setItem("painel_token", t); else sessionStorage.removeItem("painel_token"); } catch (e) {}
+}
+let criandoSenha = false;
+function mostrarLogin(msg) {
+  guardarToken(null);
+  fecharModal();
+  document.getElementById("telaLogin").classList.remove("oculto");
+  document.getElementById("loginErro").textContent = msg || "";
+  const b = document.getElementById("btnEntrar");
+  b.disabled = true;
+  google.script.run
+    .withSuccessHandler(st => {
+      criandoSenha = !st.temSenha;
+      document.getElementById("loginTexto").innerHTML = criandoSenha
+        ? "Primeiro acesso: crie a <strong>senha dos coordenadores</strong> (mínimo 6 caracteres). Depois passe essa senha só para quem coordena."
+        : "Digite a senha dos coordenadores para entrar.";
+      document.getElementById("inSenha2").classList.toggle("oculto", !criandoSenha);
+      document.getElementById("inSenha").setAttribute("autocomplete", criandoSenha ? "new-password" : "current-password");
+      b.disabled = false; b.textContent = criandoSenha ? "Criar senha e entrar" : "Entrar";
+      document.getElementById("inSenha").focus();
+    })
+    .withFailureHandler(e => { document.getElementById("loginErro").textContent = textoErro(e); b.disabled = false; })
+    .statusSenha();
+}
+function textoErro(e) {
+  const m = e && e.message || String(e);
+  if (m.indexOf("SEM_SENHA") >= 0) return "A senha ainda não foi criada. Na planilha, use o menu Escala Pastoral › Definir senha do painel.";
+  return m.replace(/^Error:\s*/, "");
+}
+function entrar(ev) {
+  ev.preventDefault();
+  const senha = document.getElementById("inSenha").value;
+  if (!senha) return;
+  if (criandoSenha) {
+    if (senha.trim().length < 6) { document.getElementById("loginErro").textContent = "A senha precisa ter pelo menos 6 caracteres."; return; }
+    if (senha !== document.getElementById("inSenha2").value) { document.getElementById("loginErro").textContent = "As duas senhas não são iguais."; return; }
+  }
+  const b = document.getElementById("btnEntrar");
+  b.disabled = true; b.textContent = "Entrando...";
+  google.script.run
+    .withSuccessHandler(t => {
+      guardarToken(t);
+      document.getElementById("inSenha").value = "";
+      document.getElementById("inSenha2").value = "";
+      document.getElementById("telaLogin").classList.add("oculto");
+      iniciar();
+    })
+    .withFailureHandler(e => mostrarLogin(textoErro(e)))
+    [criandoSenha ? "criarPrimeiraSenha" : "entrarPainel"](senha);
+}
+function sair() {
+  google.script.run.sairPainel(token);
+  mostrarLogin("Você saiu do painel.");
+}
+function zerar(oque, texto) {
+  const c = prompt("Isso vai apagar " + texto + ".\nPara confirmar, digite ZERAR:");
+  if (c === null) return;
+  if (c.trim().toUpperCase() !== "ZERAR") { toast("Não apagado: precisa digitar ZERAR.", true); return; }
+  chamar("painelZerar", [oque, c], r => {
+    toast(r === "vazio" ? "Já estava vazio." : "Apagado ✓ (cópia guardada na planilha)");
+    if (oque === "acolitos") iniciar();
+  });
+}
+function trocarSenha() {
+  const atual = document.getElementById("senhaAtual").value;
+  const nova = document.getElementById("senhaNova").value;
+  if (nova.trim().length < 6) { toast("A nova senha precisa ter pelo menos 6 caracteres.", true); return; }
+  if (nova !== document.getElementById("senhaNova2").value) { toast("As duas senhas novas não são iguais.", true); return; }
+  ocupado(document.getElementById("btnTrocar"), "Trocando...");
+  chamar("painelTrocarSenha", [atual, nova], t => {
+    guardarToken(t);
+    ["senhaAtual", "senhaNova", "senhaNova2"].forEach(id => document.getElementById(id).value = "");
+    const b = document.getElementById("btnTrocar");
+    b.disabled = false; b.removeAttribute("data-ocupado"); b.textContent = "Trocar senha";
+    toast("Senha trocada ✓ Passe a nova senha para os coordenadores.");
+  });
+}
+
+function chamar(fn, args, ok) {
+  const runner = google.script.run
+    .withSuccessHandler(ok)
+    .withFailureHandler(e => {
+      if (String(e && e.message || e).indexOf("SESSAO_EXPIRADA") >= 0) { mostrarLogin("Sua sessão acabou. Digite a senha de novo."); return; }
+      toast(textoErro(e), true);
+      document.querySelectorAll("[data-ocupado]").forEach(b => { b.disabled = false; b.removeAttribute("data-ocupado"); b.textContent = b.dataset.texto || "Salvar"; });
+    });
+  runner[fn].apply(runner, [token].concat(args || []));
+}
+function ocupado(btn, texto) { btn.dataset.texto = btn.textContent; btn.disabled = true; btn.setAttribute("data-ocupado", "1"); btn.textContent = texto; }
+
+/* Disponibilidade: texto <-> conjunto de opções */
+function lerDisponibilidade(texto) {
+  const partes = normalizar(texto).split(/[,;\/]/).map(p => p.trim()).filter(p => p);
+  if (partes.length === 0 || partes.some(p => p.indexOf("qualquer") >= 0 || p.indexOf("todos") >= 0)) return { qualquer: true, sel: new Set() };
+  const sel = new Set();
+  partes.forEach(p => {
+    const d = diaDaSemana(p), h = formatarHora(p);
+    if (d !== null && h) sel.add(d + "|" + h);
+    else if (d !== null) sel.add(d + "|*");
+    else if (h) sel.add("*|" + h);
+  });
+  return { qualquer: false, sel: sel };
+}
+function escreverDisponibilidade(qualquer, sel) {
+  if (qualquer || sel.size === 0) return "Qualquer";
+  return Array.from(sel).sort().map(k => {
+    const [d, h] = k.split("|");
+    if (d === "*") return h;
+    return DIAS[d] + (h === "*" ? "" : " " + horaCurta(h));
+  }).join(", ");
+}
+function resumoDisponibilidade(texto) {
+  const r = lerDisponibilidade(texto);
+  if (r.qualquer) return '<span class="tag green">Qualquer missa</span>';
+  return Array.from(r.sel).sort().map(k => {
+    const [d, h] = k.split("|");
+    const rot = d === "*" ? "Qualquer dia " + horaCurta(h) : diaCurto(d) + (h === "*" ? " (todas)" : " " + horaCurta(h));
+    return '<span class="tag">' + esc(rot) + '</span>';
+  }).join("");
+}
+
+/* ---------- carregar ---------- */
+window.onload = function () {
+  montarMeses();
+  if (token) iniciar(); else mostrarLogin();
+};
+function iniciar() {
+  chamar("painelCarregar", [], dados => { aplicar(dados); });
+  chamar("painelStatusTrocas", [], mostrarTrocas);
+}
+function aplicar(dados) {
+  acolitos = dados.acolitos;
+  grade = dados.grade;
+  funcoes = dados.funcoes || [];
+  especiais = dados.especiais || [];
+  frequencia = dados.frequencia || {};
+  vagasPadrao = dados.vagasPadrao || 2;
+  renderEspeciais();
+  const nomes = acolitos.map(a => a.nome);
+  incluidos = incluidos
+    ? new Set(Array.from(incluidos).filter(n => nomes.indexOf(n) >= 0).concat(acolitos.filter(a => a.ativo && !conhecidos.has(a.nome)).map(a => a.nome)))
+    : new Set(acolitos.filter(a => a.ativo).map(a => a.nome));
+  conhecidos = new Set(nomes);
+  renderIncluidos();
+  renderFuncoes();
+  renderAcolitos();
+  renderMissas();
+  const ativos = acolitos.filter(a => a.ativo).length;
+  document.getElementById("subtitulo").textContent = ativos + " acólitos ativos • " + grade.length + " missas por semana";
+  const coroinhas = acolitos.filter(a => a.ativo && a.grupo === "Coroinha").length;
+  document.getElementById("subAcolitos").textContent = (ativos - coroinhas) + " acólitos • " + coroinhas + " coroinhas";
+  const b = document.getElementById("badgeInscricoes");
+  b.textContent = dados.inscricoesPendentes || "";
+  b.classList.toggle("oculto", !dados.inscricoesPendentes);
+  document.getElementById("linkInscricao").value = dados.urlInscricao || "";
+  mostrarChaveChamada(!!dados.chamada);
+  mostrarTelaEntrada(dados.telaEntrada || "demo");
+  mostrarEmailAviso(!!dados.emailAviso, dados.emailDestino || "");
+  if (dados.urlPlanilha) document.getElementById("linkPlanilha").href = dados.urlPlanilha;
+  document.getElementById("subMissas").textContent = grade.length + " por semana" + (especiais.length ? " • " + especiais.length + " especiais" : "");
+  document.getElementById("subServindo").textContent = resumoServindo();
+  mostrarLimpeza(dados);
+}
+
+document.querySelectorAll(".tab-btn").forEach(b => b.onclick = () => mudarAba(b.dataset.aba));
+const TITULOS = { acolitos: "🙋 Acólitos", missas: "🕯️ Missas", gerar: "✨ Gerar escala", ajustar: "✏️ Ajustar escala", inscricoes: "📝 Inscrições", chamada: "✅ Chamada",
+  servindo: "👥 Acólitos por missa", acessos: "📈 Acessos", discord: "🔔 Notificações", limpeza: "🧽 Missas que já passaram", trocas: "🔁 Trocas", relatorio: "📊 Relatórios", coord: "⚙️ Configurações" };
+function mudarAba(nome) {
+  ["inicio", "acolitos", "missas", "servindo", "limpeza", "acessos", "discord", "gerar", "ajustar", "inscricoes", "chamada", "trocas", "relatorio", "coord"].forEach(a => document.getElementById("aba-" + a).classList.toggle("oculto", a !== nome));
+  document.getElementById("barraSecao").classList.toggle("oculto", nome === "inicio");
+  document.getElementById("tituloPainel").textContent = TITULOS[nome] || "";
+  document.getElementById("fabAcolito").classList.toggle("oculto", nome !== "acolitos");
+  document.getElementById("fabMissa").classList.toggle("oculto", nome !== "missas");
+  if (nome === "ajustar") carregarMes();
+  if (nome === "trocas") carregarTrocas();
+  if (nome === "inscricoes") carregarInscricoes();
+  if (nome === "chamada") { if (!document.getElementById("dataChamada").value) document.getElementById("dataChamada").value = hojeISO(); carregarChamada(); }
+  if (nome === "relatorio") carregarRelatorio();
+  if (nome === "gerar") resumirAlvo();
+  if (nome === "servindo") abrirServindo();
+  if (nome === "acessos") carregarAcessos(diasAcessos);
+  if (nome === "discord") carregarDiscord();
+  if (nome !== "inicio" && !abasContadas[nome]) { abasContadas[nome] = true; try { google.script.run.registrarUso("coord_" + nome); } catch (e) {} }
+  window.scrollTo(0, 0);
+}
+
+function montarMeses() {
+  const hoje = new Date();
+  let html = "";
+  for (let i = -1; i <= 6; i++) {
+    const d = new Date(hoje.getFullYear(), hoje.getMonth() + i, 1);
+    const val = ("0" + (d.getMonth() + 1)).slice(-2) + "/" + d.getFullYear();
+    const nome = d.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+    html += '<option value="' + val + '"' + (i === 0 ? " selected" : "") + ">" + nome.charAt(0).toUpperCase() + nome.slice(1) + "</option>";
+  }
+  document.getElementById("mesAjustar").innerHTML = html;
+  // para gerar, sugere o mês que vem
+  document.getElementById("mesGerar").innerHTML = html.replace(" selected", "");
+  document.getElementById("mesGerar").selectedIndex = 2;
+  // relatório: meses + ano inteiro
+  const ano = hoje.getFullYear();
+  document.getElementById("periodoRel").innerHTML = html + '<option value="' + ano + '">Ano de ' + ano + ' inteiro</option>';
+}
+
+/* ---------- Acólitos ---------- */
+let filtroGrupo = "";
+function filtrarGrupo(btn) {
+  filtroGrupo = btn.dataset.g;
+  document.querySelectorAll("#segFiltroGrupo button").forEach(b => b.classList.toggle("on", b === btn));
+  renderAcolitos();
+}
+function renderAcolitos() {
+  const el = document.getElementById("listaAcolitos");
+  document.getElementById("contaAcolitos").textContent = acolitos.length + " cadastrados";
+  if (!acolitos.length) { el.innerHTML = '<div class="vazio">Nenhum acólito ainda. Toque em "+ Acólito" para cadastrar.</div>'; return; }
+  const ordem = acolitos.map((a, i) => i).filter(i => !filtroGrupo || acolitos[i].grupo === filtroGrupo).sort((x, y) => (acolitos[y].ativo - acolitos[x].ativo) || acolitos[x].nome.localeCompare(acolitos[y].nome));
+  el.innerHTML = ordem.map(i => {
+    const a = acolitos[i];
+    return '<div class="card clicavel' + (a.ativo ? "" : " inativo") + '" onclick="editarAcolito(' + i + ')">' +
+      '<div class="card-info"><div class="card-title">' + esc(a.nome) + '</div>' +
+      '<div class="card-sub">' + (a.registro ? '<span class="tag">Nº ' + esc(a.registro) + '</span>' : "") +
+      '<span class="tag ' + (a.grupo === "Coroinha" ? "azul" : "") + '">' + esc(a.grupo || "Acólito") + '</span>' +
+      '<span class="tag amber">📊 ' + ((frequencia[a.nome] || {}).mes || 0) + ' no mês • ' + ((frequencia[a.nome] || {}).total || 0) + ' no total</span>' +
+      (a.repeteNoDia ? '<span class="tag green">🔁 Mais de uma por dia</span>' : "") + (a.ativo ? "" : '<span class="tag red">Inativo</span>') + resumoDisponibilidade(a.disponibilidade) + ((a.naoFaz || []).length ? '<span class="tag red">Não faz: ' + esc(a.naoFaz.join(", ")) + '</span>' : "") +
+      (a.servirCom ? '<span class="tag azul">👥 Com ' + esc(a.servirCom) + '</span>' : "") +
+      (a.telefone ? '<span class="tag green" onclick="event.stopPropagation()"><a href="https://wa.me/' + zap(a.telefone) + '" target="_blank">📞 ' + esc(a.telefone) + '</a></span>' : "") + '</div></div>' +
+      '<span class="chev">›</span></div>';
+  }).join("");
+}
+
+function opcoesDaGrade() {
+  // dias e horários que existem nas missas cadastradas
+  const porDia = {};
+  grade.forEach(m => {
+    const d = diaDaSemana(m.dia);
+    if (d === null) return;
+    (porDia[d] = porDia[d] || new Set()).add(formatarHora(m.horario));
+  });
+  return porDia;
+}
+
+function editarAcolito(i) {
+  const a = i >= 0 ? acolitos[i] : { nome: "", disponibilidade: "Qualquer", ativo: true };
+  const disp = lerDisponibilidade(a.disponibilidade);
+  rascunho = { i: i, nome: a.nome, ativo: a.ativo, repeteNoDia: !!a.repeteNoDia, qualquer: disp.qualquer, sel: disp.sel, naoFaz: new Set(a.naoFaz || []),
+    telefone: a.telefone || "", responsavel: a.responsavel || "", nascimento: a.nascimento || "", grupo: a.grupo || "Acólito", servirCom: a.servirCom || "" };
+  desenharAcolito();
+  abrirModal();
+  if (i < 0) setTimeout(() => document.getElementById("inNome").focus(), 50);
+}
+
+function desenharAcolito() {
+  const r = rascunho;
+  const porDia = opcoesDaGrade();
+  // inclui opções salvas que não estão na grade atual, para não sumirem
+  const extras = Array.from(r.sel).filter(k => {
+    const [d, h] = k.split("|");
+    return d === "*" || (h !== "*" && !(porDia[d] && porDia[d].has(h))) || (h === "*" && !porDia[d]);
+  });
+  let blocos = "";
+  ORDEM_DIAS.filter(d => porDia[d]).forEach(d => {
+    const todas = r.sel.has(d + "|*");
+    blocos += '<div class="dia-grupo">' + DIAS[d] + '</div><div class="chips">' +
+      '<button class="chip' + (todas ? " on" : "") + '" onclick="alternar(\'' + d + '|*\')">Todas</button>' +
+      Array.from(porDia[d]).sort().map(h => {
+        const k = d + "|" + h;
+        return '<button class="chip' + (r.sel.has(k) || todas ? " on" : "") + '"' + (todas ? " disabled" : "") + ' onclick="alternar(\'' + k + '\')">' + horaCurta(h) + '</button>';
+      }).join("") + '</div>';
+  });
+  if (extras.length) {
+    blocos += '<div class="dia-grupo">Outros (fora da grade)</div><div class="chips">' + extras.map(k => {
+      const [d, h] = k.split("|");
+      const rot = d === "*" ? "Qualquer dia " + horaCurta(h) : diaCurto(d) + (h === "*" ? " (todas)" : " " + horaCurta(h));
+      return '<button class="chip on" onclick="alternar(\'' + k + '\')">' + esc(rot) + ' ✕</button>';
+    }).join("") + '</div>';
+  }
+  if (!blocos) blocos = '<p class="sub">Cadastre as missas na aba Missas para escolher dias e horários.</p>';
+
+  document.getElementById("modal").innerHTML =
+    '<h2>' + (r.i >= 0 ? "Editar acólito" : "Novo acólito") + '</h2>' +
+    '<p class="sub">Nº de registro: <strong>' + (r.i >= 0 && acolitos[r.i].registro ? esc(acolitos[r.i].registro) : "gerado ao salvar") + '</strong> (único, não se repete)</p>' +
+    (r.i >= 0 ? (function () {
+      const f = frequencia[acolitos[r.i].nome] || { mes: 0, total: 0, feitas: 0 };
+      return '<div class="numeros" style="margin-top:12px;margin-bottom:0"><div><b>' + f.mes + '</b><span>no mês</span></div>' +
+        '<div><b>' + f.feitas + '</b><span>já serviu</span></div><div><b>' + f.total + '</b><span>na escala toda</span></div></div>';
+    })() : "") +
+    '<label class="campo">Grupo</label><div class="seg" id="segGrupo">' +
+    ["Acólito", "Coroinha"].map(g => '<button class="' + (r.grupo === g ? "on" : "") + '" onclick="rascunho.grupo=\'' + g + '\';document.querySelectorAll(\'#segGrupo button\').forEach(b=>b.classList.toggle(\'on\',b===this))">' + (g === "Coroinha" ? "🧒 Coroinha" : "🙋 Acólito") + '</button>').join("") + '</div>' +
+    '<label class="campo" for="inNome">Nome</label>' +
+    '<input type="text" id="inNome" value="' + esc(r.nome) + '" placeholder="Nome e sobrenome" oninput="rascunho.nome=this.value">' +
+    '<label class="campo" for="inTel">Telefone / WhatsApp (opcional)</label>' +
+    '<input type="text" inputmode="tel" id="inTel" value="' + esc(r.telefone) + '" placeholder="(61) 99999-9999" oninput="rascunho.telefone=this.value">' +
+    '<label class="campo" for="inResp">Responsável (opcional)</label>' +
+    '<input type="text" id="inResp" value="' + esc(r.responsavel) + '" placeholder="Nome do pai, mãe ou responsável" oninput="rascunho.responsavel=this.value">' +
+    '<label class="campo" for="inNasc">Data de nascimento (opcional)</label>' +
+    '<input type="date" id="inNasc" value="' + (/^\d{2}\/\d{2}\/\d{4}$/.test(r.nascimento) ? dataISO(r.nascimento) : "") + '" onchange="rascunho.nascimento=this.value?dataBR(this.value):\'\'">' +
+    '<label class="campo" for="inServirCom">Prefere servir com (opcional)</label>' +
+    '<input type="text" id="inServirCom" value="' + esc(r.servirCom) + '" placeholder="Nome de quem gosta de servir junto" oninput="rascunho.servirCom=this.value">' +
+    '<p class="sub" style="margin-top:4px">Na hora de gerar a escala, o sistema tenta colocar essa dupla na mesma missa quando der (não é garantido).</p>' +
+    '<div class="linha-switch"><span>Pode servir em <strong>qualquer missa</strong></span>' +
+    '<label class="switch"><input type="checkbox"' + (r.qualquer ? " checked" : "") + ' onchange="rascunho.qualquer=this.checked;desenharAcolito()"><span></span></label></div>' +
+    (r.qualquer ? "" : '<label class="campo">Quando pode servir</label>' + blocos) +
+    (funcoes.length ? '<label class="campo">Funções (toque para marcar o que ele <strong>não</strong> faz)</label><div class="chips">' +
+      funcoes.map(f => '<button class="chip' + (r.naoFaz.has(f) ? " nao" : " on") + '" data-f="' + esc(f) + '" onclick="alternarNaoFaz(this)">' + esc(f) + '</button>').join("") + '</div>' : "") +
+    '<div class="linha-switch"><span>Pode servir em <strong>mais de uma missa</strong> no mesmo dia</span>' +
+    '<label class="switch"><input type="checkbox"' + (r.repeteNoDia ? " checked" : "") + ' onchange="rascunho.repeteNoDia=this.checked"><span></span></label></div>' +
+    '<div class="linha-switch"><span>Ativo na escala</span>' +
+    '<label class="switch"><input type="checkbox"' + (r.ativo ? " checked" : "") + ' onchange="rascunho.ativo=this.checked"><span></span></label></div>' +
+    '<div class="modal-acoes">' +
+    (r.i >= 0 ? '<button class="btn perigo" onclick="excluirAcolito()">Excluir</button>' : '<button class="btn sec" onclick="fecharModal()">Cancelar</button>') +
+    '<button class="btn" id="btnSalvar" onclick="salvarAcolito()">Salvar</button></div>';
+}
+
+/** Telefone -> número para o link do WhatsApp (coloca 55 se faltar). */
+function zap(tel) {
+  const d = String(tel).replace(/\D/g, "");
+  return d.length <= 11 ? "55" + d : d;
+}
+function alternarNaoFaz(btn) {
+  const f = btn.getAttribute("data-f");
+  if (rascunho.naoFaz.has(f)) rascunho.naoFaz.delete(f); else rascunho.naoFaz.add(f);
+  btn.classList.toggle("nao", rascunho.naoFaz.has(f));
+  btn.classList.toggle("on", !rascunho.naoFaz.has(f));
+}
+function alternar(k) {
+  if (rascunho.sel.has(k)) rascunho.sel.delete(k); else rascunho.sel.add(k);
+  if (k.endsWith("|*")) {
+    const d = k.split("|")[0];
+    Array.from(rascunho.sel).forEach(x => { if (x.startsWith(d + "|") && x !== k) rascunho.sel.delete(x); });
+  }
+  desenharAcolito();
+}
+
+function salvarAcolito() {
+  const r = rascunho;
+  const nome = r.nome.trim();
+  if (!nome) { toast("Digite o nome do acólito.", true); return; }
+  if (acolitos.some((a, j) => j !== r.i && normalizar(a.nome) === normalizar(nome))) { toast("Já existe um acólito com esse nome.", true); return; }
+  const novo = { registro: r.i >= 0 ? acolitos[r.i].registro : "", repeteNoDia: r.repeteNoDia, nome: nome, disponibilidade: escreverDisponibilidade(r.qualquer, r.sel), ativo: r.ativo, naoFaz: Array.from(r.naoFaz),
+    telefone: r.telefone.trim(), responsavel: r.responsavel.trim(), nascimento: r.nascimento, grupo: r.grupo, servirCom: r.servirCom.trim() };
+  const lista = acolitos.slice();
+  if (r.i >= 0) lista[r.i] = novo; else lista.push(novo);
+  ocupado(document.getElementById("btnSalvar"), "Salvando...");
+  chamar("painelSalvarAcolitos", [lista], dados => { aplicar(dados); fecharModal(); toast("Acólito salvo ✓"); });
+}
+
+function excluirAcolito() {
+  const a = acolitos[rascunho.i];
+  if (!confirm("Excluir " + a.nome + "? A escala já gerada não muda.")) return;
+  const lista = acolitos.filter((x, j) => j !== rascunho.i);
+  chamar("painelSalvarAcolitos", [lista], dados => { aplicar(dados); fecharModal(); toast("Acólito excluído"); });
+}
+
+/** Cadastro rápido: cola uma lista de nomes (um por linha) e cria todo mundo de uma vez. */
+function abrirColarNomes() {
+  rascunhoColar = { texto: "", grupo: "Acólito" };
+  desenharColarNomes();
+  abrirModal();
+  setTimeout(() => document.getElementById("inColarNomes").focus(), 50);
+}
+function desenharColarNomes() {
+  const r = rascunhoColar;
+  document.getElementById("modal").innerHTML =
+    '<h2>📋 Colar lista de nomes</h2>' +
+    '<p class="sub">Um nome por linha (ou separados por vírgula). Quem já está cadastrado é ignorado, sem duplicar. Depois dá pra ajustar disponibilidade, telefone etc. em cada um.</p>' +
+    '<label class="campo">Grupo</label><div class="seg" id="segGrupoColar">' +
+    ["Acólito", "Coroinha"].map(g => '<button class="' + (r.grupo === g ? "on" : "") + '" onclick="rascunhoColar.grupo=\'' + g + '\';document.querySelectorAll(\'#segGrupoColar button\').forEach(b=>b.classList.toggle(\'on\',b===this))">' + (g === "Coroinha" ? "🧒 Coroinha" : "🙋 Acólito") + '</button>').join("") + '</div>' +
+    '<label class="campo" for="inColarNomes">Nomes</label>' +
+    '<textarea id="inColarNomes" rows="8" placeholder="Ana Souza\nJoão Pedro\nMaria Lima" oninput="rascunhoColar.texto=this.value" style="width:100%;background:#0b1220;border:1px solid var(--card-border);padding:12px 14px;border-radius:12px;color:#fff;font-size:15px;outline:none;font-family:inherit"></textarea>' +
+    '<div class="modal-acoes"><button class="btn sec" onclick="fecharModal()">Cancelar</button>' +
+    '<button class="btn" id="btnColarNomes" onclick="salvarNomesColados()">Adicionar</button></div>';
+}
+function salvarNomesColados() {
+  const r = rascunhoColar;
+  if (!r.texto.trim()) { toast("Cole pelo menos um nome.", true); return; }
+  ocupado(document.getElementById("btnColarNomes"), "Adicionando...");
+  chamar("painelAdicionarNomes", [r.texto, r.grupo], resultado => {
+    aplicar(resultado.painel);
+    fecharModal();
+    toast(resultado.adicionados + " nome(s) adicionado(s)" + (resultado.ignorados ? " • " + resultado.ignorados + " já existiam" : "") + " ✓");
+  });
+}
+
+/* ---------- Missas ---------- */
+function renderMissas() {
+  const el = document.getElementById("listaMissas");
+  document.getElementById("contaMissas").textContent = grade.length + " por semana";
+  if (!grade.length) { el.innerHTML = '<div class="vazio">Nenhuma missa cadastrada. Toque em "+ Missa".</div>'; return; }
+  const idx = grade.map((m, i) => i).sort((x, y) => {
+    const dx = diaDaSemana(grade[x].dia), dy = diaDaSemana(grade[y].dia);
+    return (dx - dy) || formatarHora(grade[x].horario).localeCompare(formatarHora(grade[y].horario));
+  });
+  let ultimoDia = null, html = "";
+  idx.forEach(i => {
+    const m = grade[i];
+    const d = diaDaSemana(m.dia);
+    if (d !== ultimoDia) { html += '<div class="dia-grupo">' + (d === null ? esc(m.dia) : DIAS[d]) + '</div>'; ultimoDia = d; }
+    html += '<div class="card clicavel" onclick="editarMissa(' + i + ')">' +
+      '<div class="card-info"><div class="card-title">' + m.vagas + (m.vagas === 1 ? " acólito" : " acólitos") + '</div>' +
+      '<div class="card-sub">' + (m.observacao ? '<span class="tag amber">' + esc(m.observacao) + '</span>' : '<span>Missa</span>') + '</div></div>' +
+      '<div class="card-time">' + esc(formatarHora(m.horario) || m.horario) + '<small>Horário</small></div></div>';
+  });
+  el.innerHTML = html;
+}
+
+function editarMissa(i) {
+  const m = i >= 0 ? grade[i] : { dia: "Domingo", horario: "10:00", observacao: "", vagas: vagasPadrao };
+  const d = diaDaSemana(m.dia);
+  rascunho = { i: i, dia: d === null ? 0 : d, horario: formatarHora(m.horario) || "10:00", observacao: m.observacao, vagas: m.vagas };
+  const r = rascunho;
+  document.getElementById("modal").innerHTML =
+    '<h2>' + (i >= 0 ? "Editar missa" : "Nova missa") + '</h2><p class="sub">Essa missa se repete toda semana.</p>' +
+    '<label class="campo">Dia da semana</label><div class="chips" id="chipsDia">' +
+    ORDEM_DIAS.map(x => '<button class="chip' + (x === r.dia ? " on" : "") + '" onclick="rascunho.dia=' + x + ';document.querySelectorAll(\'#chipsDia .chip\').forEach((c,j)=>c.classList.toggle(\'on\',j===' + x + '))">' + diaCurto(x) + '</button>').join("") + '</div>' +
+    '<label class="campo" for="inHora">Horário</label><input type="time" id="inHora" value="' + r.horario + '" onchange="rascunho.horario=this.value">' +
+    '<label class="campo" for="inObs">Observação (opcional)</label><input type="text" id="inObs" value="' + esc(r.observacao) + '" placeholder="Ex.: Missa das crianças, Adoração" oninput="rascunho.observacao=this.value">' +
+    '<label class="campo">Quantos acólitos</label><div class="stepper">' +
+    '<button onclick="mudarVagas(-1)">−</button><input type="number" inputmode="numeric" min="1" max="99" class="num-vagas" id="vagas" value="' + r.vagas + '" oninput="definirVagas(this.value)" onchange="this.value=rascunho.vagas"><button onclick="mudarVagas(1)">+</button></div>' +
+    '<div class="modal-acoes">' +
+    (i >= 0 ? '<button class="btn perigo" onclick="excluirMissa()">Excluir</button>' : '<button class="btn sec" onclick="fecharModal()">Cancelar</button>') +
+    '<button class="btn" id="btnSalvar" onclick="salvarMissa()">Salvar</button></div>';
+  abrirModal();
+}
+function mudarVagas(n) {
+  rascunho.vagas = limitarVagas(rascunho.vagas + n);
+  document.getElementById("vagas").value = rascunho.vagas;
+}
+/** Número de acólitos digitado ou nos botões − / +: de 1 a MAX_VAGAS. */
+const MAX_VAGAS = 99;
+function limitarVagas(n) { n = parseInt(n, 10); return isNaN(n) ? 1 : Math.min(MAX_VAGAS, Math.max(1, n)); }
+function definirVagas(valor) {
+  if (String(valor).trim() !== "") rascunho.vagas = limitarVagas(valor);
+}
+function salvarMissa() {
+  const r = rascunho;
+  if (!r.horario) { toast("Escolha o horário.", true); return; }
+  const nova = { dia: DIAS[r.dia], horario: r.horario, observacao: r.observacao.trim(), vagas: r.vagas };
+  if (grade.some((m, j) => j !== r.i && diaDaSemana(m.dia) === r.dia && formatarHora(m.horario) === r.horario)) {
+    toast("Já existe missa nesse dia e horário.", true); return;
+  }
+  const lista = grade.slice();
+  if (r.i >= 0) lista[r.i] = nova; else lista.push(nova);
+  ocupado(document.getElementById("btnSalvar"), "Salvando...");
+  chamar("painelSalvarGrade", [lista], dados => { aplicar(dados); fecharModal(); toast("Missa salva ✓"); });
+}
+function excluirMissa() {
+  if (!confirm("Excluir essa missa da grade? A escala já gerada não muda.")) return;
+  const lista = grade.filter((x, j) => j !== rascunho.i);
+  chamar("painelSalvarGrade", [lista], dados => { aplicar(dados); fecharModal(); toast("Missa excluída"); });
+}
+
+/* ---------- Acólitos por missa ---------- */
+function resumoServindo() {
+  const nums = grade.map(m => m.vagas);
+  if (!nums.length) return "Padrão: " + vagasPadrao + " por missa";
+  const min = Math.min.apply(null, nums), max = Math.max.apply(null, nums);
+  return min === max ? min + (min === 1 ? " acólito" : " acólitos") + " em cada missa" : "De " + min + " a " + max + " por missa";
+}
+function abrirServindo() {
+  // a caixa "todas as missas" fica como o coordenador deixou; na primeira vez, marcada se todas já estão no padrão
+  const todas = servindo ? servindo.todas : grade.every(m => m.vagas === vagasPadrao);
+  servindo = { padrao: vagasPadrao, vagas: grade.map(m => m.vagas), todas: todas };
+  renderServindo();
+}
+function renderServindo() {
+  document.getElementById("vagasPadrao").value = servindo.padrao;
+  document.getElementById("chkTodas").checked = servindo.todas;
+  const el = document.getElementById("listaServindo");
+  if (!grade.length) { el.innerHTML = '<div class="vazio">Nenhuma missa da semana cadastrada. Cadastre em Missas; elas já começam com o número padrão.</div>'; return; }
+  const idx = grade.map((m, i) => i).sort((x, y) => {
+    const dx = diaDaSemana(grade[x].dia), dy = diaDaSemana(grade[y].dia);
+    return (dx - dy) || formatarHora(grade[x].horario).localeCompare(formatarHora(grade[y].horario));
+  });
+  let ultimoDia = null, html = "";
+  idx.forEach(i => {
+    const m = grade[i], d = diaDaSemana(m.dia), v = servindo.vagas[i];
+    if (d !== ultimoDia) { html += '<div class="dia-grupo">' + (d === null ? esc(m.dia) : DIAS[d]) + '</div>'; ultimoDia = d; }
+    html += '<div class="card">' +
+      '<div class="card-info"><div class="card-title">' + esc(formatarHora(m.horario) || m.horario) + '</div>' +
+      '<div class="card-sub">' + (m.observacao ? '<span class="tag amber">' + esc(m.observacao) + '</span>' : '<span>Missa</span>') +
+      (v !== servindo.padrao ? '<span class="tag azul">diferente do padrão</span>' : '') + '</div></div>' +
+      '<div class="stepper"><button onclick="mudarServindo(' + i + ',-1)">−</button><input type="number" inputmode="numeric" min="1" max="99" class="num-vagas" value="' + v + '" onchange="definirServindo(' + i + ',this.value)"><button onclick="mudarServindo(' + i + ',1)">+</button></div></div>';
+  });
+  el.innerHTML = html;
+}
+function definirPadrao(valor) { servindo.padrao = limitarVagas(valor); seguirPadrao(); renderServindo(); }
+/** Com "todas as missas" marcado, o padrão vale para todas as missas da semana. */
+function seguirPadrao() { if (servindo.todas) servindo.vagas = servindo.vagas.map(() => servindo.padrao); }
+function marcarTodas(sim) { servindo.todas = sim; seguirPadrao(); renderServindo(); }
+function definirServindo(i, valor) { servindo.vagas[i] = limitarVagas(valor); renderServindo(); }
+function mudarPadrao(n) {
+  servindo.padrao = limitarVagas(servindo.padrao + n);
+  seguirPadrao();
+  renderServindo();
+}
+function mudarServindo(i, n) {
+  servindo.vagas[i] = limitarVagas(servindo.vagas[i] + n);
+  renderServindo();
+}
+function salvarServindo() {
+  const lista = grade.map((m, i) => Object.assign({}, m, { vagas: servindo.vagas[i] }));
+  ocupado(document.getElementById("btnSalvarServindo"), "Salvando...");
+  chamar("painelSalvarVagas", [servindo.padrao, lista], dados => {
+    const btn = document.getElementById("btnSalvarServindo");
+    btn.disabled = false; btn.removeAttribute("data-ocupado"); btn.textContent = "Salvar";
+    aplicar(dados); abrirServindo(); toast("Quantidade salva ✓ A próxima escala gerada já usa esses números.");
+  });
+}
+
+/* ---------- Funções ---------- */
+function renderFuncoes() {
+  document.getElementById("chipsFuncoes").innerHTML = funcoes.length
+    ? funcoes.map((f, i) => '<button class="chip rem" onclick="removerFuncao(' + i + ')">' + (i + 1) + ". " + esc(f) + '</button>').join("")
+    : '<span class="sub">Nenhuma função cadastrada.</span>';
+}
+function novaFuncao() {
+  const nome = (prompt("Nome da função (ex.: Missal, Microfone, Cruz):") || "").replace(/[:;]/g, "").trim();
+  if (!nome) return;
+  if (funcoes.some(f => normalizar(f) === normalizar(nome))) { toast("Essa função já existe.", true); return; }
+  chamar("painelSalvarFuncoes", [funcoes.concat([nome])], dados => { aplicar(dados); toast("Função adicionada ✓"); });
+}
+function removerFuncao(i) {
+  if (!confirm("Remover a função " + funcoes[i] + "?")) return;
+  chamar("painelSalvarFuncoes", [funcoes.filter((f, j) => j !== i)], dados => { aplicar(dados); toast("Função removida"); });
+}
+function escolherPreenche(btn) {
+  vagasAbertas = btn.dataset.v === "1";
+  document.querySelectorAll("#segPreenche button").forEach(b => b.classList.toggle("on", b === btn));
+  document.getElementById("opcoesSistema").classList.toggle("oculto", vagasAbertas);
+  document.getElementById("textoPreenche").textContent = vagasAbertas
+    ? "Todas as missas saem com vagas abertas, e a escolha fica liberada no site: cada acólito toca em \"Quero essa vaga\" nos dias que quiser."
+    : "O sistema escolhe os acólitos pela disponibilidade e por quem serviu menos.";
+}
+function escolherRepetir(btn) {
+  permitirRepetir = btn.dataset.v === "1";
+  document.querySelectorAll("#segRepetir button").forEach(b => b.classList.toggle("on", b === btn));
+}
+function escolherModo(btn) {
+  distribuirFuncoes = btn.dataset.v === "1";
+  document.querySelectorAll("#segFuncoes button").forEach(b => b.classList.toggle("on", b === btn));
+}
+/** "Missal: João; Microfone: Maria" -> { "João": "Missal", ... } */
+function lerFuncoes(texto) {
+  const mapa = {};
+  String(texto || "").split(";").forEach(p => {
+    const i = p.indexOf(":");
+    if (i > 0) mapa[p.slice(i + 1).trim()] = p.slice(0, i).trim();
+  });
+  return mapa;
+}
+
+/* ---------- Missas especiais ---------- */
+function dataBR(iso) { const p = iso.split("-"); return p[2] + "/" + p[1] + "/" + p[0]; }
+function dataISO(br) { const p = br.split("/"); return p[2] + "-" + p[1] + "-" + p[0]; }
+function diaDaData(br) { const p = br.split("/"); return DIAS[new Date(+p[2], +p[1] - 1, +p[0], 12).getDay()]; }
+function renderEspeciais() {
+  const el = document.getElementById("listaEspeciais");
+  if (!especiais.length) { el.innerHTML = '<div class="vazio">Nenhuma missa especial. Use para Natal, Semana Santa, festa da padroeira...</div>'; return; }
+  el.innerHTML = especiais.map((m, i) =>
+    '<div class="card clicavel" onclick="editarEspecial(' + i + ')">' +
+    '<div class="card-info"><div class="card-title">' + esc(m.observacao || "Missa especial") + '</div>' +
+    '<div class="card-sub"><span>📅 ' + esc(m.data) + ' • ' + esc(diaDaData(m.data)) + '</span><span class="tag">' + m.vagas + ' acólitos</span>' +
+    (m.substitui ? '<span class="tag amber">Sem as missas normais</span>' : '') + '</div></div>' +
+    '<div class="card-time">' + esc(m.horario) + '<small>Horário</small></div></div>'
+  ).join("");
+}
+function editarEspecial(i) {
+  const m = i >= 0 ? especiais[i] : { data: "", horario: "19:00", observacao: "", vagas: 4, substitui: false };
+  rascunho = { i: i, data: m.data ? dataISO(m.data) : "", horario: m.horario, observacao: m.observacao, vagas: m.vagas, substitui: m.substitui };
+  const r = rascunho;
+  document.getElementById("modal").innerHTML =
+    '<h2>' + (i >= 0 ? "Editar missa especial" : "Nova missa especial") + '</h2><p class="sub">Entra na escala quando o mês for gerado.</p>' +
+    '<label class="campo" for="inData">Data</label><input type="date" id="inData" value="' + r.data + '" onchange="rascunho.data=this.value">' +
+    '<label class="campo" for="inHora">Horário</label><input type="time" id="inHora" value="' + r.horario + '" onchange="rascunho.horario=this.value">' +
+    '<label class="campo" for="inObs">Celebração</label><input type="text" id="inObs" value="' + esc(r.observacao) + '" placeholder="Ex.: Missa de Natal, Sexta-feira Santa" oninput="rascunho.observacao=this.value">' +
+    '<label class="campo">Quantos acólitos</label><div class="stepper">' +
+    '<button onclick="mudarVagas(-1)">−</button><input type="number" inputmode="numeric" min="1" max="99" class="num-vagas" id="vagas" value="' + r.vagas + '" oninput="definirVagas(this.value)" onchange="this.value=rascunho.vagas"><button onclick="mudarVagas(1)">+</button></div>' +
+    '<div class="linha-switch"><span>Nesse dia <strong>não tem</strong> as missas normais</span>' +
+    '<label class="switch"><input type="checkbox"' + (r.substitui ? " checked" : "") + ' onchange="rascunho.substitui=this.checked"><span></span></label></div>' +
+    '<div class="modal-acoes">' +
+    (i >= 0 ? '<button class="btn perigo" onclick="excluirEspecial()">Excluir</button>' : '<button class="btn sec" onclick="fecharModal()">Cancelar</button>') +
+    '<button class="btn" id="btnSalvar" onclick="salvarEspecial()">Salvar</button></div>';
+  abrirModal();
+}
+function salvarEspecial() {
+  const r = rascunho;
+  if (!r.data) { toast("Escolha a data.", true); return; }
+  if (!r.horario) { toast("Escolha o horário.", true); return; }
+  const nova = { data: dataBR(r.data), horario: r.horario, observacao: String(r.observacao || "").trim(), vagas: r.vagas, substitui: r.substitui };
+  if (especiais.some((m, j) => j !== r.i && m.data === nova.data && m.horario === nova.horario)) { toast("Já existe missa especial nesse dia e horário.", true); return; }
+  const lista = especiais.slice();
+  if (r.i >= 0) lista[r.i] = nova; else lista.push(nova);
+  ocupado(document.getElementById("btnSalvar"), "Salvando...");
+  chamar("painelSalvarEspeciais", [lista], dados => { aplicar(dados); fecharModal(); toast("Missa especial salva ✓ Gere o mês de novo para ela entrar na escala."); });
+}
+function excluirEspecial() {
+  if (!confirm("Excluir essa missa especial? A escala já gerada não muda.")) return;
+  const lista = especiais.filter((x, j) => j !== rascunho.i);
+  chamar("painelSalvarEspeciais", [lista], dados => { aplicar(dados); fecharModal(); toast("Missa especial excluída"); });
+}
+
+/* ---------- Gerar ---------- */
+function renderIncluidos() {
+  const ordem = acolitos.slice().sort((a, b) => (b.ativo - a.ativo) || a.nome.localeCompare(b.nome));
+  document.getElementById("chipsIncluidos").innerHTML = ordem.length
+    ? ordem.map(a => '<button class="chip' + (incluidos.has(a.nome) ? " on" : "") + (a.ativo ? "" : " fora") + '" data-nome="' + esc(a.nome) + '" onclick="alternarIncluido(this)">' + (incluidos.has(a.nome) ? "✓ " : "") + esc(a.nome) + '</button>').join("")
+    : '<span class="sub">Cadastre os acólitos na aba Cadastro.</span>';
+  document.getElementById("contaIncluidos").textContent = "(" + incluidos.size + " de " + acolitos.length + ")";
+}
+function alternarIncluido(btn) {
+  const n = btn.getAttribute("data-nome");
+  if (incluidos.has(n)) incluidos.delete(n); else incluidos.add(n);
+  renderIncluidos();
+}
+function marcarGrupo(g) {
+  incluidos = new Set(acolitos.filter(a => a.ativo && (a.grupo || "Acólito") === g).map(a => a.nome));
+  renderIncluidos();
+}
+function marcarTodos(sim) {
+  incluidos = new Set(sim ? acolitos.map(a => a.nome) : []);
+  renderIncluidos();
+}
+let modoAlvo = "mes";
+let diasEscolhidos = new Set();
+let mesGer = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+function pad2(n) { return ("0" + n).slice(-2); }
+function fmtData(d) { return pad2(d.getDate()) + "/" + pad2(d.getMonth() + 1) + "/" + d.getFullYear(); }
+function escolherAlvo(btn) {
+  modoAlvo = btn.dataset.m;
+  document.querySelectorAll("#segAlvo button").forEach(b => b.classList.toggle("on", b === btn));
+  document.getElementById("alvoMes").classList.toggle("oculto", modoAlvo !== "mes");
+  document.getElementById("alvoDias").classList.toggle("oculto", modoAlvo !== "dias");
+  if (modoAlvo === "dias") desenharCalGerar();
+  resumirAlvo();
+}
+/** { alvo: "MM/AAAA" ou ["dd/MM/aaaa"...], rotulo: texto para o usuário } */
+function alvoGeracao() {
+  const hoje = new Date(); hoje.setHours(12, 0, 0, 0);
+  if (modoAlvo === "mes") {
+    const sel = document.getElementById("mesGerar");
+    return { alvo: sel.value, rotulo: sel.options[sel.selectedIndex].text };
+  }
+  const datas = [];
+  if (modoAlvo === "semana") {
+    const d = new Date(hoje);
+    do { datas.push(fmtData(d)); d.setDate(d.getDate() + 1); } while (d.getDay() !== 0);
+    return { alvo: datas, rotulo: "a semana atual (" + datas[0].slice(0, 5) + " a " + datas[datas.length - 1].slice(0, 5) + ")" };
+  }
+  if (modoAlvo === "domingos") {
+    const ini = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 1, 12);
+    for (const d = new Date(ini); d.getMonth() === ini.getMonth(); d.setDate(d.getDate() + 1)) if (d.getDay() === 0) datas.push(fmtData(d));
+    return { alvo: datas, rotulo: "os domingos de " + ini.toLocaleDateString("pt-BR", { month: "long" }) + " (" + datas.map(x => x.slice(0, 2)).join(", ") + ")" };
+  }
+  const lista = Array.from(diasEscolhidos).sort((a, b) => a.split("/").reverse().join("").localeCompare(b.split("/").reverse().join("")));
+  return { alvo: lista, rotulo: lista.length + (lista.length === 1 ? " dia escolhido" : " dias escolhidos") + (lista.length ? " (" + lista.map(x => x.slice(0, 5)).join(", ") + ")" : "") };
+}
+function resumirAlvo() {
+  const a = alvoGeracao();
+  document.getElementById("alvoResumo").textContent = modoAlvo === "mes" ? "" : "Vai gerar para " + a.rotulo + ".";
+}
+function mudarMesGer(n) { mesGer = new Date(mesGer.getFullYear(), mesGer.getMonth() + n, 1); desenharCalGerar(); }
+function desenharCalGerar() {
+  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  const tit = mesGer.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  document.getElementById("calGerTitulo").textContent = tit.charAt(0).toUpperCase() + tit.slice(1);
+  let html = ["D", "S", "T", "Q", "Q", "S", "S"].map(d => '<span class="sem">' + d + '</span>').join("");
+  for (let i = 0; i < mesGer.getDay(); i++) html += "<span></span>";
+  const total = new Date(mesGer.getFullYear(), mesGer.getMonth() + 1, 0).getDate();
+  for (let d = 1; d <= total; d++) {
+    const dt = new Date(mesGer.getFullYear(), mesGer.getMonth(), d);
+    const k = fmtData(dt);
+    html += '<button class="' + (diasEscolhidos.has(k) ? "on" : "") + (dt < hoje ? " passado" : "") + '" onclick="alternarDia(\'' + k + '\')">' + d + '</button>';
+  }
+  document.getElementById("calGer").innerHTML = html;
+}
+function alternarDia(k) {
+  if (diasEscolhidos.has(k)) diasEscolhidos.delete(k); else diasEscolhidos.add(k);
+  desenharCalGerar();
+  resumirAlvo();
+}
+function gerar() {
+  const a = alvoGeracao();
+  const nomeMes = a.rotulo;
+  if (Array.isArray(a.alvo) && !a.alvo.length) { toast("Toque nos dias do calendário para escolher.", true); return; }
+  if (!vagasAbertas && !incluidos.size) { toast("Marque pelo menos um acólito.", true); return; }
+  const pergunta = vagasAbertas
+    ? "Gerar a escala para " + nomeMes + " com TODAS as vagas abertas, para os acólitos escolherem pelo site? A escala dessas datas será refeita."
+    : "Gerar a escala para " + nomeMes + " com " + incluidos.size + " acólitos? A escala dessas datas será refeita.";
+  if (!confirm(pergunta)) return;
+  const btn = document.getElementById("btnGerar");
+  const mesVer = Array.isArray(a.alvo) ? a.alvo[0].slice(3) : a.alvo;
+  ocupado(btn, "Gerando...");
+  chamar("painelGerar", [a.alvo, distribuirFuncoes, Array.from(incluidos), permitirRepetir, vagasAbertas], r => {
+    if (typeof r.trocas === "boolean") mostrarTrocas(r.trocas);
+    if (vagasAbertas) {
+      btn.disabled = false; btn.removeAttribute("data-ocupado"); btn.textContent = "✨ Gerar escala";
+      document.getElementById("resultadoGerar").innerHTML =
+        '<div class="painel"><p><strong style="color:#34d399">✓ ' + r.total + ' missas com vagas abertas para ' + esc(nomeMes) + '</strong><br>' +
+        'A escolha está liberada: no site, cada acólito toca em "Quero essa vaga" nos dias que quiser. Acompanhe em Trocas.</p></div>';
+      toast("Vagas abertas ✓");
+      return;
+    }
+    btn.disabled = false; btn.removeAttribute("data-ocupado"); btn.textContent = "✨ Gerar escala";
+    const max = Math.max.apply(null, r.porAcolito.map(a => a.vezes).concat([1]));
+    document.getElementById("resultadoGerar").innerHTML =
+      '<div class="painel"><p><strong style="color:#34d399">✓ Escala gerada para ' + esc(nomeMes) + '</strong><br>' + r.total + ' celebrações. Veja quantas vezes cada um vai servir:</p>' +
+      r.porAcolito.slice().sort((a, b) => b.vezes - a.vezes).map(a =>
+        '<div class="resumo-barra"><span class="nome">' + esc(a.nome) + '</span><span class="trilho"><i style="width:' + Math.round(a.vezes / max * 100) + '%"></i></span><b>' + a.vezes + '</b></div>'
+      ).join("") +
+      (r.ignoradas.length ? '<p style="margin-top:12px;color:#fbbf24">Linhas ignoradas: ' + esc(r.ignoradas.join(", ")) + '</p>' : "") +
+      '<button class="btn sec full" style="margin-top:14px" onclick="document.getElementById(\'mesAjustar\').value=\'' + mesVer + '\';mudarAba(\'ajustar\')">Ver e ajustar a escala</button></div>';
+    toast("Escala gerada ✓");
+  });
+}
+
+/* ---------- Chamada de presença ---------- */
+function hojeISO() {
+  const d = new Date();
+  return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+}
+function mostrarTelaEntrada(modo) {
+  document.querySelectorAll("#segEntradaHome button").forEach(b => b.classList.toggle("on", b.dataset.v === modo));
+  document.getElementById("textoEntradaHome").textContent = {
+    nao: "Desativada: o site abre direto na escala.",
+    demo: "Demonstração: a tela de entrada aparece com o selo \"Demonstração\" embaixo. Quando começar a valer, toque em Ativada.",
+    sim: "Ativada: quem abre o site pela primeira vez escolhe o nome e toca em Entrar."
+  }[modo];
+}
+function definirTelaEntrada(modo) {
+  chamar("painelDefinirTelaEntrada", [modo], v => { mostrarTelaEntrada(v); toast({ nao: "Tela de entrada desligada", demo: "Tela de entrada em demonstração ✓", sim: "Tela de entrada ativada ✓" }[v]); });
+}
+function mostrarChaveChamada(ativa) {
+  document.querySelectorAll("#segChamada button, #segChamadaHome button").forEach(b => b.classList.toggle("on", (b.dataset.v === "1") === ativa));
+  document.getElementById("textoChamadaHome").textContent = ativa
+    ? "Ativada: use o botão ✅ Chamada abaixo para marcar quem veio e quem faltou em cada missa."
+    : "Desativada: ninguém faz chamada e os relatórios mostram só a escala.";
+  document.getElementById("tileChamada").classList.toggle("oculto", !ativa);
+}
+/* ---------- Discord ---------- */
+let discord = null;
+const DIAS_DISCORD = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+function carregarDiscord() {
+  document.getElementById("textoWebhook").textContent = "Carregando...";
+  chamar("painelDiscord", [], mostrarDiscord);
+}
+function mostrarDiscord(d) {
+  discord = d;
+  setTimeout(() => { discordSalvo = estadoDiscord(); conferirSalvarDiscord(); }, 0);
+  document.getElementById("inWebhook").value = "";
+  document.getElementById("textoWebhook").textContent = d.configurado
+    ? "Link salvo (termina em " + d.finalLink + "). Para trocar, cole o novo link aqui embaixo."
+    : "Cole aqui o link do webhook do canal do Discord (veja como pegar lá embaixo).";
+  document.getElementById("btnApagarWebhook").classList.toggle("oculto", !d.configurado);
+  const bl = document.getElementById("btnLimparDiscord");
+  bl.classList.toggle("oculto", !d.configurado && !d.ntfyTopico);
+  const total = (d.msgsDiscord || 0) + (d.msgsNtfy || 0);
+  bl.textContent = "🧹 Apagar mensagens do app" + (total ? " (" + total + ")" : "");
+  document.getElementById("btnTesteDiscord").disabled = !d.configurado;
+  document.getElementById("btnEscalaDiscord").disabled = !d.configurado;
+  document.getElementById("chkSemanal").checked = d.semanal;
+  document.getElementById("chkVagasDiscord").checked = d.vagas;
+  document.getElementById("chkAcessosDiscord").checked = d.acessos;
+  document.getElementById("chkVigiaDiscord").checked = d.vigia;
+  document.getElementById("chkVigiaDiario").checked = d.vigiaDiario;
+  document.getElementById("chkResumoDiario").checked = !!d.resumo;
+  mostrarNtfy(d);
+  mostrarVigia(d);
+  document.getElementById("inHoraDiscord").innerHTML = Array.from({ length: 24 }, (_, h) => '<option value="' + h + '"' + (h === d.hora ? " selected" : "") + '>' + h + 'h</option>').join("");
+  desenharDiscordAgenda();
+  document.getElementById("subDiscord").textContent = !d.configurado ? "Discord e celular (ntfy)"
+    : (d.semanal ? "Escala toda " + DIAS_DISCORD[d.dia].toLowerCase() + " às " + d.hora + "h" : "Link salvo") + (d.vagas ? " • avisa vagas" : "") + (d.acessos ? " • avisa acessos" : "") + (d.ntfyTopico ? " • celular" : "");
+}
+function mostrarNtfy(d) {
+  const t = d.ntfyTopico || "";
+  document.getElementById("textoNtfy").textContent = t
+    ? "No app ntfy, toque em + e digite este tópico (sem mudar o servidor). Os avisos do vigia chegam no celular."
+    : "Receba no celular os avisos do vigia (site caiu, voltou e o aviso diário). Instale o app ntfy e toque em Criar tópico.";
+  const el = document.getElementById("topicoNtfy");
+  el.textContent = t;
+  el.classList.toggle("oculto", !t);
+  document.getElementById("btnCriarNtfy").classList.toggle("oculto", !!t);
+  ["btnCopiarNtfy", "btnTesteNtfy", "btnApagarNtfy"].forEach(id => document.getElementById(id).classList.toggle("oculto", !t));
+}
+/* O teste vai direto do navegador para o ntfy (1 segundo), sem passar pelo Google, que às vezes demora. */
+function testeNtfyRapido(btn) {
+  const t = document.getElementById("topicoNtfy").textContent.trim();
+  ocupado(btn, "Enviando...");
+  const volta = () => { btn.disabled = false; btn.removeAttribute("data-ocupado"); btn.textContent = btn.dataset.texto; };
+  fetch("https://ntfy.sh/", { method: "POST", body: JSON.stringify({ topic: t, title: "Teste da Escala de Acólitos",
+    message: "Pronto! Os avisos do site vão chegar aqui no celular.", tags: ["white_check_mark"], sequence_id: "teste" }) })
+    .then(r => { volta(); if (!r.ok) throw new Error(r.status); toast("Teste enviado ✓ Veja o celular."); })
+    .catch(() => {
+      // se o navegador não deixar, manda pelo Google mesmo (mais lento, mas funciona)
+      chamar("painelNtfy", ["teste"], () => { volta(); toast("Teste enviado ✓ Veja o celular."); });
+    });
+}
+function acaoNtfy(acao) {
+  if (acao === "teste") { testeNtfyRapido(document.getElementById("btnTesteNtfy")); return; }
+  const btn = document.getElementById(acao === "criar" ? "btnCriarNtfy" : acao === "teste" ? "btnTesteNtfy" : "btnApagarNtfy");
+  ocupado(btn, "Aguarde...");
+  chamar("painelNtfy", [acao], d => {
+    btn.disabled = false; btn.removeAttribute("data-ocupado"); btn.textContent = btn.dataset.texto;
+    mostrarNtfy(d);
+    toast(acao === "criar" ? "Tópico criado ✓ Agora assine no app ntfy." : acao === "teste" ? "Teste enviado ✓ Veja o celular." : "Avisos no celular desligados");
+  });
+}
+function copiarNtfy() {
+  const t = document.getElementById("topicoNtfy").textContent;
+  try { navigator.clipboard.writeText(t).then(() => toast("Tópico copiado ✓"), () => toast("Segure o dedo no tópico para copiar", true)); }
+  catch (e) { toast("Segure o dedo no tópico para copiar", true); }
+}
+function mostrarVigia(d) {
+  const u = d.vigiaUltima;
+  document.getElementById("textoVigia").textContent = !u
+    ? "O app abre o próprio site a cada 15 minutos. Só manda mensagem quando cair e quando voltar."
+    : (u.problema ? "⚠️ Última checagem (" + u.quando + "): " + u.problema + "." : "✅ Última checagem (" + u.quando + "): site no ar.");
+}
+function checarSiteAgora() {
+  const btn = document.getElementById("btnChecarSite");
+  ocupado(btn, "Checando...");
+  chamar("painelChecarSite", [], d => {
+    btn.disabled = false; btn.removeAttribute("data-ocupado"); btn.textContent = "Checar agora";
+    mostrarVigia(d);
+    toast(d.vigiaUltima && d.vigiaUltima.problema ? "O site está com problema" : "Site no ar ✓", !!(d.vigiaUltima && d.vigiaUltima.problema));
+  });
+}
+function desenharDiscordAgenda() {
+  const liga = document.getElementById("chkSemanal").checked;
+  document.getElementById("agendaDiscord").classList.toggle("oculto", !liga);
+  document.getElementById("chipsDiaDiscord").innerHTML = DIAS_DISCORD.map((n, i) =>
+    '<button class="chip' + (i === discord.dia ? " on" : "") + '" onclick="discord.dia=' + i + ';desenharDiscordAgenda()">' + n + '</button>').join("");
+}
+/* Salvar só fica ativo quando algo mudou no quadro Notificações */
+let discordSalvo = "";
+function estadoDiscord() {
+  return JSON.stringify([document.getElementById("inWebhook").value.trim(),
+    ...["chkSemanal", "chkVagasDiscord", "chkAcessosDiscord", "chkVigiaDiscord", "chkVigiaDiario", "chkResumoDiario"].map(id => document.getElementById(id).checked),
+    discord ? discord.dia : 0, document.getElementById("inHoraDiscord").value]);
+}
+function conferirSalvarDiscord() {
+  const btn = document.getElementById("btnSalvarDiscord");
+  if (btn.hasAttribute("data-ocupado")) return;
+  const mudou = estadoDiscord() !== discordSalvo;
+  btn.disabled = !mudou;
+  btn.textContent = mudou ? "Salvar" : "Salvo ✓";
+}
+["input", "change", "click"].forEach(ev => document.getElementById("aba-discord").addEventListener(ev, () => setTimeout(conferirSalvarDiscord, 0)));
+function salvarDiscord(extra) {
+  const btn = document.getElementById("btnSalvarDiscord");
+  const dados = Object.assign({
+    webhook: document.getElementById("inWebhook").value.trim(),
+    semanal: document.getElementById("chkSemanal").checked,
+    vagas: document.getElementById("chkVagasDiscord").checked,
+    acessos: document.getElementById("chkAcessosDiscord").checked,
+    vigia: document.getElementById("chkVigiaDiscord").checked || document.getElementById("chkVigiaDiario").checked,
+    vigiaDiario: document.getElementById("chkVigiaDiario").checked,
+    resumo: document.getElementById("chkResumoDiario").checked,
+    dia: discord.dia,
+    hora: +document.getElementById("inHoraDiscord").value
+  }, extra || {});
+  if ((dados.semanal || dados.vagas) && !discord.configurado && !dados.webhook) { toast("Cole primeiro o link do webhook do Discord.", true); return; }
+  ocupado(btn, "Salvando...");
+  chamar("painelSalvarDiscord", [dados], d => {
+    btn.disabled = false; btn.removeAttribute("data-ocupado"); btn.textContent = "Salvar";
+    mostrarDiscord(d);
+    toast(dados.apagar ? "Link tirado" : "Discord salvo ✓" + (d.configurado && !discord.testado ? " Toque em Enviar teste para conferir." : ""));
+  });
+}
+function limparDiscord() {
+  const total = discord ? (discord.msgsDiscord || 0) + (discord.msgsNtfy || 0) : 0;
+  if (!total && !(discord && discord.ntfyTopico)) { toast("Nenhuma mensagem do app para apagar. As mais antigas só dá para apagar no próprio Discord.", true); return; }
+  if (!confirm("Apagar as mensagens que o app mandou no Discord (" + (discord.msgsDiscord || 0) + ") e no celular (" + (discord.msgsNtfy || 0) + ")? As de pessoas não são apagadas.")) return;
+  const btn = document.getElementById("btnLimparDiscord");
+  ocupado(btn, "Apagando...");
+  chamar("painelLimparDiscord", [], r => {
+    btn.disabled = false; btn.removeAttribute("data-ocupado");
+    mostrarDiscord(r.painel);
+    toast("Apagadas ✓ Discord: " + r.apagadas + " • celular: " + (r.celular || 0) + (r.faltam ? " • faltam " + r.faltam + ": toque de novo." : ""));
+  });
+}
+function apagarWebhook() {
+  if (!confirm("Tirar o link do Discord? Os avisos param até você colar um link de novo.")) return;
+  salvarDiscord({ apagar: true, semanal: false, vagas: false });
+}
+function testeDiscord() {
+  const btn = document.getElementById("btnTesteDiscord");
+  ocupado(btn, "Enviando...");
+  chamar("painelTesteDiscord", [], () => { btn.disabled = false; btn.removeAttribute("data-ocupado"); btn.textContent = "Enviar teste"; discord.testado = true; toast("Mensagem de teste enviada ✓ Veja no canal do Discord."); });
+}
+function enviarEscalaDiscord() {
+  if (!confirm("Mandar agora a escala dos próximos 7 dias no Discord?")) return;
+  const btn = document.getElementById("btnEscalaDiscord");
+  ocupado(btn, "Enviando...");
+  chamar("painelEnviarEscalaDiscord", [], () => { btn.disabled = false; btn.removeAttribute("data-ocupado"); btn.textContent = "Enviar a escala da semana agora"; toast("Escala enviada no Discord ✓"); });
+}
+
+/* ---------- Acessos ---------- */
+const abasContadas = {};
+let diasAcessos = 7;
+function carregarAcessos(dias) {
+  diasAcessos = dias;
+  document.querySelectorAll("#segAcessos button").forEach(b => b.classList.toggle("on", +b.dataset.d === dias));
+  const el = document.getElementById("conteudoAcessos");
+  el.innerHTML = '<div class="carregando">Carregando...</div>';
+  chamar("painelAcessos", [dias], desenharAcessos);
+}
+function desenharAcessos(r) {
+  const total = r.porDia.reduce((t, d) => t + d.site, 0);
+  const max = Math.max(1, ...r.porDia.map(d => d.site));
+  const barras = r.porDia.map(d => '<div title="' + d.data + ': ' + d.site + '" style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;min-width:0">' +
+    '<div style="width:100%;max-width:26px;border-radius:4px 4px 0 0;background:' + (d.site ? "#3b82f6" : "#1e293b") + ';height:' + Math.max(3, Math.round(d.site / max * 90)) + 'px"></div>' +
+    (r.dias <= 7 ? '<span style="font-size:10px;color:var(--text-muted)">' + d.data + '</span>' : '') + '</div>').join("");
+  const lista = grupo => {
+    const itens = r.usos.filter(u => u.grupo === grupo).sort((a, b) => b.vezes - a.vezes);
+    const maior = Math.max(1, ...itens.map(u => u.vezes));
+    return itens.map(u => '<div class="card" style="flex-direction:column;align-items:stretch;gap:8px">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span class="card-title" style="font-size:14px">' + esc(u.nome) + '</span>' +
+      (u.vezes ? '<b style="font-size:17px">' + u.vezes + '</b>' : '<span class="tag red">ninguém usou</span>') + '</div>' +
+      '<div style="height:6px;border-radius:3px;background:#1e293b"><div style="height:6px;border-radius:3px;background:' + (grupo === "site" ? "#3b82f6" : "#a855f7") + ';width:' + Math.round(u.vezes / maior * 100) + '%"></div></div></div>').join("");
+  };
+  document.getElementById("conteudoAcessos").innerHTML =
+    '<div class="painel"><p><strong>' + total + '</strong> ' + (total === 1 ? "vez" : "vezes") + ' que o site foi aberto nos últimos ' + r.dias + ' dias</p>' +
+    '<div style="display:flex;align-items:flex-end;gap:' + (r.dias <= 7 ? 8 : 2) + 'px;height:' + (r.dias <= 7 ? 116 : 96) + 'px;margin-top:14px">' + barras + '</div></div>' +
+    '<div class="section-header" style="margin-top:22px"><span class="section-title">Site dos acólitos</span><span class="section-sub">mais usado primeiro</span></div>' +
+    '<div class="lista">' + lista("site") + '</div>' +
+    '<div class="section-header" style="margin-top:22px"><span class="section-title">Área dos coordenadores</span></div>' +
+    '<div class="lista">' + lista("coord") + '</div>';
+}
+
+/* ---------- Missas que já passaram ---------- */
+function mostrarLimpeza(dados) {
+  const ativa = !!dados.limpezaAuto, n = dados.missasPassadas || 0;
+  document.querySelectorAll("#segLimpeza button").forEach(b => b.classList.toggle("on", (b.dataset.v === "1") === ativa));
+  document.getElementById("textoLimpeza").textContent = ativa
+    ? "Ativado: todo dia, depois da meia-noite, as missas do dia anterior saem da escala sozinhas."
+    : "Desativado: as missas que já passaram só saem da escala quando você tocar em Limpar agora.";
+  document.getElementById("textoPassadas").textContent = n
+    ? n + (n === 1 ? " missa de dia que já passou ainda está na escala." : " missas de dias que já passaram ainda estão na escala.")
+    : "Nenhuma missa de dia que já passou na escala. Está tudo em dia ✓";
+  document.getElementById("btnLimparAgora").disabled = !n;
+  document.getElementById("subLimpeza").textContent = (ativa ? "Automático ligado" : "Automático desligado") + (n ? " • " + n + " para limpar" : "");
+}
+function definirLimpeza(ativa) {
+  chamar("painelDefinirLimpezaAuto", [ativa], dados => {
+    aplicar(dados);
+    toast(ativa ? "Limpeza automática ligada ✓" : "Limpeza automática desligada");
+  });
+}
+function limparAgora() {
+  const btn = document.getElementById("btnLimparAgora");
+  ocupado(btn, "Limpando...");
+  chamar("painelLimparPassadas", [], r => {
+    btn.removeAttribute("data-ocupado"); btn.textContent = "🧽 Limpar agora";
+    aplicar(r.painel);
+    toast(r.movidas ? r.movidas + " missa(s) saíram da escala ✓ (guardadas no Historico)" : "Nada para limpar.");
+  });
+}
+
+function mostrarEmailAviso(ativo, email) {
+  document.querySelectorAll("#segEmail button").forEach(b => b.classList.toggle("on", (b.dataset.v === "1") === ativo));
+  if (email !== undefined) document.getElementById("inEmailDestino").value = email;
+}
+function definirEmailAviso(ativa) {
+  const email = document.getElementById("inEmailDestino").value;
+  chamar("painelDefinirEmailAviso", [ativa, email], r => { mostrarEmailAviso(r.ativa, r.email); toast(r.ativa ? "E-mail ligado ✓ Você recebe um aviso a cada movimentação." : "E-mail desligado"); });
+}
+function salvarEmailDestino() {
+  const ligado = document.querySelector("#segEmail button.on");
+  definirEmailAviso(!!ligado && ligado.dataset.v === "1");
+}
+function definirChamada(ativa) {
+  chamar("painelDefinirChamada", [ativa], v => { mostrarChaveChamada(v); toast(v ? "Chamada ligada ✓ O botão aparece na tela inicial." : "Chamada desligada"); });
+}
+function mudarDiaChamada(n) {
+  const i = document.getElementById("dataChamada");
+  const d = i.value ? new Date(i.value + "T12:00:00") : new Date();
+  d.setDate(d.getDate() + n);
+  i.value = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+  carregarChamada();
+}
+let chamadaDia = [];
+function carregarChamada() {
+  const el = document.getElementById("listaChamada");
+  const iso = document.getElementById("dataChamada").value;
+  if (!iso) return;
+  el.innerHTML = '<div class="carregando">Carregando...</div>';
+  chamar("painelChamadaDoDia", [iso.split("-").reverse().join("/")], lista => {
+    chamadaDia = lista.map(m => {
+      const nomes = m.acolitos.split(",").map(n => n.trim()).filter(n => n && n.indexOf("Vaga Aberta") < 0);
+      Object.keys(m.presenca).forEach(n => { if (nomes.indexOf(n) < 0) nomes.push(n); }); // quem veio de extra
+      return Object.assign(m, { nomes: nomes, salvo: Object.keys(m.presenca).length > 0, mudou: false });
+    });
+    desenharChamada();
+  });
+}
+function desenharChamada() {
+  const el = document.getElementById("listaChamada");
+  if (!chamadaDia.length) { el.innerHTML = '<div class="vazio">Nenhuma missa na escala neste dia.</div>'; return; }
+  el.innerHTML = chamadaDia.map((m, i) => {
+    const outros = acolitos.filter(a => a.ativo && m.nomes.indexOf(a.nome) < 0).map(a => a.nome);
+    return '<div class="card" style="flex-direction:column;align-items:stretch">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center"><div class="card-title">' + esc(m.horario) + (m.observacao ? ' • ' + esc(m.observacao) : '') + '</div>' +
+      (m.mudou ? '<span class="tag amber">não salvo</span>' : m.salvo ? '<span class="tag green">✓ chamada feita</span>' : '<span class="tag">sem chamada</span>') + '</div>' +
+      (m.nomes.length ? m.nomes.map(n =>
+        '<div class="presenca"><span>' + esc(n) + '</span>' +
+        '<button class="veio' + (m.presenca[n] === "P" ? " on" : "") + '" onclick="marcarPresenca(' + i + ', this, \'P\')" data-nome="' + esc(n) + '">✓ Veio</button>' +
+        '<button class="faltou' + (m.presenca[n] === "F" ? " on" : "") + '" onclick="marcarPresenca(' + i + ', this, \'F\')" data-nome="' + esc(n) + '">✗ Faltou</button></div>').join("")
+        : '<p class="sub" style="margin-top:8px">Ninguém escalado nesta missa.</p>') +
+      (outros.length ? '<select style="margin-top:10px" onchange="acrescentarPresenca(' + i + ', this)"><option value="">+ Veio mais alguém que não estava na escala</option>' +
+        outros.map(n => '<option value="' + esc(n) + '">' + esc(n) + '</option>').join("") + '</select>' : '') +
+      '<div style="display:flex;gap:8px;margin-top:12px"><button class="btn sec small" style="flex:1" onclick="todosVieram(' + i + ')">Todos vieram</button>' +
+      '<button class="btn small" style="flex:1" onclick="salvarChamada(' + i + ', this)">Salvar</button></div></div>';
+  }).join("");
+}
+function marcarPresenca(i, btn, valor) {
+  const n = btn.getAttribute("data-nome");
+  const m = chamadaDia[i];
+  if (m.presenca[n] === valor) delete m.presenca[n]; else m.presenca[n] = valor;
+  m.mudou = true;
+  desenharChamada();
+}
+function acrescentarPresenca(i, sel) {
+  if (!sel.value) return;
+  chamadaDia[i].nomes.push(sel.value);
+  chamadaDia[i].presenca[sel.value] = "P";
+  chamadaDia[i].mudou = true;
+  desenharChamada();
+}
+function todosVieram(i) {
+  const m = chamadaDia[i];
+  m.nomes.forEach(n => { m.presenca[n] = "P"; });
+  m.mudou = true;
+  desenharChamada();
+}
+function salvarChamada(i, btn) {
+  const m = chamadaDia[i];
+  ocupado(btn, "Salvando...");
+  chamar("painelSalvarChamada", [m.linha, m.data, m.horario, m.presenca, m.aba], () => { m.salvo = Object.keys(m.presenca).length > 0; m.mudou = false; toast("Chamada das " + m.horario + " salva ✓"); desenharChamada(); });
+}
+
+/* ---------- Inscrições ---------- */
+function copiarLink() {
+  const i = document.getElementById("linkInscricao");
+  i.select();
+  try { navigator.clipboard.writeText(i.value).then(() => toast("Link copiado ✓"), () => { document.execCommand("copy"); toast("Link copiado ✓"); }); }
+  catch (e) { document.execCommand("copy"); toast("Link copiado ✓"); }
+}
+let inscricoes = [];
+function carregarInscricoes() {
+  const el = document.getElementById("listaInscricoes");
+  el.innerHTML = '<div class="carregando">Carregando...</div>';
+  chamar("painelInscricoes", [], mostrarInscricoes);
+}
+function mostrarInscricoes(lista) {
+  inscricoes = lista;
+  const el = document.getElementById("listaInscricoes");
+  document.getElementById("contaInscricoes").textContent = lista.length ? lista.length + " esperando" : "";
+  const b = document.getElementById("badgeInscricoes");
+  b.textContent = lista.length || ""; b.classList.toggle("oculto", !lista.length);
+  if (!lista.length) { el.innerHTML = '<div class="vazio">Nenhuma inscrição esperando. Mande o link de inscrição no grupo.</div>'; return; }
+  el.innerHTML = lista.map((x, i) =>
+    '<div class="card" style="flex-direction:column;align-items:stretch">' +
+    '<div class="card-info"><div class="card-title">' + esc(x.nome) + '</div>' +
+    '<div class="card-sub"><span class="tag ' + (x.grupo === "Coroinha" ? "azul" : "") + '">' + esc(x.grupo) + '</span>' +
+    (x.telefone ? '<span class="tag green"><a href="https://wa.me/' + zap(x.telefone) + '" target="_blank">📞 ' + esc(x.telefone) + '</a></span>' : "") +
+    (x.nascimento ? '<span class="tag">🎂 ' + esc(x.nascimento) + '</span>' : "") + '</div>' +
+    '<div class="card-sub">' + (x.responsavel ? '<span>Responsável: ' + esc(x.responsavel) + '</span>' : "") + '</div>' +
+    '<div class="card-sub">' + resumoDisponibilidade(x.disponibilidade) + '</div>' +
+    (x.observacao ? '<div class="card-sub"><span>💬 ' + esc(x.observacao) + '</span></div>' : "") +
+    '<div class="card-sub"><span style="color:#64748b">Recebida em ' + esc(x.recebido) + '</span></div></div>' +
+    '<div style="display:flex;gap:8px;margin-top:12px"><button class="btn perigo small" style="flex:1" onclick="recusarInscricao(' + i + ')">Recusar</button>' +
+    '<button class="btn small" style="flex:2" onclick="aprovarInscricao(' + i + ', this)">✓ Aprovar</button></div></div>'
+  ).join("");
+}
+function aprovarInscricao(i, btn) {
+  const x = inscricoes[i];
+  ocupado(btn, "Aprovando...");
+  chamar("painelAprovarInscricao", [x.linha, x.nome], dados => {
+    aplicar(dados);
+    toast(x.nome + " aprovado(a) ✓");
+    carregarInscricoes();
+  });
+}
+function recusarInscricao(i) {
+  const x = inscricoes[i];
+  if (!confirm("Recusar a inscrição de " + x.nome + "? Ela fica marcada como recusada na planilha.")) return;
+  chamar("painelRecusarInscricao", [x.linha, x.nome], lista => { mostrarInscricoes(lista); toast("Inscrição recusada"); });
+}
+
+/* ---------- Trocas ---------- */
+function mostrarTrocas(liberadas) {
+  document.querySelectorAll("#segTrocas button, #segModoHome button").forEach(b => b.classList.toggle("on", (b.dataset.v === "1") === liberadas));
+  document.getElementById("textoModoHome").textContent = liberadas
+    ? "Liberado: no site cada acólito toca em \"Quero essa vaga\" para escolher seus dias, e em \"Não vou poder ir\" para sair. Para eles escolherem do zero, gere a escala com \"Deixar vagas abertas\"."
+    : "O coordenador monta a escala em Gerar escala. No site os acólitos só veem, sem botões de troca.";
+  document.getElementById("textoTrocas").textContent = liberadas
+    ? "Os acólitos veem os botões \"Não vou poder ir\" e \"Quero essa vaga\" no site."
+    : "Os botões de troca somem do site. Só os coordenadores mudam a escala, pela tela Ajustar.";
+}
+function definirTrocas(liberadas) {
+  chamar("painelDefinirTrocas", [liberadas], v => { mostrarTrocas(v); toast(v ? "Acólitos podem trocar pelo site ✓" : "Só coordenadores mexem na escala ✓"); });
+}
+function carregarTrocas() {
+  chamar("painelStatusTrocas", [], mostrarTrocas);
+  const el = document.getElementById("listaTrocas");
+  el.innerHTML = '<div class="carregando">Carregando...</div>';
+  chamar("painelDesistencias", [], lista => {
+    if (!lista.length) { el.innerHTML = '<div class="vazio">Nenhuma troca ainda.</div>'; return; }
+    el.innerHTML = lista.map(d => {
+      const assumiu = String(d.tipo).toLowerCase().indexOf("assumiu") >= 0;
+      return '<div class="card"><div class="card-info"><div class="card-title">' + esc(d.nome) + '</div>' +
+        '<div class="card-sub">' + (assumiu ? '<span class="tag green">🙋 Assumiu vaga</span>' : '<span class="tag red">🚫 Desistiu</span>') +
+        '<span>' + esc(d.dia) + ', ' + esc(d.data) + ' às ' + esc(d.horario) + '</span></div>' +
+        '<div class="card-sub"><span style="color:#64748b">em ' + esc(d.quando) + '</span></div></div></div>';
+    }).join("");
+  });
+}
+
+/* ---------- Relatórios ---------- */
+function carregarRelatorio() {
+  const el = document.getElementById("conteudoRel");
+  el.innerHTML = '<div class="carregando">Carregando...</div>';
+  chamar("painelRelatorio", [document.getElementById("periodoRel").value], r => {
+    const ativos = r.pessoas.filter(p => p.vezes || p.desistiu || p.assumiu || acolitos.some(a => a.nome === p.nome && a.ativo));
+    el.innerHTML = '<div class="numeros"><div><b>' + r.missas + '</b><span>missas</span></div>' +
+      '<div><b>' + ativos.reduce((t, p) => t + p.vezes, 0) + '</b><span>participações</span></div>' +
+      '<div><b style="color:' + (r.vagasAbertas ? "#fbbf24" : "#34d399") + '">' + r.vagasAbertas + '</b><span>vagas abertas</span></div></div>' +
+      (ativos.length ? '<div class="painel"><div class="tabela-rolagem"><table class="tabela-func"><tr><th>Acólito</th><th>Escalado</th>' +
+        (r.chamada ? '<th>Veio</th><th>Faltou</th>' : '') + '<th>Desistiu</th><th>Assumiu</th><th>Última</th></tr>' +
+        ativos.map(p => '<tr><td>' + esc(p.nome) + '</td><td><b>' + p.vezes + '</b></td>' +
+          (r.chamada ? '<td' + (p.veio ? ' style="color:#34d399"' : '') + '>' + (p.veio || "·") + '</td><td' + (p.faltou ? ' style="color:#f87171"' : '') + '>' + (p.faltou || "·") + '</td>' : '') +
+          '<td' + (p.desistiu ? ' style="color:#f87171"' : '') + '>' + (p.desistiu || "·") + '</td><td' + (p.assumiu ? ' style="color:#34d399"' : '') + '>' + (p.assumiu || "·") + '</td><td>' + esc(p.ultima ? p.ultima.slice(0, 5) : "—") + '</td></tr>').join("") +
+        '</table></div><p class="sub" style="margin-top:8px">Escalado = missas em que está na escala no período (inclui as que ainda vão acontecer).' +
+        (r.chamada ? ' Veio / Faltou = pela chamada (' + r.missasComChamada + ' missas com chamada feita).' : '') + '</p></div>'
+        : '<div class="vazio">Sem escala nesse período.</div>');
+  });
+}
+
+/* ---------- Ajustar ---------- */
+function carregarDesistencias() {
+  chamar("painelDesistencias", [], lista => {
+    const el = document.getElementById("blocoDesistencias");
+    if (!lista.length) { el.innerHTML = ""; return; }
+    el.innerHTML = '<div class="painel" style="border-color:#4c1d24"><p><strong style="color:#f87171">🚫 Desistências</strong> <span style="color:var(--text-muted);font-size:12px">(a vaga ficou aberta; toque na missa abaixo para colocar outra pessoa)</span></p>' +
+      lista.slice(0, 8).map(d => '<div class="card-sub" style="margin-top:8px"><span class="tag red">' + esc(d.nome) + '</span><span>' + esc(d.dia) + ', ' + esc(d.data) + ' às ' + esc(d.horario) + '</span><span style="color:#64748b">• pediu em ' + esc(d.quando) + '</span></div>').join("") +
+      '</div>';
+  });
+}
+function carregarMes() {
+  const el = document.getElementById("listaAjustar");
+  el.innerHTML = '<div class="carregando">Carregando...</div>';
+  chamar("painelEscalaDoMes", [document.getElementById("mesAjustar").value], mostrarMes);
+}
+function mostrarMes(lista) {
+    const el = document.getElementById("listaAjustar");
+    escalaMes = lista;
+    renderResumoFuncoes(lista);
+    if (!lista.length) { el.innerHTML = '<div class="vazio">Esse mês ainda não tem escala. Gere na aba Gerar.</div>'; return; }
+    let html = "", ultimaData = null;
+    lista.forEach((m, i) => {
+      if (m.data !== ultimaData) { html += '<div class="dia-grupo">' + esc(m.dia) + ", " + esc(m.data.slice(0, 5)) + '</div>'; ultimaData = m.data; }
+      const aberta = m.acolitos.indexOf("Vaga Aberta") >= 0;
+      const fx = lerFuncoes(m.funcoes);
+      const tagsF = Object.keys(fx).length
+        ? Object.keys(fx).map(n => '<span class="tag">' + esc(fx[n]) + ": " + esc(n.split(" ")[0]) + '</span>').join("")
+        : '<span class="tag green">Funções na hora</span>';
+      html += '<div class="card clicavel" onclick="editarEscala(' + i + ')">' +
+        '<div class="card-info"><div class="card-title">' + esc(m.acolitos || "—") + '</div>' +
+        '<div class="card-sub">' + (aberta ? '<span class="tag red">Vaga aberta</span>' : "") + tagsF + (m.observacao ? '<span class="tag amber">' + esc(m.observacao) + '</span>' : "") + '</div></div>' +
+        '<div class="card-time">' + esc(m.horario) + '<small>Trocar</small></div></div>';
+    });
+    el.innerHTML = html;
+}
+
+function renderResumoFuncoes(lista) {
+  const el = document.getElementById("resumoFuncoes");
+  if (!lista.length || !funcoes.length) { el.innerHTML = ""; return; }
+  const conta = {}, nomes = new Set();
+  lista.forEach(m => {
+    const fx = lerFuncoes(m.funcoes);
+    Object.keys(fx).forEach(n => { nomes.add(n); conta[n + "|" + fx[n]] = (conta[n + "|" + fx[n]] || 0) + 1; });
+  });
+  const usadas = funcoes.filter(f => Array.from(nomes).some(n => conta[n + "|" + f]));
+  let corpo;
+  if (!nomes.size) {
+    corpo = '<p class="sub" style="margin-top:6px">Nesse mês as funções estão como "decidir na hora".</p>';
+  } else {
+    const maxPor = {};
+    usadas.forEach(f => { maxPor[f] = Math.max.apply(null, Array.from(nomes).map(n => conta[n + "|" + f] || 0)); });
+    corpo = '<div class="tabela-rolagem"><table class="tabela-func"><tr><th>Acólito</th>' + usadas.map(f => '<th>' + esc(f) + '</th>').join("") + '</tr>' +
+      Array.from(nomes).sort().map(n => '<tr><td>' + esc(n) + '</td>' + usadas.map(f => {
+        const v = conta[n + "|" + f] || 0;
+        return '<td' + (v && v === maxPor[f] && v > 1 ? ' class="alto"' : '') + '>' + (v || "·") + '</td>';
+      }).join("") + '</tr>').join("") + '</table></div>' +
+      '<p class="sub" style="margin-top:8px">Em amarelo: quem mais pegou cada função. Para tirar alguém de uma função, marque no Cadastro que ele não faz e toque em Redistribuir.</p>';
+  }
+  el.innerHTML = '<div class="painel"><p><strong>Funções no mês</strong></p>' + corpo +
+    '<button class="btn sec full" style="margin-top:12px" id="btnRedistribuir" onclick="redistribuir()">🔄 Redistribuir funções do mês</button></div>';
+}
+function redistribuir() {
+  if (!confirm("Refazer as funções de todas as missas desse mês? Quem está escalado não muda, só as funções.")) return;
+  ocupado(document.getElementById("btnRedistribuir"), "Redistribuindo...");
+  chamar("painelRedistribuirFuncoes", [document.getElementById("mesAjustar").value], lista => { mostrarMes(lista); toast("Funções redistribuídas ✓"); });
+}
+
+function editarEscala(i) {
+  const m = escalaMes[i];
+  const atuais = m.acolitos.split(",").map(s => s.trim()).filter(s => s && s.indexOf("Vaga Aberta") < 0);
+  const dow = diaDaSemana(m.dia);
+  const hora = formatarHora(m.horario);
+  const nomes = acolitos.filter(a => a.ativo).map(a => a.nome);
+  atuais.forEach(n => { if (nomes.indexOf(n) < 0) nomes.push(n); });
+  // vagas definidas para essa missa na grade (se ainda existir)
+  const g = grade.find(x => diaDaSemana(x.dia) === dow && formatarHora(x.horario) === hora);
+  rascunho = { i: i, sel: new Set(atuais), vagas: g ? g.vagas : Math.max(atuais.length, 1), func: lerFuncoes(m.funcoes) };
+  const podeServir = n => {
+    const a = acolitos.find(x => x.nome === n);
+    if (!a) return false;
+    const r = lerDisponibilidade(a.disponibilidade);
+    if (r.qualquer) return true;
+    return r.sel.has(dow + "|" + hora) || r.sel.has(dow + "|*") || r.sel.has("*|" + hora);
+  };
+  const disponiveis = nomes.filter(podeServir), outros = nomes.filter(n => !podeServir(n));
+  const chip = n => '<button class="chip' + (rascunho.sel.has(n) ? " on" : "") + (podeServir(n) ? "" : " fora") + '" data-nome="' + esc(n) + '" onclick="marcarEscalado(this)">' + esc(n) + '</button>';
+  document.getElementById("modal").innerHTML =
+    '<h2>' + esc(m.dia) + ', ' + esc(m.data) + ' • ' + esc(m.horario) + '</h2>' +
+    '<p class="sub">Toque nos nomes para escolher quem vai servir. Previsto: ' + rascunho.vagas + ' acólito(s).</p>' +
+    '<label class="campo">Disponíveis nesse horário</label><div class="chips">' + (disponiveis.map(chip).join("") || '<span class="sub">Ninguém marcou esse horário.</span>') + '</div>' +
+    (outros.length ? '<label class="campo">Outros acólitos</label><div class="chips">' + outros.map(chip).join("") + '</div>' : "") +
+    '<label class="campo">Funções</label><div id="blocoFuncoes"></div>' +
+    '<div class="modal-acoes"><button class="btn sec" onclick="fecharModal()">Cancelar</button>' +
+    '<button class="btn" id="btnSalvar" onclick="salvarEscala()">Salvar</button></div>';
+  desenharFuncoes();
+  abrirModal();
+}
+function marcarEscalado(btn) {
+  const n = btn.getAttribute("data-nome");
+  if (rascunho.sel.has(n)) { rascunho.sel.delete(n); delete rascunho.func[n]; } else rascunho.sel.add(n);
+  btn.classList.toggle("on");
+  desenharFuncoes();
+}
+function desenharFuncoes() {
+  const el = document.getElementById("blocoFuncoes");
+  const nomes = Array.from(rascunho.sel);
+  if (!nomes.length) { el.innerHTML = '<p class="sub">Escolha os acólitos primeiro.</p>'; return; }
+  const opcoes = funcoes.slice();
+  Object.keys(rascunho.func).forEach(n => { if (opcoes.indexOf(rascunho.func[n]) < 0) opcoes.push(rascunho.func[n]); });
+  el.innerHTML = nomes.map(n =>
+    '<div class="func-linha"><span>' + esc(n) + '</span><select data-nome="' + esc(n) + '" onchange="mudarFuncao(this)">' +
+    '<option value="">🤝 Decidir na hora</option>' +
+    opcoes.map(f => {
+      const a = acolitos.find(x => x.nome === n);
+      const nao = a && (a.naoFaz || []).indexOf(f) >= 0 && rascunho.func[n] !== f;
+      return '<option value="' + esc(f) + '"' + (rascunho.func[n] === f ? " selected" : "") + (nao ? " disabled" : "") + '>' + esc(f) + (nao ? " (não faz)" : "") + '</option>';
+    }).join("") +
+    '</select></div>'
+  ).join("");
+}
+function mudarFuncao(sel) {
+  const n = sel.getAttribute("data-nome");
+  if (sel.value) {
+    // cada função fica com uma pessoa só nessa missa
+    Object.keys(rascunho.func).forEach(x => { if (x !== n && rascunho.func[x] === sel.value) delete rascunho.func[x]; });
+    rascunho.func[n] = sel.value;
+  } else delete rascunho.func[n];
+  desenharFuncoes();
+}
+function salvarEscala() {
+  const m = escalaMes[rascunho.i];
+  const nomes = Array.from(rascunho.sel);
+  while (nomes.length < rascunho.vagas) nomes.push("— Vaga Aberta —");
+  const texto = nomes.join(", ");
+  const ordem = f => { const i = funcoes.indexOf(f); return i < 0 ? 99 : i; };
+  const textoFuncoes = Object.keys(rascunho.func).filter(n => rascunho.sel.has(n))
+    .sort((a, b) => ordem(rascunho.func[a]) - ordem(rascunho.func[b]))
+    .map(n => rascunho.func[n] + ": " + n).join("; ");
+  ocupado(document.getElementById("btnSalvar"), "Salvando...");
+  chamar("painelAjustar", [m.linha, m.data, m.horario, texto, textoFuncoes], () => { fecharModal(); toast("Escala atualizada ✓"); carregarMes(); });
+}
+
+/* ---------- modal ---------- */
+function abrirModal() { document.getElementById("modalFundo").classList.add("aberto"); document.body.style.overflow = "hidden"; }
+function fecharModal() { document.getElementById("modalFundo").classList.remove("aberto"); document.body.style.overflow = ""; }
+document.addEventListener("keydown", e => { if (e.key === "Escape") fecharModal(); });
+
+/* ---------- versão nova ---------- */
+// A página guarda a versão com que abriu. A cada 15 minutos pergunta ao servidor qual está no ar.
+// Se tiver versão nova, pergunta se quer atualizar. "Agora não" = não pergunta de novo dessa versão;
+// ela entra sozinha na próxima vez que a pessoa abrir ou recarregar o site.
+const VERSAO_CARREGADA = document.body.getAttribute('data-versao') || '';
+let versaoRecusada = '';
+function mostrarPerguntaAtualizar(v) {
+  document.getElementById('textoAtualizar').textContent = window.mensagemVersao
+    ? 'Versão ' + v + ': ' + window.mensagemVersao
+    : 'Você está na versão ' + VERSAO_CARREGADA + ' e já saiu a ' + v + '. Quer atualizar agora?';
+  // o link abre com um parâmetro novo: o celular não reaproveita a versão antiga do cache
+  document.querySelector('#telaAtualizar .atualizar-acoes a').href = './?p=coord&v=' + encodeURIComponent(v) + '&t=' + Date.now();
+  // A área dos coordenadores agora abre dentro do Google Sites (moldura alta): a janela aparece perto do 🔄, não no meio da moldura.
+  const fundo = document.getElementById('telaAtualizar');
+  fundo.style.display = 'flex';
+  fundo.style.height = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight) + 'px';
+  fundo.firstElementChild.style.marginTop = (window.yBotaoVersao != null ? window.yBotaoVersao : window.scrollY + 20) + 'px';
+}
+function naoAtualizar() {
+  versaoRecusada = window.versaoNoAr || '';
+  document.getElementById('telaAtualizar').style.display = 'none';
+}
+function conferirVersao(manual, botao) {
+  const msg = document.getElementById('msgVersao');
+  clearTimeout(window.tmMsgVersao);
+  if (botao) { msg.style.top = (botao.getBoundingClientRect().bottom + window.scrollY + 8) + 'px'; window.yBotaoVersao = botao.getBoundingClientRect().top + window.scrollY; }
+  if (manual) { msg.textContent = 'Verificando...'; window.tmMsgVersao = setTimeout(function () { msg.textContent = ''; }, 8000); }
+  google.script.run.withSuccessHandler(function (info) {
+    const v = info && info.versao;
+    window.versaoNoAr = v;
+    window.mensagemVersao = (info && info.mensagem) || '';
+    if (v && v !== VERSAO_CARREGADA && (manual || v !== versaoRecusada)) {
+      if (manual) msg.textContent = '';
+      mostrarPerguntaAtualizar(v);
+    } else if (manual) {
+      msg.textContent = '✓ Você já está na versão mais nova (' + VERSAO_CARREGADA + ').';
+    }
+  }).withFailureHandler(function () { if (manual) msg.textContent = 'Sem conexão. Tente de novo.'; }).versaoGithub();
+}
+if (VERSAO_CARREGADA && VERSAO_CARREGADA !== 'dev') setInterval(function () { conferirVersao(false); }, 15 * 60 * 1000);
+document.getElementById('numeroVersao').textContent = VERSAO_CARREGADA || '1.0';
+</script>
+</body>
+</html>

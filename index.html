@@ -1,0 +1,2173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<script>if (/[?&]p=coord/.test(location.search)) location.replace('coord.html');</script>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b1633">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Acólitos">
+<script src="api.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Escala de Acólitos · Perpétuo Socorro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+<style>
+:root {
+  --bg: #0f1118;
+  --surface: #181b26;
+  --surface-2: #222636;
+  --line: #2b3044;
+  --fg: #f1f4fb;
+  --muted: #9ba1b8;
+  --gold: #e2ba64;
+  --gold-ink: #191407;
+  --vaga: #f97316;
+  --vaga-bg: #2d1b12;
+  --vaga-line: #522712;
+  --me: #60a5fa;
+  --me-bg: #132238;
+  --me-line: #1e3a5f;
+  --verde: #22c55e;
+  --verde-bg: #0f291e;
+  --vermelho: #ef4444;
+  --display: "Marcellus", Georgia, serif;
+  --body: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--fg); font: 15px/1.45 var(--body); -webkit-text-size-adjust: 100%; }
+button, select, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.app { max-width: 680px; margin: 0 auto; padding: 16px 14px 48px; display: flex; flex-direction: column; gap: 14px; }
+
+/* ---------- Topo limpo ---------- */
+.topo { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-bottom: 2px; }
+.marca h1 { font: 400 1.35rem/1.2 var(--display); color: #fff; letter-spacing: .02em; }
+.marca p { color: var(--muted); font-size: .8rem; margin-top: 2px; }
+.topo-acoes { display: flex; align-items: center; gap: 6px; }
+.btn-menu { width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); font-size: 18px; display: inline-flex; align-items: center; justify-content: center; }
+.btn-menu:active { transform: scale(.95); }
+
+/* ---------- Faixa de Atualização ---------- */
+.faixa-nova { display: none; align-items: center; gap: 10px; background: #261f0e; border: 1px solid var(--gold); border-radius: 14px; padding: 10px 14px; font-size: 13px; font-weight: 500; }
+.faixa-nova span { flex: 1; }
+.faixa-nova a { background: var(--gold); color: var(--gold-ink); text-decoration: none; font-weight: 700; border-radius: 8px; padding: 6px 12px; font-size: 12px; white-space: nowrap; }
+.faixa-nova button { background: none; border: none; color: var(--muted); font-size: 16px; padding: 4px; }
+
+/* ---------- Card "Eu Sou" e Destaque ---------- */
+.card-eu { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.eu-seletor { display: flex; align-items: center; gap: 10px; }
+.eu-seletor label { font-size: .82rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.eu-seletor select { flex: 1; min-width: 0; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; font-size: 15px; font-weight: 600; color: #fff; }
+
+.destaque-missa { display: none; background: var(--me-bg); border: 1px solid var(--me-line); border-radius: 12px; padding: 12px 14px; flex-direction: column; gap: 6px; }
+.destaque-missa.mostrar { display: flex; }
+.destaque-tag { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--me); }
+.destaque-info { font-size: 1rem; font-weight: 600; color: #fff; }
+.destaque-funcao { font-size: .84rem; color: #bfdbfe; }
+.destaque-rodape { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+
+/* ---------- Abas Simplificadas ---------- */
+.abas { display: grid; grid-template-columns: 1fr 1.15fr 1fr; gap: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 4px; }
+.abas.com-chamada { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.aba-btn { position: relative; border: 0; background: transparent; border-radius: 10px; padding: 10px 8px; font-size: .85rem; font-weight: 600; color: var(--muted); display: flex; align-items: center; justify-content: center; gap: 6px; }
+.aba-btn[aria-current="page"] { background: var(--surface-2); color: var(--gold); }
+.aba-badge { background: var(--vaga); color: #1d0f04; border-radius: 999px; font-size: .68rem; font-weight: 800; padding: 1px 7px; line-height: 16px; margin-left: 4px; }
+.aba-badge:empty { display: none; }
+
+/* ---------- Card Nova Escala 🙏 ---------- */
+.card-nova-escala { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px 18px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 8px 30px rgba(0,0,0,.35); max-width: 500px; margin: 0 auto; width: 100%; }
+.nova-escala-titulo { font: 700 1.45rem var(--body); color: #22c55e; text-align: center; }
+.campo-passo { display: flex; flex-direction: column; gap: 6px; text-align: left; }
+.campo-passo label { font-size: 14px; font-weight: 600; color: var(--fg); }
+.campo-passo select, .campo-passo input { width: 100%; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 15px; color: #fff; outline: none; }
+.campo-passo select:focus, .campo-passo input:focus { border-color: #22c55e; }
+.campo-passo select:disabled { opacity: .5; }
+.btn-salvar-registro { width: 100%; background: #0f6848; color: #fff; border: none; border-radius: 10px; padding: 14px; font-size: 16px; font-weight: 700; margin-top: 4px; transition: background .15s ease, transform .1s ease; cursor: pointer; }
+.btn-salvar-registro:hover { background: #15803d; }
+.btn-salvar-registro:active { transform: scale(.98); }
+.btn-salvar-registro:disabled { opacity: .5; cursor: not-allowed; }
+
+/* Mini Calendário do Formulário */
+.mini-cal { background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px; padding: 12px 10px; }
+.cal-topo { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-weight: 700; font-size: 15px; color: #fff; padding: 0 4px; }
+.cal-topo-btn { background: var(--surface); border: 1px solid var(--line); color: var(--fg); border-radius: 8px; width: 32px; height: 32px; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.cal-topo-btn:active { transform: scale(.92); }
+.cal-grade { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+.cal-dow { font-size: 11px; font-weight: 700; color: var(--muted); padding: 4px 0; text-transform: uppercase; }
+.cal-dia { aspect-ratio: 1; border: 1px solid transparent; background: transparent; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--fg); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .12s ease; }
+.cal-dia:hover:not(:disabled) { background: rgba(255,255,255,.08); border-color: var(--line); }
+.cal-dia.dom, .cal-dia.sab { color: var(--gold); }
+.cal-dia.hoje { border-color: var(--gold); }
+.cal-dia.selecionado { background: #0f6848 !important; color: #fff !important; font-weight: 800; border-color: #22c55e !important; box-shadow: 0 0 10px rgba(34,197,94,.4); }
+.cal-dia:disabled { opacity: .2; cursor: not-allowed; }
+.cal-escolhido-aviso { font-size: 13.5px; font-weight: 700; color: #86efac; text-align: center; margin-top: 6px; min-height: 20px; }
+
+/* ---------- Filtros e Busca ---------- */
+.barra-busca { display: flex; flex-direction: column; gap: 8px; }
+.busca-input { width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; font-size: 15px; outline: none; }
+.busca-input::placeholder { color: var(--muted); }
+.chips-filtro { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+.chips-filtro::-webkit-scrollbar { display: none; }
+.chip-btn { flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 14px; font-size: .82rem; font-weight: 500; color: var(--muted); }
+.chip-btn[aria-pressed="true"], .chip-btn.on { background: var(--gold); color: var(--gold-ink); border-color: var(--gold); font-weight: 700; }
+
+/* ---------- Lista de Missas ---------- */
+#tela { display: flex; flex-direction: column; gap: 16px; }
+.dia-grupo { display: flex; flex-direction: column; gap: 8px; }
+.dia-titulo { display: flex; align-items: baseline; gap: 8px; padding-left: 2px; }
+.dia-numero { font: 400 1.5rem/1 var(--display); color: var(--gold); }
+.dia-nome { font-size: .88rem; color: var(--muted); }
+.dia-nome b { color: var(--fg); font-weight: 600; }
+
+.missa-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.missa-cabecalho { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; background: rgba(255,255,255,.02); border-bottom: 1px solid var(--line); }
+.missa-hora-box { display: flex; align-items: center; gap: 8px; }
+.missa-hora { font-size: 1.15rem; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
+.missa-obs { font-size: .75rem; font-weight: 700; text-transform: uppercase; background: var(--gold); color: var(--gold-ink); border-radius: 4px; padding: 2px 6px; }
+.missa-vagas-aviso { font-size: .75rem; font-weight: 700; color: var(--vaga); background: var(--vaga-bg); border: 1px solid var(--vaga-line); border-radius: 999px; padding: 2px 8px; }
+
+.missa-linhas { list-style: none; padding: 4px 0; }
+.missa-linha { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 14px; border-bottom: 1px solid rgba(255,255,255,.03); min-height: 44px; }
+.missa-linha:last-child { border-bottom: none; }
+.missa-col-nome { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.missa-papel { font-size: .75rem; color: var(--muted); text-transform: uppercase; font-weight: 600; letter-spacing: .03em; }
+.missa-nome { font-size: .95rem; font-weight: 600; color: var(--fg); overflow-wrap: break-word; }
+
+.missa-linha.minha { background: var(--me-bg); }
+.missa-linha.minha .missa-nome { color: var(--me); font-weight: 700; }
+.missa-linha.aberta { background: var(--vaga-bg); }
+.missa-linha.aberta .missa-nome { color: var(--vaga); font-weight: 700; }
+
+.btn-vaga-pegar { border: 0; border-radius: 8px; background: var(--vaga); color: #1c0e04; font-weight: 700; font-size: .8rem; padding: 7px 12px; white-space: nowrap; }
+.btn-trocar-missa { border: 1px solid rgba(226, 186, 100, 0.45); background: rgba(226, 186, 100, 0.1); border-radius: 8px; font-size: .78rem; font-weight: 600; padding: 6px 11px; color: var(--gold); white-space: nowrap; cursor: pointer; transition: all .15s ease; }
+.btn-trocar-missa:hover { background: rgba(226, 186, 100, 0.25); color: #fff; border-color: var(--gold); }
+.btn-sair-missa { border: 1px solid rgba(239, 68, 68, 0.45); background: rgba(239, 68, 68, 0.1); border-radius: 8px; font-size: .78rem; font-weight: 600; padding: 6px 11px; color: #fca5a5; white-space: nowrap; cursor: pointer; transition: all .15s ease; }
+.btn-sair-missa:hover { background: #b91c1c; color: #fff; border-color: #ef4444; }
+.btn-confirmar-presenca { border: 1px solid rgba(34, 197, 94, 0.45); background: rgba(34, 197, 94, 0.12); border-radius: 8px; font-size: .78rem; font-weight: 700; padding: 6px 11px; color: #86efac; white-space: nowrap; cursor: pointer; transition: all .15s ease; display: inline-flex; align-items: center; gap: 4px; }
+.btn-confirmar-presenca:hover { background: #15803d; color: #fff; border-color: #22c55e; }
+.btn-confirmar-presenca.confirmado-ok { background: rgba(34, 197, 94, 0.22); border-color: #22c55e; color: #86efac; }
+.badge-confirmado { display: inline-flex; align-items: center; gap: 3px; background: rgba(34, 197, 94, 0.18); border: 1px solid rgba(34, 197, 94, 0.5); color: #86efac; border-radius: 999px; font-size: .72rem; font-weight: 700; padding: 2px 8px; line-height: 16px; vertical-align: middle; }
+.missa-acoes-linha { display: flex; align-items: center; gap: 6px; }
+.missa-rodape-desistir { display: flex; justify-content: flex-end; gap: 8px; padding: 0 14px 8px; flex-wrap: wrap; }
+@media (max-width: 480px) {
+  .missa-linha { flex-wrap: wrap; gap: 6px; }
+  .missa-acoes-linha { width: 100%; justify-content: flex-end; gap: 4px; }
+  .missa-acoes-linha button { font-size: .74rem; padding: 5px 8px; }
+  .destaque-rodape { flex-wrap: wrap; }
+}
+
+/* ---------- Avisos / Vazio ---------- */
+.aviso-vazio { text-align: center; padding: 32px 16px; color: var(--muted); font-size: 14px; background: var(--surface); border: 1px dashed var(--line); border-radius: 14px; }
+.aviso-vazio b { display: block; font-size: 28px; margin-bottom: 6px; }
+.carregando { text-align: center; color: var(--muted); padding: 36px 12px; font-size: 14px; }
+
+/* ---------- Chamada ---------- */
+.chamada-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+.chamada-topo { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+.chamada-topo h3 { font-size: 1.05rem; font-weight: 700; color: #fff; }
+.chamada-topo span { font-size: .78rem; color: var(--muted); font-weight: 600; }
+.chamada-btn { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 14px; font-weight: 600; text-align: left; }
+.chamada-btn em { font-style: normal; font-size: 12px; font-weight: 700; color: var(--me); }
+.chamada-btn.ok { background: var(--verde-bg); border-color: var(--verde); cursor: default; }
+.chamada-btn.ok em { color: #86efac; }
+
+/* ---------- Rodapé e Inscrição ---------- */
+.card-inscricao { background: var(--surface); border: 1px dashed var(--line); border-radius: 14px; padding: 14px 16px; text-align: center; margin-top: 6px; }
+.card-inscricao p { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+.card-inscricao button { background: var(--surface-2); color: var(--gold); border: 1px solid var(--line); border-radius: 10px; padding: 9px 16px; font-size: 13px; font-weight: 700; }
+
+footer { text-align: center; color: var(--muted); font-size: .78rem; padding-top: 10px; line-height: 1.5; }
+footer a { color: var(--muted); text-decoration: underline; }
+
+/* ---------- Modais e Menus ---------- */
+.modal-fundo {
+  position: fixed;
+  inset: 0;
+  background: rgba(4,6,10,.82);
+  display: none;
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  box-sizing: border-box;
+}
+.modal-caixa {
+  width: 100%;
+  max-width: 460px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 20px 18px 22px;
+  max-height: calc(88vh - 32px);
+  max-height: calc(88dvh - 32px);
+  overflow-y: auto;
+  box-shadow: 0 16px 48px rgba(0,0,0,.6);
+  margin: auto;
+}
+
+.modal-caixa h2 { font: 400 1.25rem var(--display); color: #fff; margin-bottom: 4px; }
+.modal-caixa p { font-size: 13px; color: var(--muted); }
+.menu-lista { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.menu-item { display: flex; align-items: center; gap: 12px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14px; font-weight: 600; text-decoration: none; color: #fff; text-align: left; }
+.menu-item span.ic { font-size: 18px; width: 26px; text-align: center; }
+
+.modal-acoes { display: flex; gap: 8px; margin-top: 18px; }
+.modal-acoes button { flex: 1; border: none; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 700; }
+.btn-cancelar { background: var(--surface-2); color: var(--muted); }
+.btn-confirmar { background: #b91c1c; color: #fff; }
+.btn-confirmar.verde { background: #15803d; }
+.btn-confirmar:disabled { opacity: .45; }
+
+.des-nomes-lista { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; max-height: 240px; overflow-y: auto; }
+.des-nome-btn { text-align: left; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 11px 14px; font-size: 15px; font-weight: 600; }
+.des-nome-btn.on { border-color: var(--gold); background: #332a13; color: #fff; }
+
+.msg-versao { position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 99; background: var(--surface-2); border: 1px solid var(--verde); color: #86efac; border-radius: 10px; padding: 8px 16px; font-size: 12px; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,.5); text-align: center; max-width: 90vw; }
+.msg-versao:empty { display: none; }
+
+/* ---------- Tela de entrada (em teste, liga na Coord.) ---------- */
+/* No Google Sites a página fica dentro de um quadro bem alto: por isso a tela começa no topo (e não no meio),
+   senão o conteúdo ficava lá embaixo e só aparecia o fundo azul */
+.entrada { position: fixed; inset: 0; z-index: 200; display: none; align-items: flex-start; justify-content: center; padding: 36px 18px 24px;
+  background: radial-gradient(ellipse 520px 420px at 50% 140px, rgba(226,186,100,.20), transparent 70%), linear-gradient(180deg, #0b1633 0px, #0a1024 700px, #070b18 1400px); overflow-y: auto; }
+.entrada.aberta { display: flex; }
+.entrada-caixa { width: 100%; max-width: 380px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+.entrada-selo { width: 112px; height: 112px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 52px;
+  background: radial-gradient(circle at 50% 35%, #1b2a55, #0d1530); border: 3px solid var(--gold); box-shadow: 0 0 0 6px rgba(226,186,100,.12), 0 0 40px rgba(226,186,100,.35); overflow: hidden; }
+.entrada-selo img { width: 100%; height: 100%; object-fit: cover; }
+.entrada h2 { font: 400 1.9rem/1.15 var(--display); color: #fff; letter-spacing: .02em; }
+.entrada .sub { color: #c9cfe3; font-size: .9rem; margin-top: -6px; }
+.entrada .lema { font: italic 400 1rem var(--display); color: var(--gold); opacity: .9; }
+.entrada-form { width: 100%; background: rgba(15,22,45,.75); border: 1px solid #263361; border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+.entrada-form label { text-align: left; font-size: .8rem; font-weight: 600; color: #aab3d3; }
+.entrada-form select { width: 100%; background: #0c1330; border: 1px solid #2c3a6e; border-radius: 12px; padding: 12px 14px; font-size: 16px; font-weight: 600; color: #fff; }
+.entrada-entrar { width: 100%; border: none; border-radius: 12px; padding: 13px; font-size: 16px; font-weight: 700; color: #fff; background: linear-gradient(135deg, #2563eb, #4f46e5); box-shadow: 0 6px 20px rgba(37,99,235,.35); }
+.entrada-entrar:disabled { opacity: .5; }
+.entrada-link { background: none; border: none; color: #93b4ff; font-size: .88rem; font-weight: 600; padding: 4px; }
+.entrada-rodape { color: #6f7896; font-size: .75rem; margin-top: 6px; }
+.entrada-demo { display: none; color: #fbbf24; border: 1px solid #fbbf24; border-radius: 999px; padding: 3px 12px; font-size: .72rem; font-weight: 700; letter-spacing: .12em; margin-top: 4px; }
+.entrada.demo .entrada-demo { display: inline-block; }
+</style>
+</head>
+<body data-versao="1.66">
+<div class="entrada" id="telaEntrada" role="dialog" aria-label="Entrar">
+  <div class="entrada-caixa">
+    <div class="entrada-selo"><img src="data:image/webp;base64,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" alt="Símbolo da escala"></div>
+    <h2>Escala de Acólitos</h2>
+    <p class="sub">Paróquia Nossa Senhora do Perpétuo Socorro</p>
+    <p class="lema">Servir com alegria</p>
+    <div class="entrada-form">
+      <label for="entradaNome">Quem é você?</label>
+      <select id="entradaNome" onchange="document.getElementById('btnEntrar').disabled=!this.value"><option value="">Escolha seu nome...</option></select>
+      <button class="entrada-entrar" id="btnEntrar" disabled onclick="entrarComNome()">Entrar</button>
+      <button class="entrada-link" onclick="fecharEntrada();abrirModalCadastro()">Ainda não está na lista? Cadastre-se</button>
+    </div>
+    <button class="entrada-link" onclick="fecharEntrada()">Só ver a escala</button>
+    <p class="entrada-demo" id="entradaDemo">DEMONSTRAÇÃO</p>
+    <p class="entrada-rodape">Versão 1.66</p>
+  </div>
+</div>
+<div class="app">
+
+  <!-- Topo -->
+  <header class="topo">
+    <div class="marca">
+      <h1>Acólitos · Perpétuo Socorro</h1>
+      <p id="subtitulo">Carregando a escala...</p>
+    </div>
+    <div class="topo-acoes">
+      <button class="btn-menu" onclick="abrirMenuOpcoes()" title="Mais opções" aria-label="Mais opções">⋮</button>
+    </div>
+  </header>
+
+  <!-- Faixa de versão nova (se houver) -->
+  <div class="faixa-nova" id="faixaNova">
+    <span id="textoFaixaNova">🔄 Versão nova disponível!</span>
+    <a href="./" target="_top">Atualizar</a>
+    <button onclick="naoAtualizar()" aria-label="Fechar">✕</button>
+  </div>
+
+  <!-- Identificação do Acólito ("Eu sou") + Próxima Missa em Destaque -->
+  <div class="card-eu">
+    <div class="eu-seletor">
+      <label for="euSou">👤 Eu sou:</label>
+      <select id="euSou" onchange="escolherEu(this.value)">
+        <option value="">Selecione seu nome...</option>
+      </select>
+    </div>
+    <div style="padding:0 2px; margin-top:3px">
+      <span style="font-size:11.5px; color:var(--muted)">💡 Não encontrou seu nome? Abra a lista acima, tem a opção para adicionar.</span>
+      <br><span style="font-size:11px; color:var(--muted)">Os coordenadores recebem por dia a lista de quem entrou no site com o nome escolhido aqui.</span>
+    </div>
+    <div class="destaque-missa" id="destaqueMissa">
+      <span class="destaque-tag">⭐ SUA PRÓXIMA MISSA</span>
+      <div class="destaque-info" id="destaqueInfo">Domingo, 05/10 às 10h</div>
+      <div class="destaque-funcao" id="destaqueFuncao"></div>
+      <div class="destaque-rodape">
+        <button class="btn-confirmar-presenca" id="btnConfirmarDestaque" style="display:none">✅ Confirmar presença</button>
+        <span class="badge-confirmado" id="badgeConfirmadoDestaque" style="display:none; font-size:.82rem; padding:4px 10px">Presença confirmada ✅</span>
+        <button class="btn-trocar-missa" id="btnTrocarDestaque" style="display:none">🔄 Trocar horário</button>
+        <button class="btn-sair-missa" id="btnDesistirDestaque">🚫 Não vou poder ir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Abas Essenciais: Escala, Nova Escala e Vagas (+ Chamada se ativa) -->
+  <nav class="abas" id="barraAbas" aria-label="Seções">
+    <button class="aba-btn" data-aba="escala" onclick="mudarAba('escala')" aria-current="page">
+      <span>📅 Escala</span>
+    </button>
+    <button class="aba-btn" data-aba="nova" onclick="mudarAba('nova')">
+      <span>🙏 Nova Escala</span>
+    </button>
+    <button class="aba-btn" data-aba="vagas" onclick="mudarAba('vagas')">
+      <span>🟠 Vagas</span>
+      <span class="aba-badge" id="badgeVagas"></span>
+    </button>
+    <button class="aba-btn" data-aba="chamada" id="abaChamadaBtn" style="display:none" onclick="mudarAba('chamada')">
+      <span>✅ Chamada</span>
+    </button>
+  </nav>
+
+  <!-- Filtros Rápidos (na tela da escala) -->
+  <div class="barra-busca" id="blocoBusca">
+    <input class="busca-input" type="search" placeholder="🔍 Buscar por nome, dia ou função..." value="" id="campoBusca" oninput="filtrarPorTexto(this.value)">
+    <div class="chips-filtro">
+      <button class="chip-btn" id="chipTodas" aria-pressed="true" onclick="escolherFiltro('todas')">Todas as missas</button>
+      <button class="chip-btn" id="chipMinhas" aria-pressed="false" onclick="escolherFiltro('minhas')">Minhas missas</button>
+      <button class="chip-btn" id="chipVagas" aria-pressed="false" onclick="escolherFiltro('vagas')">Com vagas</button>
+      <button class="chip-btn" id="chipConfirmados" aria-pressed="false" onclick="escolherFiltro('confirmados')">✅ Confirmados</button>
+    </div>
+  </div>
+
+  <!-- Conteúdo Principal -->
+  <main id="tela">
+    <div class="carregando">Carregando a escala...</div>
+  </main>
+
+  <!-- Rodapé -->
+  <footer>
+    Desenvolvido por <strong>Bruninho Acólito</strong> ⛪<br>
+    Versão <span id="numeroVersao"></span> · <a href="./?p=coord" target="_blank" rel="noopener">Área dos Coordenadores</a>
+    <div class="msg-versao" id="msgVersao"></div>
+  </footer>
+
+</div>
+
+<!-- Modal: Menu de Mais Opções (substitui os 3 botões soltos do topo) -->
+<div class="modal-fundo" id="modalMenu" onclick="if (event.target === this) fecharMenuOpcoes()">
+  <div class="modal-caixa">
+    <h2>Opções do App</h2>
+    <p>Acesso rápido e informações da escala.</p>
+    <div class="menu-lista">
+      <button class="menu-item" onclick="fecharMenuOpcoes(); abrirManual();" style="border: 1px solid #22c55e; background: #0f291e">
+        <span class="ic">📖</span>
+        <span style="color:#86efac; font-weight:700">Manual / Como Usar o App</span>
+      </button>
+      <button class="menu-item" onclick="fecharMenuOpcoes(); abrirInstalarApp();">
+        <span class="ic">📲</span>
+        <span>Adicionar à tela inicial (atalho)</span>
+      </button>
+      <button class="menu-item" onclick="fecharMenuOpcoes(); abrirNovidades();">
+        <span class="ic">📋</span>
+        <span>Novidades das atualizações</span>
+      </button>
+      <button class="menu-item" onclick="fecharMenuOpcoes(); conferirVersao(true);">
+        <span class="ic">🔄</span>
+        <span>Verificar se há versão nova</span>
+      </button>
+      <a class="menu-item" href="./?p=coord" target="_blank" rel="noopener">
+        <span class="ic">🔐</span>
+        <span>Entrar como Coordenador</span>
+      </a>
+    </div>
+    <div class="modal-acoes">
+      <button class="btn-cancelar" onclick="fecharMenuOpcoes()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Trocar Horário -->
+<div class="modal-fundo" id="trocaFundo" onclick="if (event.target === this) fecharTrocarHorario()">
+  <div class="modal-caixa">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start">
+      <div>
+        <h2 style="color:var(--gold)">🔄 Trocar Horário</h2>
+        <p style="margin-top:2px; font-size:13px">Transfira seu horário para outra missa.</p>
+      </div>
+      <button onclick="fecharTrocarHorario()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:0 4px" aria-label="Fechar">✕</button>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:12px; margin-top:14px">
+      <!-- Info da missa atual -->
+      <div style="background:rgba(255,255,255,0.04); border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:13px">
+        <div style="color:var(--muted); font-size:11px; text-transform:uppercase; font-weight:700">Missa Atual:</div>
+        <div id="trocaMissaAtual" style="color:#fff; font-weight:600; margin-top:2px">--</div>
+        <div id="trocaAcolitoBox" style="color:var(--me); font-weight:600; font-size:12.5px; margin-top:3px">
+          Acólito: <span id="trocaNomeAtual">--</span>
+        </div>
+        <div id="trocaNomeSelectBox" style="display:none; margin-top:6px">
+          <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:2px">Escolha quem vai trocar:</label>
+          <select id="trocaNomeSelect" class="busca-input" style="font-size:13px" onchange="aoMudarNomeTroca()"></select>
+        </div>
+      </div>
+
+      <!-- Seleção de Nova Data -->
+      <div class="campo-passo">
+        <label for="trocaNovaData" style="font-weight:600; font-size:13px">Novo Dia (Data):</label>
+        <select id="trocaNovaData" class="busca-input" style="font-size:14px" onchange="aoMudarDataTroca()"></select>
+      </div>
+
+      <!-- Seleção de Novo Horário -->
+      <div class="campo-passo">
+        <label for="trocaNovoHorario" style="font-weight:600; font-size:13px">Novo Horário:</label>
+        <select id="trocaNovoHorario" class="busca-input" style="font-size:14px"></select>
+      </div>
+
+      <div id="trocaAviso" style="font-size:12.5px; line-height:1.4; border-radius:8px; padding:8px 12px; display:none"></div>
+    </div>
+
+    <div class="modal-acoes" style="margin-top:16px">
+      <button type="button" class="btn-cancelar" onclick="fecharTrocarHorario()">Cancelar</button>
+      <button type="button" class="btn-confirmar" id="btnConfirmarTroca" onclick="confirmarTrocaHorario()" style="background:var(--gold); color:#1c0e04; font-weight:700">Confirmar Troca 🔄</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Não vou poder ir (Desistir) -->
+<div class="modal-fundo" id="desFundo" onclick="if (event.target === this) fecharDesistir()">
+  <div class="modal-caixa">
+    <h2 id="desCabecalho">Não vou poder ir</h2>
+    <p id="desTitulo"></p>
+    <p id="desAjuda" style="margin-top:4px">Toque no seu nome para confirmar a desistência. A vaga ficará aberta e o coordenador será avisado.</p>
+    <div class="des-nomes-lista" id="desNomes"></div>
+    <div class="modal-acoes">
+      <button class="btn-cancelar" onclick="fecharDesistir()">Cancelar</button>
+      <button class="btn-confirmar" id="desConfirmar" onclick="confirmarDesistir()" disabled>Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Cadastro de Nome -->
+<div class="modal-fundo" id="cadFundo" onclick="if (event.target === this) fecharModalCadastro()">
+  <div class="modal-caixa" id="cadModalCaixa">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start">
+      <div>
+        <h2 style="color:#22c55e">➕ Cadastrar meu Nome</h2>
+        <p style="margin-top:2px">Digite seu nome para entrar na lista de acólitos.</p>
+      </div>
+      <button onclick="fecharModalCadastro()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:0 4px" aria-label="Fechar">✕</button>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:12px; margin-top:16px">
+      <div class="campo-passo">
+        <label for="cadNomeInput">Nome Completo:</label>
+        <input type="text" id="cadNomeInput" placeholder="Ex: Gabriel da Silva Santos" class="busca-input" autocomplete="name" style="font-size:16px" onkeydown="if(event.key==='Enter') enviarCadastroNome()">
+      </div>
+
+      <div id="cadAviso" style="font-size:13px; line-height:1.4; border-radius:8px; padding:8px 12px; display:none"></div>
+    </div>
+
+    <div class="modal-acoes" style="margin-top:16px">
+      <button type="button" class="btn-cancelar" onclick="fecharModalCadastro()">Cancelar</button>
+      <button type="button" class="btn-confirmar verde" id="btnSalvarCadastro" onclick="enviarCadastroNome()">Salvar Cadastro ✅</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Quero me inscrever -->
+<div class="modal-fundo" id="insFundo" onclick="if (event.target === this) fecharInscricao()">
+  <div class="modal-caixa" id="insModal">
+    <h2>📝 Quero me inscrever</h2>
+    <p>Preencha seus dados para a coordenação aprovar.</p>
+    <div style="display:flex; flex-direction:column; gap:10px; margin-top:12px">
+      <label style="font-size:12px; font-weight:600; color:var(--muted)">Você é:</label>
+      <div style="display:flex; gap:6px" id="insGrupo">
+        <button class="chip-btn on" data-g="Acólito" onclick="escolherGrupoIns(this)" style="flex:1">🙋 Acólito</button>
+        <button class="chip-btn" data-g="Coroinha" onclick="escolherGrupoIns(this)" style="flex:1">🧒 Coroinha</button>
+      </div>
+      <input type="text" id="insNome" placeholder="Nome completo" class="busca-input">
+      <input type="text" id="insTel" placeholder="WhatsApp (61) 99999-9999" class="busca-input">
+      <input type="text" id="insResp" placeholder="Nome do Responsável (se menor)" class="busca-input">
+      <input type="date" id="insNasc" class="busca-input">
+      <div id="insErro" style="color:var(--vermelho); font-size:13px"></div>
+    </div>
+    <div class="modal-acoes">
+      <button class="btn-cancelar" onclick="fecharInscricao()">Cancelar</button>
+      <button class="btn-confirmar verde" id="insEnviar" onclick="enviarInscricaoSimples()">Enviar inscrição</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Atalho na tela inicial -->
+<div class="modal-fundo" id="instFundo" onclick="if (event.target === this) fecharInstalarApp()">
+  <div class="modal-caixa">
+    <h2>📲 Adicionar à tela inicial</h2>
+    <p>Tenha acesso rápido igual a um aplicativo no celular.</p>
+    <div style="margin-top:14px; display:flex; flex-direction:column; gap:12px; font-size:13px; color:var(--muted); line-height:1.5">
+      <div>
+        <strong style="color:#fff">No Android (Chrome):</strong>
+        <p>Toque no menu ⋮ (três pontinhos) no canto superior direito e escolha <b>"Adicionar à tela inicial"</b>.</p>
+      </div>
+      <div>
+        <strong style="color:#fff">No iPhone (Safari):</strong>
+        <p>Toque no botão de compartilhar <b>⬆️</b> na barra inferior e escolha <b>"Adicionar à Tela de Início"</b>.</p>
+      </div>
+    </div>
+    <div class="modal-acoes">
+      <button class="btn-confirmar verde" onclick="fecharInstalarApp()">Entendi</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Novidades -->
+<div class="modal-fundo" id="novFundo" onclick="if (event.target === this) fecharNovidades()">
+  <div class="modal-caixa">
+    <h2>📋 Novidades</h2>
+    <div id="novLista" style="margin-top:12px; display:flex; flex-direction:column; gap:12px"></div>
+    <div class="modal-acoes">
+      <button class="btn-confirmar verde" onclick="fecharNovidades()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Manual e Slides de Apresentação -->
+<div class="modal-fundo" id="manualFundo" onclick="if (event.target === this) fecharManual()">
+  <div class="modal-caixa" style="max-width:540px; padding:18px 16px 20px;">
+    <!-- Topo do Manual -->
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:12px">
+      <div style="display:flex; align-items:center; gap:8px">
+        <span style="font-size:22px">📖</span>
+        <div>
+          <h2 style="font-size:1.15rem; color:#fff; margin:0">Manual da Escala</h2>
+          <span style="font-size:11px; color:#86efac; font-weight:700; text-transform:uppercase; letter-spacing:0.05em">Apresentação & Guia Rápido</span>
+        </div>
+      </div>
+      <button onclick="fecharManual()" style="background:none; border:none; color:var(--muted); font-size:20px; cursor:pointer; padding:0 4px" aria-label="Fechar">✕</button>
+    </div>
+
+    <!-- Navegação rápida em chips (tópicos dos slides) -->
+    <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:8px; margin-bottom:10px; scrollbar-width:none" id="manualChips">
+      <button type="button" class="chip-btn on" onclick="irParaSlideManual(0)">1. Atalho</button>
+      <button type="button" class="chip-btn" onclick="irParaSlideManual(1)">2. Meu Perfil</button>
+      <button type="button" class="chip-btn" onclick="irParaSlideManual(2)">3. Escala</button>
+      <button type="button" class="chip-btn" onclick="irParaSlideManual(3)">4. Nova Escala</button>
+      <button type="button" class="chip-btn" onclick="irParaSlideManual(4)">5. Vagas</button>
+      <button type="button" class="chip-btn" onclick="irParaSlideManual(5)">6. Apresentação</button>
+    </div>
+
+    <!-- Conteúdo do Slide Atual -->
+    <div id="manualConteudoSlide" style="min-height:260px; background:var(--surface-2); border:1px solid var(--line); border-radius:14px; padding:16px 14px;">
+      <!-- Preenchido via JavaScript -->
+    </div>
+
+    <!-- Rodapé com Navegação dos Slides -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-top:14px; gap:8px">
+      <button type="button" id="btnManualAnt" class="btn-cancelar" onclick="mudarSlideManual(-1)" style="padding:10px 14px; font-size:13px; font-weight:700; border-radius:8px">
+        ◀ Anterior
+      </button>
+      <div id="manualDots" style="display:flex; gap:6px; align-items:center">
+        <!-- Indicadores de slide ● ○ ○ ○ ○ -->
+      </div>
+      <button type="button" id="btnManualProx" class="btn-confirmar verde" onclick="mudarSlideManual(1)" style="padding:10px 16px; font-size:13px; font-weight:700; border-radius:8px">
+        Próximo ▶
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+let DADOS_INICIAIS = null;
+const NOVIDADES = [
+  { versao: "1.66", itens: [
+    "Preparação para o site também funcionar no GitHub Pages (mais rápido e instalável como app)."
+  ] },
+  { versao: "1.65", itens: [
+    "O site abre mais rápido: menos leituras da planilha na abertura e o aviso de acesso do Discord não atrasa mais a tela.",
+    "A tela de entrada agora aparece no topo, já visível, sem precisar rolar a página."
+  ] },
+  { versao: "1.64", itens: [
+    "O símbolo no círculo da tela de entrada agora aparece em todos os celulares."
+  ] },
+  { versao: "1.63", itens: [
+    "Tela de entrada: o site abre numa tela com o símbolo da paróquia, onde o acólito escolhe o nome e toca em Entrar. Por enquanto aparece como \"Demonstração\"; a Coord. muda para Ativada quando começar a valer."
+  ] },
+  { versao: "1.62", itens: [
+    "As checagens automáticas do monitor não contam mais como visita no site (antes inflavam o número de acessos e disparavam avisos de \"novo acesso\")."
+  ] },
+  { versao: "1.61", itens: [
+    "O botão \"Apagar mensagens do app\" agora também tira do celular (ntfy) as notificações que o app mandou.",
+    "No quadro Notificações, o botão Salvar só fica ativo quando alguma coisa foi mudada."
+  ] },
+  { versao: "1.60", itens: [
+    "Botão \"Apagar mensagens do app\" no quadro Notificações: tira do canal do Discord as mensagens que o app mandou a partir desta versão."
+  ] },
+  { versao: "1.59", itens: [
+    "O botão \"Enviar teste para o celular\" ficou mais rápido: manda direto para o ntfy, sem esperar o Google."
+  ] },
+  { versao: "1.58", itens: [
+    "Resumo diário das visitas: às 21h chega uma mensagem só (Discord e celular) com quantas visitas o site teve e os nomes de quem escolheu o nome em \"Eu sou\", em vez de um aviso a cada visita."
+  ] },
+  { versao: "1.57", itens: [
+    "O quadro \"Discord\" da Coord. agora se chama \"Notificações\", porque reúne o Discord e o aviso no celular (ntfy)."
+  ] },
+  { versao: "1.56", itens: [
+    "Avisos do vigia também no celular pelo app ntfy (quadro Discord > Notificação no celular).",
+    "Quando o Discord recusa mensagens por excesso (erro 429), o app espera e tenta de novo; avisos automáticos ficam numa fila e são enviados depois."
+  ] },
+  { versao: "1.55", itens: [
+    "Monitor do site: usa o mesmo link do Discord salvo na Coord. e avisa também por e-mail quando o site, o painel ou o Google Sites caírem."
+  ] },
+  { versao: "1.54", itens: [
+    "Segurança: removido um endereço antigo do site que, sem senha, apagava e refazia a planilha de coleta de nomes."
+  ] },
+  { versao: "1.52", itens: [
+    "Vigia do site: opção de receber no Discord, uma vez por dia (às 8h), a mensagem \"Site da escala funcionando\", para saber que está tudo certo."
+  ] },
+  { versao: "1.51", itens: [
+    "Vigia do site: com a chave ligada no quadro Discord, o próprio app confere o site a cada 15 minutos e avisa no Discord só quando ele cair e quando voltar."
+  ] },
+  { versao: "1.45", itens: [
+    "Ajuste visual nos menus e janelas: agora abrem centralizados no meio da tela no celular e no computador, sem descer para o rodapé."
+  ] },
+  { versao: "1.44", itens: [
+    "Botão de Confirmar Presença: agora cada acólito pode confirmar sua presença com antecedência para as missas, exibindo o selo 'Confirmado ✅' na escala.",
+    "Filtro de Confirmados: novo botão no topo para ver rapidamente todas as missas que já contam com acólitos confirmados."
+  ] },
+  { versao: "1.38", itens: [
+    "Cadastro direto pelo site: qualquer acólito ou coroinha pode cadastrar seu próprio nome direto na tela inicial ou na Nova Escala, com número de registro gerado na hora e sem precisar abrir planilha.",
+    "Mini calendário interativo na Nova Escala: escolha o dia da celebração tocando no calendário do mês com sábados e domingos destacados."
+  ] },
+  { versao: "1.33", itens: [
+    "Nova Escala 🙏: formulário simples e direto para escolher o dia e horário da missa, puxando os nomes dos acólitos direto da planilha (com opção de digitar) e salvando com 1 toque."
+  ] },
+  { versao: "1.32", itens: [
+    "Nova Escala 🙏: formulário simples e direto para escolher o dia, horário e lançar acólitos na escala com 1 toque, mesmo antes de gerar a escala do mês."
+  ] },
+  { versao: "1.31", itens: [
+    "Visual simplificado e mais limpo: card com sua próxima missa no topo, navegação rápida entre a escala completa e vagas abertas, e visual moderno sem poluição visual no celular."
+  ] },
+  { versao: "1.30", itens: [
+    "Corrigidos os acentos que apareciam quebrados (ex.: \"AcÃ³litos\"). O aviso no Discord a cada acesso ao site agora vem desligado; o coordenador liga no quadro Discord se quiser."
+  ] },
+  { versao: "1.29", itens: [
+    "Avisos no Discord: a escala da semana chega sozinha no canal no dia e hora escolhidos, e chegam alertas com números claros quando alguém acessa o site ou quando abre vaga."
+  ] },
+  { versao: "1.28", itens: [
+    "Novo quadro \"Acessos\" na área dos coordenadores: mostra quantas vezes o site foi aberto e quanto cada tela e botão foi usado nos últimos 7, 30 ou 90 dias, para ver o que ninguém usa. Só números, sem identificar ninguém."
+  ] },
+  { versao: "1.26", itens: [
+    "Novo quadro \"Missas que já passaram\" na área dos coordenadores: tira da escala as missas dos dias que já passaram, sozinho (Ativado) ou no botão \"Limpar agora\". Elas ficam guardadas na aba Historico da planilha, e relatórios e chamada continuam contando."
+  ] },
+  { versao: "1.25", itens: [
+    "Em \"Acólitos por missa\", marque \"Mudar todas as missas junto com o padrão\" para que o número padrão valha para todas as missas da semana de uma vez. Cada missa continua podendo ser ajustada separada."
+  ] },
+  { versao: "1.24", itens: [
+    "Em \"Acólitos por missa\" e no cadastro de missas, agora dá para digitar o número de acólitos direto (até 99), além dos botões − e +. Bom para missas grandes, como a de Natal."
+  ] },
+  { versao: "1.22", itens: [
+    "Novo quadro \"Acólitos por missa\" na área dos coordenadores: define quantos acólitos servem em cada missa (um número padrão para todas e ajuste por horário). A escala gerada já usa esses números."
+  ] },
+  { versao: "1.19", itens: [
+    "O coordenador agora pode colar uma lista de nomes para cadastrar vários acólitos ou coroinhas de uma vez, em vez de um por um."
+  ] }
+];
+let escalaGeral = [];
+let trocasLiberadas = true;
+let chamadaAtiva = false;
+let nomesAcolitos = null;
+let gradeMissas = (DADOS_INICIAIS && DADOS_INICIAIS.grade) || null;
+
+const GRADE_PADRAO_SANTUARIO = {
+  "Domingo": [
+    { horario: "08:00", observacao: "" },
+    { horario: "10:00", observacao: "Missa com as Crianças" },
+    { horario: "12:00", observacao: "" },
+    { horario: "17:00", observacao: "" },
+    { horario: "19:00", observacao: "" },
+    { horario: "21:00", observacao: "" }
+  ],
+  "Segunda-feira": [
+    { horario: "08:00", observacao: "" },
+    { horario: "19:00", observacao: "" }
+  ],
+  "Terça-feira": [
+    { horario: "08:00", observacao: "" },
+    { horario: "19:00", observacao: "" }
+  ],
+  "Quarta-feira": [
+    { horario: "08:00", observacao: "" },
+    { horario: "19:00", observacao: "Novena Perpétua" }
+  ],
+  "Quinta-feira": [
+    { horario: "08:00", observacao: "" },
+    { horario: "17:00", observacao: "Missa da Saúde" },
+    { horario: "19:00", observacao: "" }
+  ],
+  "Sexta-feira": [
+    { horario: "08:00", observacao: "" },
+    { horario: "19:00", observacao: "" }
+  ],
+  "Sábado": [
+    { horario: "08:00", observacao: "" },
+    { horario: "18:00", observacao: "" }
+  ]
+};
+
+const lembrar = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+};
+
+const estado = {
+  aba: 'escala',
+  eu: lembrar.get('eu') || '',
+  filtro: 'todas',
+  busca: ''
+};
+
+const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+const SEMANA = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+const SEM_CURTA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pad = n => ('0' + n).slice(-2);
+const ehVaga = n => n.indexOf('Vaga Aberta') >= 0;
+
+function partesData(d) { const p = d.split('/'); return { d: +p[0], m: +p[1] - 1, a: +p[2] }; }
+function dataObj(d) { const p = partesData(d); return new Date(p.a, p.m, p.d); }
+
+function iniciarSite() {
+  if (DADOS_INICIAIS) {
+    trocasLiberadas = !!DADOS_INICIAIS.trocas;
+    chamadaAtiva = !!DADOS_INICIAIS.chamada;
+    if (Array.isArray(DADOS_INICIAIS.nomes)) nomesAcolitos = DADOS_INICIAIS.nomes; // a lista de nomes já vem com a página
+    carregarEscala(DADOS_INICIAIS.escala);
+    abrirEntrada(DADOS_INICIAIS.telaEntrada);
+  } else {
+    google.script.run.withSuccessHandler(carregarEscala).withFailureHandler(tratarErro).obterEscalaParaWeb();
+    google.script.run.withSuccessHandler(c => { trocasLiberadas = !!c.trocas; chamadaAtiva = !!c.chamada; atualizarAbas(); abrirEntrada(c.telaEntrada); }).obterConfigSite();
+  }
+  if (!gradeMissas) {
+    google.script.run.withSuccessHandler(g => { if (g) gradeMissas = g; }).obterGradeMissas();
+  }
+  google.script.run.withSuccessHandler(n => { nomesAcolitos = n || []; montarEuSou(); }).obterNomesAcolitos();
+  if (!(DADOS_INICIAIS && DADOS_INICIAIS.abrirInscricao)) setTimeout(() => { try { google.script.run.avisarAcessoSite(); } catch (e) {} }, 1500);
+}
+prontoSite(iniciarSite);
+
+/* ---------- Montagem de Linhas e Dados ---------- */
+function montarLinhas(item) {
+  const papeis = {};
+  String(item.funcoes || '').split(';').forEach(p => {
+    const i = p.indexOf(':');
+    if (i > 0) { const n = p.slice(i + 1).trim(), f = p.slice(0, i).trim(); (papeis[n] = papeis[n] || []).push(f); }
+  });
+  const pres = item.presenca || {};
+  return String(item.acolitos || '').split(',').map(n => n.trim()).filter(n => n)
+    .map(n => {
+      if (ehVaga(n)) return { vaga: true };
+      const statusPres = pres[n];
+      const conf = (statusPres === 'C' || statusPres === 'P');
+      return { nome: n, papel: (papeis[n] || []).join(', '), confirmado: conf, statusPresenca: statusPres };
+    });
+}
+function nomesDe(item) { return String(item.acolitos || '').split(',').map(n => n.trim()).filter(n => n && !ehVaga(n)); }
+function vagasDe(item) { return (String(item.acolitos || '').match(/Vaga Aberta/g) || []).length; }
+function temConfirmado(item) {
+  const pres = item.presenca || {};
+  return nomesDe(item).some(n => pres[n] === 'C' || pres[n] === 'P');
+}
+function estouNa(item) { return !!estado.eu && nomesDe(item).indexOf(estado.eu) >= 0; }
+function totalVagas() { return escalaGeral.reduce((t, i) => t + vagasDe(i), 0); }
+
+function carregarEscala(dados) {
+  escalaGeral = dados || [];
+  const prox = escalaGeral[0];
+  document.getElementById('subtitulo').textContent = prox
+    ? `Próxima: ${SEM_CURTA[dataObj(prox.data).getDay()]} ${prox.data.slice(0, 5)} às ${prox.horario.replace(':00', 'h')}`
+    : 'Nenhuma escala gerada no momento';
+  montarEuSou();
+  atualizarDestaqueMinhaMissa();
+  atualizarAbas();
+  desenhar();
+}
+function tratarErro(e) {
+  document.getElementById('tela').innerHTML = `<div class="aviso-vazio"><b>⚠️</b>Erro ao carregar a escala: ${esc(e.message || e)}</div>`;
+}
+
+function montarEuSou() {
+  const sel = document.getElementById('euSou');
+  const nomes = new Set(nomesAcolitos || []);
+  escalaGeral.forEach(i => nomesDe(i).forEach(n => nomes.add(n)));
+  if (estado.eu) nomes.add(estado.eu);
+  const lista = Array.from(nomes).sort((a, b) => a.localeCompare(b));
+  sel.innerHTML = '<option value="">Selecione seu nome...</option>' +
+    '<option value="__NOVO__" style="color:#22c55e;font-weight:700">➕ Cadastrar meu nome...</option>' +
+    lista.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  sel.value = estado.eu;
+
+  const selEntrada = document.getElementById('entradaNome');
+  if (selEntrada) {
+    const atual = selEntrada.value;
+    selEntrada.innerHTML = '<option value="">Escolha seu nome...</option>' + lista.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+    selEntrada.value = atual;
+  }
+
+  const dl = document.getElementById('listaAcolitos');
+  if (dl) {
+    dl.innerHTML = lista.map(n => `<option value="${esc(n)}">`).join('');
+  }
+}
+
+/* Tela de entrada (em teste): aparece só para quem ainda não escolheu o nome neste celular */
+function abrirEntrada(modo) {
+  if (estado.eu || !modo || modo === 'nao' || modo === false) return;
+  const t = document.getElementById('telaEntrada');
+  t.classList.toggle('demo', modo !== 'sim' && modo !== true);
+  t.classList.add('aberta');
+  t.scrollTop = 0;
+  window.scrollTo(0, 0);
+  document.body.style.overflow = 'hidden';
+}
+function fecharEntrada() {
+  document.getElementById('telaEntrada').classList.remove('aberta');
+  document.body.style.overflow = '';
+}
+function entrarComNome() {
+  const nome = document.getElementById('entradaNome').value;
+  if (!nome) return;
+  fecharEntrada();
+  escolherEu(nome);
+  const sel = document.getElementById('euSou');
+  if (sel) sel.value = nome;
+}
+
+/* resumo diário dos coordenadores: conta quem entrou hoje com o nome do "Eu sou" (uma vez por dia por celular) */
+function avisarVisita(nomeNovo) {
+  if (!estado.eu) return;
+  const d = new Date(), hoje = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  if (!nomeNovo && lembrar.get('visita_dia') === hoje + '|' + estado.eu) return;
+  lembrar.set('visita_dia', hoje + '|' + estado.eu);
+  try { google.script.run.registrarVisitante(estado.eu); } catch (e) {}
+}
+setTimeout(() => avisarVisita(false), 3000);
+
+function escolherEu(nome) {
+  if (nome === '__NOVO__') {
+    const sel = document.getElementById('euSou');
+    if (sel) sel.value = estado.eu || '';
+    abrirModalCadastro();
+    return;
+  }
+  estado.eu = nome;
+  lembrar.set('eu', nome);
+  avisarVisita(true);
+  const inputAcolito = document.getElementById('novoAcolito');
+  if (inputAcolito && !inputAcolito.value) inputAcolito.value = nome;
+  atualizarDestaqueMinhaMissa();
+  desenhar();
+}
+
+/* Mostra a próxima missa do acólito logo abaixo do "Eu sou" */
+function atualizarDestaqueMinhaMissa() {
+  const box = document.getElementById('destaqueMissa');
+  if (!estado.eu) {
+    box.classList.remove('mostrar');
+    return;
+  }
+  const index = escalaGeral.findIndex(estouNa);
+  if (index >= 0) {
+    const m = escalaGeral[index];
+    const linhas = montarLinhas(m);
+    const minhaLinha = linhas.find(l => l.nome === estado.eu);
+    const meuPapel = (minhaLinha || {}).papel || '';
+    const jaConfirmado = !!(minhaLinha && minhaLinha.confirmado);
+
+    document.getElementById('destaqueInfo').textContent = `${m.dia}, ${m.data.slice(0, 5)} às ${m.horario.replace(':00', 'h')}`;
+    document.getElementById('destaqueFuncao').textContent = meuPapel ? `Função: ${meuPapel}` : '';
+
+    const btnConf = document.getElementById('btnConfirmarDestaque');
+    const badgeConf = document.getElementById('badgeConfirmadoDestaque');
+    if (jaConfirmado) {
+      if (btnConf) btnConf.style.display = 'none';
+      if (badgeConf) badgeConf.style.display = 'inline-flex';
+    } else {
+      if (badgeConf) badgeConf.style.display = 'none';
+      if (btnConf) {
+        btnConf.style.display = 'inline-flex';
+        btnConf.textContent = '✅ Confirmar presença';
+        btnConf.onclick = () => confirmarPresencaLinha(index, estado.eu);
+      }
+    }
+
+    const btnDes = document.getElementById('btnDesistirDestaque');
+    if (btnDes) {
+      btnDes.style.display = 'inline-block';
+      btnDes.onclick = () => naoPossoIr(index);
+    }
+    const btnTrocar = document.getElementById('btnTrocarDestaque');
+    if (btnTrocar) {
+      btnTrocar.style.display = 'inline-block';
+      btnTrocar.onclick = () => trocarHorarioLinha(index, -1, estado.eu);
+    }
+    box.classList.add('mostrar');
+  } else {
+    document.getElementById('destaqueInfo').textContent = 'Você não tem missas escaladas nos próximos dias.';
+    document.getElementById('destaqueFuncao').textContent = 'Fique atento às vagas abertas se quiser servir!';
+    if (document.getElementById('btnConfirmarDestaque')) document.getElementById('btnConfirmarDestaque').style.display = 'none';
+    if (document.getElementById('badgeConfirmadoDestaque')) document.getElementById('badgeConfirmadoDestaque').style.display = 'none';
+    if (document.getElementById('btnDesistirDestaque')) document.getElementById('btnDesistirDestaque').style.display = 'none';
+    if (document.getElementById('btnTrocarDestaque')) document.getElementById('btnTrocarDestaque').style.display = 'none';
+    box.classList.add('mostrar');
+  }
+}
+
+/* ---------- Controle de Abas ---------- */
+function atualizarAbas() {
+  const v = totalVagas();
+  document.getElementById('badgeVagas').textContent = v || '';
+  const btnChamada = document.getElementById('abaChamadaBtn');
+  btnChamada.style.display = chamadaAtiva ? 'flex' : 'none';
+  document.getElementById('barraAbas').classList.toggle('com-chamada', chamadaAtiva);
+}
+
+function mudarAba(aba) {
+  estado.aba = aba;
+  document.querySelectorAll('.aba-btn').forEach(b => {
+    if (b.dataset.aba === aba) b.setAttribute('aria-current', 'page');
+    else b.removeAttribute('aria-current');
+  });
+  document.getElementById('blocoBusca').style.display = (aba === 'escala') ? 'flex' : 'none';
+  desenhar();
+}
+
+function escolherFiltro(tipo) {
+  estado.filtro = tipo;
+  ['todas', 'minhas', 'vagas', 'confirmados'].forEach(t => {
+    const btn = document.getElementById('chip' + t.charAt(0).toUpperCase() + t.slice(1));
+    if (btn) btn.setAttribute('aria-pressed', t === tipo);
+  });
+  desenhar();
+}
+
+function filtrarPorTexto(txt) {
+  estado.busca = txt;
+  desenhar();
+}
+
+/* ---------- Renderização das Telas ---------- */
+function desenhar() {
+  const tela = document.getElementById('tela');
+  if (estado.aba === 'vagas') {
+    tela.innerHTML = renderTelaVagas();
+  } else if (estado.aba === 'chamada') {
+    carregarChamadaSite();
+  } else if (estado.aba === 'nova') {
+    tela.innerHTML = renderCardNovaEscalaHtml();
+    posRenderNovaEscala();
+  } else {
+    tela.innerHTML = renderTelaEscala();
+    if (!escalaGeral.length && estado.filtro === 'todas' && !estado.busca) {
+      posRenderNovaEscala();
+    }
+  }
+}
+
+function renderTelaEscala() {
+  let lista = escalaGeral;
+  if (estado.filtro === 'minhas') {
+    if (!estado.eu) return '<div class="aviso-vazio"><b>👤</b>Selecione seu nome em <strong>"Eu sou"</strong> lá em cima para ver as suas missas.</div>';
+    lista = lista.filter(estouNa);
+  } else if (estado.filtro === 'vagas') {
+    lista = lista.filter(i => vagasDe(i) > 0);
+  } else if (estado.filtro === 'confirmados') {
+    lista = lista.filter(temConfirmado);
+  }
+  const t = estado.busca.trim().toLowerCase();
+  if (t) {
+    lista = lista.filter(i => [i.acolitos, i.dia, i.data, i.observacao, i.funcoes].some(x => String(x || '').toLowerCase().indexOf(t) >= 0));
+  }
+  if (!lista.length) {
+    if (estado.filtro === 'confirmados') {
+      return `<div class="aviso-vazio"><b>✅</b>Nenhum acólito confirmou presença ainda para as próximas missas.<br><span style="font-size:12.5px;color:var(--muted);margin-top:6px;display:inline-block">Toque no botão <strong>"✅ Confirmar"</strong> ao lado do seu nome em qualquer missa para confirmar sua presença!</span></div>`;
+    }
+    if (estado.filtro === 'todas' && !estado.busca) {
+      return `<div class="aviso-vazio" style="margin-bottom:14px">
+        <b>📅</b>
+        <strong style="color:#fff;font-size:16px">Nenhuma escala gerada no momento.</strong><br>
+        <span style="font-size:13px;color:var(--muted)">Preencha o formulário abaixo para registrar os horários na escala:</span>
+      </div>` + renderCardNovaEscalaHtml();
+    }
+    return `<div class="aviso-vazio"><b>🔍</b>Nenhuma missa encontrada para este filtro.</div>`;
+  }
+  return agruparPorDia(lista);
+}
+
+/* ---------- Formulário Nova Escala 🙏 ---------- */
+function renderCardNovaEscalaHtml() {
+  return `<section class="card-nova-escala">
+    <h2 class="nova-escala-titulo">Nova Escala 🙏</h2>
+
+    <div class="campo-passo">
+      <label>1. Toque no Dia no Calendário:</label>
+      <div class="mini-cal" id="miniCalNovaEscala">
+        <div class="cal-topo">
+          <button type="button" class="cal-topo-btn" onclick="mudarMesCalendario(-1)" aria-label="Mês anterior">◀</button>
+          <span id="calMesAnoTitulo">Outubro 2026</span>
+          <button type="button" class="cal-topo-btn" onclick="mudarMesCalendario(1)" aria-label="Próximo mês">▶</button>
+        </div>
+        <div class="cal-grade" id="calGradeDias"></div>
+      </div>
+      <div class="cal-escolhido-aviso" id="calAvisoDia">👆 Toque no dia em que vai servir</div>
+      <input type="hidden" id="novoDia" value="">
+    </div>
+
+    <div class="campo-passo">
+      <label for="novoHorario">2. Horário da Missa:</label>
+      <select id="novoHorario" disabled>
+        <option value="">Toque no dia no calendário primeiro...</option>
+      </select>
+    </div>
+
+    <div class="campo-passo">
+      <div style="display:flex; justify-content:space-between; align-items:baseline">
+        <label for="novoAcolitoSelect">3. Nome do Acólito:</label>
+        <button type="button" onclick="carregarNomesPlanilha(true)" style="background:none;border:none;color:var(--gold);font-size:12px;font-weight:600;padding:0;cursor:pointer">🔄 Puxar da planilha</button>
+      </div>
+      <select id="novoAcolitoSelect" onchange="aoMudarAcolitoSelect(this.value)">
+        <option value="">-- Escolha o acólito na planilha --</option>
+      </select>
+      <input type="text" id="novoAcolitoManual" placeholder="Digite o nome aqui..." style="display:none; margin-top:6px" class="busca-input">
+      <div style="font-size:11.5px; color:var(--muted); text-align:right; margin-top:3px">
+        💡 Não encontrou o nome? Abra a lista acima para adicionar.
+      </div>
+    </div>
+
+    <button type="button" class="btn-salvar-registro" id="btnSalvarRegistro" onclick="salvarNovoRegistro()">Salvar Registro</button>
+    <div id="novoErro" style="color:var(--vermelho);font-size:13px;text-align:center;font-weight:600;min-height:18px"></div>
+  </section>`;
+}
+
+let calAno = new Date().getFullYear();
+let calMes = new Date().getMonth();
+let dataSelecionadaNovaEscala = null;
+
+function posRenderNovaEscala() {
+  desenharCalendarioNovaEscala();
+  montarSelectAcolitosNovaEscala();
+}
+
+function mudarMesCalendario(delta) {
+  calMes += delta;
+  if (calMes > 11) { calMes = 0; calAno++; }
+  else if (calMes < 0) { calMes = 11; calAno--; }
+  desenharCalendarioNovaEscala();
+}
+
+function desenharCalendarioNovaEscala() {
+  const tit = document.getElementById('calMesAnoTitulo');
+  const grade = document.getElementById('calGradeDias');
+  if (!tit || !grade) return;
+
+  const nomeMes = MESES[calMes].charAt(0).toUpperCase() + MESES[calMes].slice(1);
+  tit.textContent = `${nomeMes} ${calAno}`;
+
+  const dows = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  let html = dows.map(d => `<div class="cal-dow">${d}</div>`).join('');
+
+  const primDia = new Date(calAno, calMes, 1).getDay();
+  const totDias = new Date(calAno, calMes + 1, 0).getDate();
+  const hoje = new Date();
+  hoje.setHours(0,0,0,0);
+
+  // Espaços vazios antes do dia 1
+  for (let i = 0; i < primDia; i++) {
+    html += '<div class="cal-dia" style="visibility:hidden"></div>';
+  }
+
+  for (let d = 1; d <= totDias; d++) {
+    const curDate = new Date(calAno, calMes, d);
+    const dataBR = pad(d) + '/' + pad(calMes + 1) + '/' + calAno;
+    const dow = curDate.getDay();
+    const ehHoje = (curDate.getTime() === hoje.getTime());
+    const passado = (curDate < hoje);
+    const sel = (dataSelecionadaNovaEscala === dataBR);
+
+    const classes = ['cal-dia'];
+    if (dow === 0) classes.push('dom');
+    if (dow === 6) classes.push('sab');
+    if (ehHoje) classes.push('hoje');
+    if (sel) classes.push('selecionado');
+
+    const disabledAttr = passado ? 'disabled' : '';
+    html += `<button type="button" class="${classes.join(' ')}" ${disabledAttr} onclick="selecionarDiaCalendario(${calAno}, ${calMes}, ${d})">${d}</button>`;
+  }
+
+  grade.innerHTML = html;
+}
+
+function selecionarDiaCalendario(ano, mes, dia) {
+  const dObj = new Date(ano, mes, dia);
+  const dow = dObj.getDay();
+  const diaNome = SEMANA[dow];
+  const dataBR = pad(dia) + '/' + pad(mes + 1) + '/' + ano;
+  dataSelecionadaNovaEscala = dataBR;
+
+  const inputDia = document.getElementById('novoDia');
+  if (inputDia) inputDia.value = dataBR;
+
+  const aviso = document.getElementById('calAvisoDia');
+  if (aviso) aviso.textContent = `📅 Dia escolhido: ${diaNome}, ${dataBR}`;
+
+  // Popula os horários da missa
+  const selHora = document.getElementById('novoHorario');
+  if (!selHora) return;
+  const grade = (gradeMissas && gradeMissas[diaNome]) || GRADE_PADRAO_SANTUARIO[diaNome] || [];
+
+  if (!grade.length) {
+    selHora.innerHTML = '<option value="">Nenhum horário cadastrado</option>';
+    selHora.disabled = true;
+    return;
+  }
+
+  selHora.disabled = false;
+  selHora.innerHTML = '<option value="">-- Escolha o horário --</option>' + grade.map(m => {
+    const h = m.horario.replace(':00', 'h');
+    const obs = m.observacao ? ` (${m.observacao})` : '';
+    return `<option value="${m.horario}">${h}${obs}</option>`;
+  }).join('');
+
+  desenharCalendarioNovaEscala();
+}
+
+function montarSelectAcolitosNovaEscala() {
+  const sel = document.getElementById('novoAcolitoSelect');
+  if (!sel) return;
+  const nomes = new Set(nomesAcolitos || []);
+  escalaGeral.forEach(it => nomesDe(it).forEach(n => nomes.add(n)));
+  if (estado.eu) nomes.add(estado.eu);
+  const lista = Array.from(nomes).sort((a,b) => a.localeCompare(b));
+
+  sel.innerHTML = '<option value="">-- Escolha o acólito na planilha --</option>' +
+    '<option value="__NOVO__" style="color:#22c55e;font-weight:700">➕ Cadastrar novo nome...</option>' +
+    lista.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+
+  if (estado.eu && lista.indexOf(estado.eu) >= 0) {
+    sel.value = estado.eu;
+  }
+}
+
+function carregarNomesPlanilha(aviso) {
+  const sel = document.getElementById('novoAcolitoSelect');
+  if (sel) sel.disabled = true;
+  google.script.run
+    .withSuccessHandler(nomes => {
+      if (sel) sel.disabled = false;
+      nomesAcolitos = nomes || [];
+      montarEuSou();
+      montarSelectAcolitosNovaEscala();
+      if (aviso) alert(`✓ ${nomesAcolitos.length} acólitos carregados da planilha!`);
+    })
+    .withFailureHandler(err => {
+      if (sel) sel.disabled = false;
+      if (aviso) alert('Erro ao carregar nomes da planilha: ' + (err.message || err));
+    })
+    .obterNomesAcolitos();
+}
+
+let digitacaoManualAtiva = false;
+function alternarDigitacaoManual() {
+  digitacaoManualAtiva = !digitacaoManualAtiva;
+  const input = document.getElementById('novoAcolitoManual');
+  const sel = document.getElementById('novoAcolitoSelect');
+  const btn = document.getElementById('btnAlternarManual');
+  if (digitacaoManualAtiva) {
+    if (input) { input.style.display = 'block'; input.focus(); }
+    if (sel) sel.style.display = 'none';
+    if (btn) btn.textContent = '← Voltar para a lista da planilha';
+  } else {
+    if (input) input.style.display = 'none';
+    if (sel) sel.style.display = 'block';
+    if (btn) btn.textContent = 'Não achou o nome? Toque para digitar';
+  }
+}
+
+function aoMudarAcolitoSelect(val) {
+  if (val === '__NOVO__') {
+    const sel = document.getElementById('novoAcolitoSelect');
+    if (sel) sel.value = '';
+    abrirModalCadastro();
+    return;
+  }
+  if (val && !estado.eu) {
+    escolherEu(val);
+  }
+}
+
+function salvarNovoRegistro() {
+  const selHora = document.getElementById('novoHorario');
+  const selAcolito = document.getElementById('novoAcolitoSelect');
+  const inputManual = document.getElementById('novoAcolitoManual');
+  const erro = document.getElementById('novoErro');
+  if (erro) erro.textContent = '';
+
+  const dia = dataSelecionadaNovaEscala || (document.getElementById('novoDia') ? document.getElementById('novoDia').value : '');
+  const hora = selHora ? selHora.value : '';
+  const nome = (digitacaoManualAtiva && inputManual && inputManual.value.trim())
+    ? inputManual.value.trim()
+    : (selAcolito ? selAcolito.value.trim() : '');
+
+  if (!dia) { if (erro) erro.textContent = 'Por favor, toque no dia no calendário acima.'; return; }
+  if (!hora) { if (erro) erro.textContent = 'Por favor, selecione o horário da missa.'; return; }
+  if (!nome) { if (erro) erro.textContent = 'Por favor, escolha ou digite o nome do acólito.'; return; }
+
+  const btn = document.getElementById('btnSalvarRegistro');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Salvando registro...';
+  }
+
+  google.script.run
+    .withSuccessHandler(dados => {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Salvar Registro';
+      }
+      alert(`✅ Registro salvo com sucesso!\n\n${nome} escalado(a) para ${dia} às ${hora.replace(':00', 'h')}.`);
+      dataSelecionadaNovaEscala = null;
+      carregarEscala(dados);
+      if (!estado.eu) escolherEu(nome);
+      mudarAba('escala');
+    })
+    .withFailureHandler(err => {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Salvar Registro';
+      }
+      if (erro) erro.textContent = err.message || err;
+    })
+    .salvarRegistroRapido(dia, hora, nome);
+}
+
+function renderTelaVagas() {
+  const lista = escalaGeral.filter(i => vagasDe(i) > 0);
+  if (!lista.length) {
+    return '<div class="aviso-vazio"><b>🎉</b>Nenhuma vaga aberta no momento! Todas as missas estão preenchidas.</div>';
+  }
+  return agruparPorDia(lista);
+}
+
+function agruparPorDia(lista) {
+  const map = new Map();
+  lista.forEach(m => {
+    if (!map.has(m.data)) map.set(m.data, []);
+    map.get(m.data).push(m);
+  });
+  return Array.from(map).map(([data, missas]) => {
+    const o = dataObj(data);
+    const cabecalho = `<div class="dia-titulo"><span class="dia-numero">${pad(o.getDate())}</span><span class="dia-nome"><b>${SEMANA[o.getDay()]}</b> · ${MESES[o.getMonth()]}</span></div>`;
+    const cards = missas.map(cartaoMissa).join('');
+    return `<section class="dia-grupo">${cabecalho}${cards}</section>`;
+  }).join('');
+}
+
+function cartaoMissa(item) {
+  const index = escalaGeral.indexOf(item);
+  const linhas = montarLinhas(item);
+  const vagas = vagasDe(item);
+  const euAqui = estouNa(item);
+
+  const linhasHtml = linhas.map((l, lIdx) => {
+    if (l.vaga) {
+      const acao = trocasLiberadas && !euAqui
+        ? `<button class="btn-vaga-pegar" onclick="quererVaga(${index})">Quero servir</button>`
+        : '';
+      return `<li class="missa-linha aberta">
+        <div class="missa-col-nome">
+          <span class="missa-papel">${esc(l.papel || 'Vaga')}</span>
+          <span class="missa-nome">Vaga Aberta</span>
+        </div>
+        ${acao}
+      </li>`;
+    }
+    const ehMinha = (l.nome === estado.eu);
+    let acao = '';
+    if (trocasLiberadas) {
+      const btnConfirmar = !l.confirmado
+        ? `<button class="btn-confirmar-presenca" onclick="confirmarPresencaLinha(${index}, '${esc(l.nome)}')" title="Confirmar que vai servir">✅ Confirmar</button>`
+        : `<button class="btn-confirmar-presenca confirmado-ok" onclick="desfazerConfirmacaoLinha(${index}, '${esc(l.nome)}')" title="Presença confirmada. Clique se quiser desmarcar">✅ Confirmado</button>`;
+
+      acao = `<div class="missa-acoes-linha">
+          ${btnConfirmar}
+          <button class="btn-trocar-missa" onclick="trocarHorarioLinha(${index}, ${lIdx})">🔄 Trocar</button>
+          ${ehMinha
+            ? `<button class="btn-sair-missa" onclick="naoPossoIr(${index})">🚫 Não posso ir</button>`
+            : `<button class="btn-sair-missa" onclick="desistirLinha(${index}, ${lIdx})">🚫 Desistir</button>`}
+        </div>`;
+    }
+    return `<li class="missa-linha ${ehMinha ? 'minha' : ''}">
+      <div class="missa-col-nome">
+        ${l.papel ? `<span class="missa-papel">${esc(l.papel)}</span>` : ''}
+        <div style="display:flex; align-items:center; flex-wrap:wrap; gap:5px">
+          <span class="missa-nome">${esc(l.nome)}${ehMinha ? ' (você)' : ''}</span>
+          ${l.confirmado ? `<span class="badge-confirmado">Confirmado ✅</span>` : ''}
+        </div>
+      </div>
+      ${acao}
+    </li>`;
+  }).join('');
+
+  // Se ninguém estiver selecionado no "Eu sou", permite confirmar, trocar ou desistir escolhendo o nome na lista
+  const rodapeSemNome = trocasLiberadas && !estado.eu && nomesDe(item).length
+    ? `<div class="missa-rodape-desistir">
+        <button class="btn-confirmar-presenca" onclick="abrirConfirmarSemNome('${item.data}', '${item.horario}')">✅ Confirmar presença</button>
+        <button class="btn-trocar-missa" onclick="abrirTrocarSemNome('${item.data}', '${item.horario}')">🔄 Trocar horário</button>
+        <button class="btn-sair-missa" onclick="abrirDesistir('${item.data}', '${item.horario}')">🚫 Não vou poder ir</button>
+      </div>`
+    : '';
+
+  return `<article class="missa-card">
+    <div class="missa-cabecalho">
+      <div class="missa-hora-box">
+        <span class="missa-hora">${esc(item.horario.replace(':00', 'h'))}</span>
+        ${item.observacao ? `<span class="missa-obs">${esc(item.observacao)}</span>` : ''}
+      </div>
+      ${vagas ? `<span class="missa-vagas-aviso">${vagas} ${vagas === 1 ? 'vaga aberta' : 'vagas abertas'}</span>` : ''}
+    </div>
+    <ul class="missa-linhas">${linhasHtml}</ul>
+    ${rodapeSemNome}
+  </article>`;
+}
+
+/* ---------- Ações: Confirmar / Quero a Vaga / Não posso ir ---------- */
+function confirmarPresencaLinha(index, nome) {
+  const m = escalaGeral[index];
+  if (!m) return;
+  nome = (nome || estado.eu || '').trim();
+  if (!nome) {
+    abrirConfirmarSemNome(m.data, m.horario);
+    return;
+  }
+
+  const msg = (nome === estado.eu)
+    ? `Deseja confirmar sua presença na missa de ${m.dia}, ${m.data} às ${m.horario.replace(':00', 'h')}?`
+    : `Deseja confirmar a presença de ${nome} na missa de ${m.dia}, ${m.data} às ${m.horario.replace(':00', 'h')}?`;
+
+  if (!confirm(msg)) return;
+
+  const aviso = document.getElementById('destaqueInfo');
+  if (aviso && estado.eu === nome) aviso.textContent = 'Confirmando sua presença...';
+
+  google.script.run
+    .withSuccessHandler(dados => {
+      carregarEscala(dados);
+      if (!estado.eu) escolherEu(nome);
+      alert(`✅ Presença confirmada com sucesso!\n\n${nome} confirmado(a) para ${m.dia}, ${m.data} às ${m.horario.replace(':00', 'h')}.\nDeus abençoe seu serviço no Altar! ⛪`);
+    })
+    .withFailureHandler(err => {
+      alert('Erro ao confirmar presença: ' + (err.message || err));
+      desenhar();
+    })
+    .confirmarPresencaSite(m.data, m.horario, nome, false);
+}
+
+function desfazerConfirmacaoLinha(index, nome) {
+  const m = escalaGeral[index];
+  if (!m) return;
+  nome = (nome || estado.eu || '').trim();
+  if (!nome) return;
+
+  if (!confirm(`Deseja desfazer a confirmação de presença de ${nome} para ${m.dia}, ${m.data} às ${m.horario.replace(':00', 'h')}?`)) return;
+
+  google.script.run
+    .withSuccessHandler(dados => {
+      carregarEscala(dados);
+      alert(`Confirmação desfeita para ${nome}.`);
+    })
+    .withFailureHandler(err => {
+      alert('Erro ao cancelar confirmação: ' + (err.message || err));
+      desenhar();
+    })
+    .confirmarPresencaSite(m.data, m.horario, nome, true);
+}
+
+function quererVaga(i) {
+  const item = escalaGeral[i];
+  if (!estado.eu) {
+    abrirAssumir(item.data, item.horario);
+    return;
+  }
+  if (!confirm(`Confirmar que você (${estado.eu}) vai servir em ${item.dia}, ${item.data} às ${item.horario}?`)) return;
+  executarTroca('assumir', item, estado.eu);
+}
+
+function naoPossoIr(i) {
+  const item = escalaGeral[i];
+  if (!confirm(`${estado.eu}, confirma que NÃO poderá ir em ${item.dia}, ${item.data} às ${item.horario.replace(':00', 'h')}? A vaga ficará aberta no site e no Discord.`)) return;
+  executarTroca('desistir', item, estado.eu);
+}
+
+function desistirLinha(i, lIdx) {
+  const item = escalaGeral[i];
+  if (!item) return;
+  const linhas = montarLinhas(item);
+  const l = linhas[lIdx];
+  if (!l || !l.nome) return;
+  if (!confirm(`Confirmar que ${l.nome} NÃO poderá ir na missa de ${item.dia}, ${item.data} às ${item.horario.replace(':00', 'h')}?\n\nA vaga ficará aberta no site para outro acólito servir.`)) return;
+  executarTroca('desistir', item, l.nome);
+}
+
+function executarTroca(modo, item, nome) {
+  const btn = document.getElementById('desConfirmar');
+  if (modo === 'confirmar') {
+    google.script.run
+      .withSuccessHandler(dados => {
+        fecharDesistir();
+        carregarEscala(dados);
+        if (!estado.eu) escolherEu(nome);
+        alert(`✅ Presença confirmada com sucesso!\n\n${nome} confirmado(a) para ${item.dia}, ${item.data} às ${item.horario.replace(':00', 'h')}.\nDeus abençoe seu serviço no Altar! ⛪`);
+      })
+      .withFailureHandler(e => {
+        if (btn) { btn.disabled = false; btn.innerText = 'Confirmar Presença'; }
+        alert(e.message || e);
+      })
+      .confirmarPresencaSite(item.data, item.horario, nome, false);
+    return;
+  }
+  google.script.run
+    .withSuccessHandler(dados => {
+      fecharDesistir();
+      carregarEscala(dados);
+      alert(modo === 'assumir' ? 'Vaga confirmada com sucesso! Muito obrigado por servir!' : 'Sua desistência foi registrada e a vaga foi liberada.');
+    })
+    .withFailureHandler(e => {
+      if (btn) { btn.disabled = false; btn.innerText = 'Confirmar'; }
+      alert(e.message || e);
+    })
+    [modo === 'assumir' ? 'assumirVaga' : 'desistir'](item.data, item.horario, nome);
+}
+
+/* ---------- Modais: Desistir, Assumir e Confirmar ---------- */
+let desistindo = null;
+function abrirConfirmarSemNome(data, horario) {
+  const item = escalaGeral.find(i => i.data === data && i.horario === horario);
+  if (!item) return;
+  desistindo = { item, nome: null, modo: 'confirmar' };
+  document.getElementById('desCabecalho').innerText = '✅ Confirmar Presença';
+  document.getElementById('desTitulo').innerText = `${item.dia}, ${item.data} às ${item.horario.replace(':00', 'h')}`;
+  document.getElementById('desAjuda').innerText = 'Toque no seu nome para confirmar que você vai servir nesta missa:';
+  document.getElementById('desNomes').innerHTML = nomesDe(item).map(n => `<button class="des-nome-btn" onclick="selecionarNomeDesistir(this)">${esc(n)}</button>`).join('');
+  const conf = document.getElementById('desConfirmar');
+  conf.disabled = true;
+  conf.className = 'btn-confirmar verde';
+  conf.innerText = 'Confirmar Presença';
+  document.getElementById('desFundo').style.display = 'flex';
+}
+
+function abrirDesistir(data, horario) {
+  const item = escalaGeral.find(i => i.data === data && i.horario === horario);
+  if (!item) return;
+  desistindo = { item, nome: null, modo: 'desistir' };
+  document.getElementById('desCabecalho').innerText = 'Não vou poder ir';
+  document.getElementById('desTitulo').innerText = `${item.dia}, ${item.data} às ${item.horario}`;
+  document.getElementById('desAjuda').innerText = 'Toque no seu nome para confirmar a desistência. A vaga ficará aberta no site:';
+  document.getElementById('desNomes').innerHTML = nomesDe(item).map(n => `<button class="des-nome-btn" onclick="selecionarNomeDesistir(this)">${esc(n)}</button>`).join('');
+  const conf = document.getElementById('desConfirmar');
+  conf.disabled = true;
+  conf.className = 'btn-confirmar';
+  conf.innerText = 'Confirmar Desistência';
+  document.getElementById('desFundo').style.display = 'flex';
+}
+
+function abrirAssumir(data, horario) {
+  const item = escalaGeral.find(i => i.data === data && i.horario === horario);
+  if (!item) return;
+  desistindo = { item, nome: null, modo: 'assumir' };
+  document.getElementById('desCabecalho').innerText = 'Quero essa vaga';
+  document.getElementById('desTitulo').innerText = `${item.dia}, ${item.data} às ${item.horario}`;
+  document.getElementById('desAjuda').innerText = 'Escolha seu nome para assumir esta vaga:';
+  const lista = document.getElementById('desNomes');
+  const conf = document.getElementById('desConfirmar');
+  conf.disabled = true;
+  conf.className = 'btn-confirmar verde';
+  conf.innerText = 'Assumir Vaga';
+
+  const ja = nomesDe(item);
+  lista.innerHTML = (nomesAcolitos || []).filter(n => ja.indexOf(n) < 0)
+    .map(n => `<button class="des-nome-btn" onclick="selecionarNomeDesistir(this)">${esc(n)}</button>`).join('') || '<p>Nenhum nome disponível.</p>';
+  document.getElementById('desFundo').style.display = 'flex';
+}
+
+function selecionarNomeDesistir(btn) {
+  document.querySelectorAll('.des-nome-btn').forEach(b => b.classList.toggle('on', b === btn));
+  desistindo.nome = btn.innerText;
+  document.getElementById('desConfirmar').disabled = false;
+}
+
+function fecharDesistir() {
+  document.getElementById('desFundo').style.display = 'none';
+  const conf = document.getElementById('desConfirmar');
+  if (conf) {
+    conf.className = 'btn-confirmar';
+    conf.innerText = 'Confirmar';
+    conf.disabled = true;
+  }
+  const aj = document.getElementById('desAjuda');
+  if (aj) aj.innerText = 'Toque no seu nome para confirmar a desistência. A vaga ficará aberta no site.';
+  const cab = document.getElementById('desCabecalho');
+  if (cab) cab.innerText = 'Não vou poder ir';
+}
+
+function confirmarDesistir() {
+  if (!desistindo || !desistindo.nome) return;
+  const btn = document.getElementById('desConfirmar');
+  btn.disabled = true;
+  btn.innerText = 'Enviando...';
+  executarTroca(desistindo.modo, desistindo.item, desistindo.nome);
+}
+
+/* ---------- Trocar Horário ---------- */
+let trocaAtual = null;
+
+function trocarHorarioLinha(i, lIdx, nomeOpcional) {
+  const item = escalaGeral[i];
+  if (!item) return;
+  let nome = nomeOpcional;
+  if (!nome && lIdx >= 0) {
+    const linhas = montarLinhas(item);
+    if (linhas[lIdx]) nome = linhas[lIdx].nome;
+  }
+  if (!nome && estado.eu) {
+    nome = estado.eu;
+  }
+  abrirTrocarHorario(item, nome);
+}
+
+function abrirTrocarSemNome(data, horario) {
+  const item = escalaGeral.find(i => i.data === data && i.horario === horario);
+  if (!item) return;
+  abrirTrocarHorario(item, null);
+}
+
+function abrirTrocarHorario(item, nome) {
+  trocaAtual = { item, nome: nome || null };
+
+  document.getElementById('trocaMissaAtual').textContent = `${item.dia}, ${item.data} às ${item.horario.replace(':00', 'h')}${item.observacao ? ' (' + item.observacao + ')' : ''}`;
+
+  const nomes = nomesDe(item);
+  const acolitoBox = document.getElementById('trocaAcolitoBox');
+  const nomeAtual = document.getElementById('trocaNomeAtual');
+  const selectBox = document.getElementById('trocaNomeSelectBox');
+  const selectNome = document.getElementById('trocaNomeSelect');
+
+  if (nome) {
+    acolitoBox.style.display = 'block';
+    nomeAtual.textContent = nome;
+    selectBox.style.display = 'none';
+  } else {
+    acolitoBox.style.display = 'none';
+    selectBox.style.display = 'block';
+    selectNome.innerHTML = nomes.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+    trocaAtual.nome = selectNome.value;
+  }
+
+  // Preenche opções de datas (a mesma data + outras datas da escala)
+  const selData = document.getElementById('trocaNovaData');
+  const datasSet = new Set();
+  datasSet.add(item.data);
+  escalaGeral.forEach(it => datasSet.add(it.data));
+
+  // Converte para ordenação por data
+  const datasArr = Array.from(datasSet).sort((a, b) => {
+    return dataObj(a).getTime() - dataObj(b).getTime();
+  });
+
+  selData.innerHTML = datasArr.map(d => {
+    const m = escalaGeral.find(it => it.data === d);
+    const dia = m ? m.dia : SEM_LONGA[dataObj(d).getDay()];
+    const mesmo = (d === item.data) ? ' (Mesmo dia)' : '';
+    return `<option value="${d}">${dia}, ${d}${mesmo}</option>`;
+  }).join('');
+
+  selData.value = item.data;
+
+  // Atualiza horários para a data selecionada
+  aoMudarDataTroca();
+
+  const aviso = document.getElementById('trocaAviso');
+  aviso.style.display = 'none';
+  document.getElementById('btnConfirmarTroca').disabled = false;
+  document.getElementById('btnConfirmarTroca').innerText = 'Confirmar Troca 🔄';
+
+  document.getElementById('trocaFundo').style.display = 'flex';
+}
+
+function aoMudarNomeTroca() {
+  const selectNome = document.getElementById('trocaNomeSelect');
+  if (trocaAtual && selectNome) {
+    trocaAtual.nome = selectNome.value;
+  }
+}
+
+function aoMudarDataTroca() {
+  if (!trocaAtual) return;
+  const selData = document.getElementById('trocaNovaData');
+  const selHora = document.getElementById('trocaNovoHorario');
+  const dataEscolhida = selData.value;
+  const item = trocaAtual.item;
+
+  // Descobre o nome do dia da semana
+  const m = escalaGeral.find(it => it.data === dataEscolhida);
+  const diaNome = m ? m.dia : SEM_LONGA[dataObj(dataEscolhida).getDay()];
+
+  // Horários da grade oficial
+  const grade = (gradeMissas && gradeMissas[diaNome]) || GRADE_PADRAO_SANTUARIO[diaNome] || [];
+  const horasSet = new Set();
+  grade.forEach(g => horasSet.add(g.horario));
+
+  // Adiciona horários que já existem na escala para aquele dia
+  escalaGeral.filter(it => it.data === dataEscolhida).forEach(it => horasSet.add(it.horario));
+
+  // Ordena os horários
+  const horasArr = Array.from(horasSet).sort();
+
+  // Filtra fora a missa atual se for no mesmo dia
+  const opcoes = horasArr.filter(h => !(dataEscolhida === item.data && h === item.horario));
+
+  if (!opcoes.length) {
+    selHora.innerHTML = '<option value="">Nenhum outro horário neste dia</option>';
+    selHora.disabled = true;
+    document.getElementById('btnConfirmarTroca').disabled = true;
+    return;
+  }
+
+  selHora.disabled = false;
+  document.getElementById('btnConfirmarTroca').disabled = false;
+
+  selHora.innerHTML = opcoes.map(h => {
+    const missaAlvo = escalaGeral.find(it => it.data === dataEscolhida && it.horario === h);
+    let extra = '';
+    if (missaAlvo) {
+      const v = vagasDe(missaAlvo);
+      if (v > 0) {
+        extra = ` (${v} vaga${v > 1 ? 's' : ''} aberta${v > 1 ? 's' : ''} ✨)`;
+      } else {
+        extra = ` (completa)`;
+      }
+      if (missaAlvo.observacao) extra += ` - ${missaAlvo.observacao}`;
+    }
+    const label = `${h.replace(':00', 'h')}${extra}`;
+    return `<option value="${h}">${esc(label)}</option>`;
+  }).join('');
+}
+
+function fecharTrocarHorario() {
+  document.getElementById('trocaFundo').style.display = 'none';
+  trocaAtual = null;
+}
+
+function confirmarTrocaHorario() {
+  if (!trocaAtual || !trocaAtual.nome) {
+    alert('Selecione o seu nome.');
+    return;
+  }
+  const itemOrigem = trocaAtual.item;
+  const selData = document.getElementById('trocaNovaData');
+  const selHora = document.getElementById('trocaNovoHorario');
+  const novaData = selData.value;
+  const novoHorario = selHora.value;
+
+  if (!novaData || !novoHorario) {
+    alert('Escolha o novo dia e horário.');
+    return;
+  }
+
+  if (novaData === itemOrigem.data && novoHorario === itemOrigem.horario) {
+    alert('O horário escolhido é o mesmo em que você já está escalado.');
+    return;
+  }
+
+  const btn = document.getElementById('btnConfirmarTroca');
+  const aviso = document.getElementById('trocaAviso');
+  btn.disabled = true;
+  btn.innerText = 'Trocando...';
+
+  google.script.run
+    .withSuccessHandler(dados => {
+      fecharTrocarHorario();
+      carregarEscala(dados);
+      alert(`Troca confirmada! Você agora está escalado para ${novaData} às ${novoHorario.replace(':00', 'h')}.`);
+    })
+    .withFailureHandler(err => {
+      btn.disabled = false;
+      btn.innerText = 'Confirmar Troca 🔄';
+      aviso.style.display = 'block';
+      aviso.style.background = 'rgba(239, 68, 68, 0.15)';
+      aviso.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+      aviso.style.color = '#fca5a5';
+      aviso.textContent = 'Erro ao trocar: ' + (err.message || err);
+    })
+    .trocarHorario(itemOrigem.data, itemOrigem.horario, trocaAtual.nome, novaData, novoHorario);
+}
+
+/* ---------- Chamada de Presença ---------- */
+let chamadaHoje = null;
+function carregarChamadaSite() {
+  const el = document.getElementById('tela');
+  if (!chamadaAtiva) {
+    el.innerHTML = '<div class="aviso-vazio"><b>🔒</b>A chamada de presença está desativada no momento.</div>';
+    return;
+  }
+  el.innerHTML = '<div class="carregando">Carregando missas de hoje...</div>';
+  google.script.run
+    .withSuccessHandler(d => { chamadaHoje = d; renderChamadaSite(); })
+    .withFailureHandler(e => { el.innerHTML = `<div class="aviso-vazio">${esc(e.message || e)}</div>`; })
+    .obterChamadaHoje();
+}
+
+function renderChamadaSite() {
+  const el = document.getElementById('tela');
+  const d = chamadaHoje;
+  if (!d.missas.length) {
+    el.innerHTML = `<div class="aviso-vazio"><b>📅</b>Não há missas na escala para hoje (${esc(d.hoje)}).</div>`;
+    return;
+  }
+  el.innerHTML = d.missas.map((m, i) => {
+    const presentes = Object.values(m.presenca).filter(v => v === 'P').length;
+    const btns = m.nomes.length ? m.nomes.map(n => {
+      const foi = (m.presenca[n] === 'P');
+      return foi
+        ? `<div class="chamada-btn ok"><span>${esc(n)}</span><em>✓ Presente</em></div>`
+        : `<button class="chamada-btn" onclick="marcarPresente(${i}, '${esc(n)}')"><span>${esc(n)}</span><em>Estou aqui</em></button>`;
+    }).join('') : '<p class="aviso-vazio">Ninguém escalado nesta missa.</p>';
+
+    return `<div class="chamada-card">
+      <div class="chamada-topo">
+        <h3>${esc(m.horario)} ${m.observacao ? '· ' + esc(m.observacao) : ''}</h3>
+        <span>${presentes} de ${m.nomes.length} presentes</span>
+      </div>
+      ${btns}
+    </div>`;
+  }).join('');
+}
+
+function marcarPresente(i, nome) {
+  const m = chamadaHoje.missas[i];
+  if (!confirm(`Confirmar presença de ${nome} na missa das ${m.horario}?`)) return;
+  google.script.run
+    .withSuccessHandler(d => { chamadaHoje = d; renderChamadaSite(); })
+    .withFailureHandler(e => alert(e.message || e))
+    .marcarPresencaSite(m.data, m.horario, nome);
+}
+
+/* ---------- Inscrição Simples ---------- */
+function abrirInscricao() { document.getElementById('insFundo').style.display = 'flex'; }
+function fecharInscricao() { document.getElementById('insFundo').style.display = 'none'; }
+function escolherGrupoIns(btn) {
+  document.querySelectorAll('#insGrupo button').forEach(b => b.classList.toggle('on', b === btn));
+}
+function enviarInscricaoSimples() {
+  const nome = document.getElementById('insNome').value.trim();
+  const erro = document.getElementById('insErro');
+  if (nome.split(/\s+/).length < 2) { erro.textContent = 'Digite nome e sobrenome.'; return; }
+  const btn = document.getElementById('insEnviar');
+  btn.disabled = true; btn.innerText = 'Enviando...';
+  const grupo = document.querySelector('#insGrupo button.on').dataset.g;
+  const dados = {
+    nome: nome,
+    grupo: grupo,
+    telefone: document.getElementById('insTel').value.trim(),
+    responsavel: document.getElementById('insResp').value.trim(),
+    nascimento: (document.getElementById('insNasc').value || '').split('-').reverse().join('/'),
+    disponibilidade: 'Qualquer',
+    observacao: '',
+    site: ''
+  };
+  google.script.run
+    .withSuccessHandler(() => {
+      btn.disabled = false; btn.innerText = 'Enviar inscrição';
+      document.getElementById('insModal').innerHTML = '<h2>✅ Inscrição enviada!</h2><p>Obrigado! A coordenação irá aprovar sua inscrição.</p><div class="modal-acoes"><button class="btn-confirmar verde" onclick="fecharInscricao()">Fechar</button></div>';
+    })
+    .withFailureHandler(e => { btn.disabled = false; btn.innerText = 'Enviar inscrição'; erro.textContent = e.message || e; })
+    .enviarInscricao(dados);
+}
+
+/* ---------- Cadastro Próprio de Acólito ---------- */
+function abrirModalCadastro(nomeSugerido) {
+  const fundo = document.getElementById('cadFundo');
+  if (!fundo) return;
+
+  document.getElementById('cadModalCaixa').innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:flex-start">
+      <div>
+        <h2 style="color:#22c55e">✨ Cadastrar meu Nome</h2>
+        <p style="margin-top:2px">Seu nome será adicionado na lista oficial de acólitos da paróquia.</p>
+      </div>
+      <button onclick="fecharModalCadastro()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:0 4px" aria-label="Fechar">✕</button>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:12px; margin-top:16px">
+      <div class="campo-passo">
+        <label for="cadNomeInput">Nome Completo:</label>
+        <input type="text" id="cadNomeInput" placeholder="Ex: Gabriel da Silva Santos" class="busca-input" autocomplete="name" style="font-size:16px" onkeydown="if(event.key==='Enter') enviarCadastroNome()">
+      </div>
+
+      <div id="cadAviso" style="font-size:13px; line-height:1.4; border-radius:8px; padding:8px 12px; display:none"></div>
+    </div>
+
+    <div class="modal-acoes" style="margin-top:16px">
+      <button type="button" class="btn-cancelar" onclick="fecharModalCadastro()">Cancelar</button>
+      <button type="button" class="btn-confirmar verde" id="btnSalvarCadastro" onclick="enviarCadastroNome()">Salvar Cadastro ✅</button>
+    </div>
+  `;
+
+  const input = document.getElementById('cadNomeInput');
+  if (nomeSugerido) {
+    input.value = nomeSugerido;
+  } else {
+    const manual = document.getElementById('novoAcolitoManual');
+    if (manual && manual.value.trim()) input.value = manual.value.trim();
+  }
+  fundo.style.display = 'flex';
+  setTimeout(() => input && input.focus(), 150);
+}
+
+function fecharModalCadastro() {
+  const fundo = document.getElementById('cadFundo');
+  if (fundo) fundo.style.display = 'none';
+}
+
+function enviarCadastroNome() {
+  const input = document.getElementById('cadNomeInput');
+  const aviso = document.getElementById('cadAviso');
+  const btn = document.getElementById('btnSalvarCadastro');
+  const nome = (input && input.value ? input.value : '').replace(/\s+/g, ' ').trim();
+
+  if (!nome || nome.length < 2) {
+    if (aviso) {
+      aviso.style.display = 'block';
+      aviso.style.background = 'rgba(239, 68, 68, 0.15)';
+      aviso.style.color = '#fca5a5';
+      aviso.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+      aviso.textContent = 'Por favor, digite seu nome completo.';
+    }
+    if (input) input.focus();
+    return;
+  }
+
+  const grupo = 'Acólito';
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Salvando no cadastro...';
+  }
+  if (aviso) aviso.style.display = 'none';
+
+  google.script.run
+    .withSuccessHandler(res => {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Salvar Cadastro ✅';
+      }
+      if (res && res.sucesso) {
+        if (Array.isArray(res.nomes) && res.nomes.length > 0) {
+          nomesAcolitos = res.nomes;
+        } else if (!nomesAcolitos.includes(res.nome)) {
+          nomesAcolitos.push(res.nome);
+          nomesAcolitos.sort((a, b) => a.localeCompare(b));
+        }
+
+        montarEuSou();
+        montarSelectAcolitosNovaEscala();
+        escolherEu(res.nome);
+
+        const selNova = document.getElementById('novoAcolitoSelect');
+        if (selNova) selNova.value = res.nome;
+        if (digitacaoManualAtiva) alternarDigitacaoManual();
+
+        const regTexto = res.registro ? `(Nº de Registro: <b>${esc(res.registro)}</b>)` : '';
+        document.getElementById('cadModalCaixa').innerHTML = `
+          <div style="text-align:center; padding:14px 4px">
+            <div style="font-size:46px; margin-bottom:10px">🎉</div>
+            <h2 style="color:#22c55e; margin-bottom:8px">Cadastro Realizado!</h2>
+            <p style="font-size:15px; color:#fff; font-weight:600; margin-bottom:6px">
+              Bem-vindo(a), ${esc(res.nome)}!
+            </p>
+            <p style="font-size:13px; color:var(--muted); line-height:1.5; margin-bottom:18px">
+              Seu nome foi salvo na lista oficial ${regTexto} e já está selecionado como seu perfil no aplicativo.
+            </p>
+            <button type="button" class="btn-salvar-registro" onclick="fecharModalCadastro()">
+              Continuar no App 🚀
+            </button>
+          </div>
+        `;
+      }
+    })
+    .withFailureHandler(err => {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Salvar Cadastro ✅';
+      }
+      if (aviso) {
+        aviso.style.display = 'block';
+        aviso.style.background = 'rgba(239, 68, 68, 0.15)';
+        aviso.style.color = '#fca5a5';
+        aviso.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+        aviso.textContent = err.message || err || 'Erro ao realizar o cadastro.';
+      }
+    })
+    .cadastrarNomeAcolito(nome, grupo);
+}
+
+/* ---------- Manual e Slides de Apresentação ---------- */
+const SLIDES_MANUAL = [
+  {
+    tag: "Passo 1 de 6",
+    titulo: "📲 Como Usar no Celular (Atalho)",
+    sub: "Abra como um app na tela inicial, sem precisar digitar o link todo dia!",
+    html: `
+      <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px; line-height:1.5;">
+        <p>O site oficial da paróquia é: <br><strong style="color:var(--gold); word-break:break-all">sites.google.com/view/acolitos-socorro</strong></p>
+        <div style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 12px">
+          <strong style="color:#fff">🤖 No celular Android (Google Chrome):</strong>
+          <p style="color:var(--muted); margin-top:2px">Toque nos <b>três pontinhos (⋮)</b> no canto superior do navegador e selecione <b>"Adicionar à tela inicial"</b> ou <b>"Instalar aplicativo"</b>.</p>
+        </div>
+        <div style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 12px">
+          <strong style="color:#fff">🍏 No iPhone (Safari):</strong>
+          <p style="color:var(--muted); margin-top:2px">Toque no botão de <b>compartilhar (⬆️)</b> na barra inferior e selecione <b>"Adicionar à Tela de Início"</b>.</p>
+        </div>
+        <div style="color:#86efac; font-weight:600; font-size:13px">
+          ✨ Pronto! Ele fica com um ícone dourado na sua tela inicial, abrindo direto em tela cheia!
+        </div>
+      </div>
+    `
+  },
+  {
+    tag: "Passo 2 de 6",
+    titulo: "👤 Meu Perfil (\"Eu sou\") & Cadastro",
+    sub: "Identifique-se para ver sua próxima missa e ter tudo personalizado.",
+    html: `
+      <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px; line-height:1.5;">
+        <div style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 12px">
+          <strong style="color:#fff">1. Como se identificar:</strong>
+          <p style="color:var(--muted); margin-top:2px">No topo da página, clique em <b>"👤 Eu sou:"</b> e escolha seu nome. O aplicativo salva a sua escolha no seu aparelho!</p>
+        </div>
+        <div style="background:var(--me-bg); border:1px solid var(--me-line); border-radius:10px; padding:10px 12px">
+          <strong style="color:var(--me)">⭐ Sua Próxima Missa em Destaque:</strong>
+          <p style="color:#bfdbfe; margin-top:2px">Assim que você seleciona seu nome, o card azul do topo mostra automaticamente a data e hora da sua próxima celebração.</p>
+        </div>
+        <div style="background:var(--verde-bg); border:1px solid var(--verde); border-radius:10px; padding:10px 12px">
+          <strong style="color:#86efac">➕ Não achou seu nome na lista?</strong>
+          <p style="color:#e2e8f0; margin-top:2px">Abra a lista e selecione a primeira opção: <b>"➕ Cadastrar meu nome..."</b>. Digite seu nome completo e salve. Seu número de registro é gerado na hora!</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    tag: "Passo 3 de 6",
+    titulo: "📅 Consultando a Escala",
+    sub: "Acompanhe todas as celebrações e ache qualquer horário em segundos.",
+    html: `
+      <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px; line-height:1.5;">
+        <p>Na aba <b>📅 Escala</b>, todas as celebrações do mês estão organizadas dia por dia:</p>
+        <div style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 12px">
+          <strong style="color:#fff">Filtros Rápidos no topo:</strong>
+          <ul style="padding-left:18px; margin-top:4px; color:var(--muted)">
+            <li><b>Todas as missas:</b> visão geral de toda a paróquia.</li>
+            <li><b style="color:var(--gold)">Minhas missas:</b> esconde o resto e mostra apenas as celebrações que VOCÊ vai servir.</li>
+            <li><b style="color:var(--vaga)">Com vagas:</b> mostra celebrações precisando de voluntários.</li>
+          </ul>
+        </div>
+        <div style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 12px">
+          <strong style="color:#fff">🔍 Barra de Busca:</strong>
+          <p style="color:var(--muted); margin-top:2px">Digite qualquer nome, dia ou função (Missal, Microfone, Cruz...) para filtrar na hora.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    tag: "Passo 4 de 6",
+    titulo: "🙏 Lançando na Nova Escala",
+    sub: "Escolha o dia no calendário e marque seu horário com 3 toques.",
+    html: `
+      <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px; line-height:1.5;">
+        <p>Na aba <b>🙏 Nova Escala</b> você pode se colocar na escala de forma simples:</p>
+        <div style="display:flex; flex-direction:column; gap:6px">
+          <div style="background:var(--surface); border-left:3px solid #22c55e; border-radius:6px; padding:8px 12px">
+            <strong style="color:#fff">1. Toque no Dia no Calendário:</strong>
+            <p style="color:var(--muted); font-size:12.5px; margin-top:2px">Sábados e domingos aparecem em dourado. Toque no dia em que deseja servir.</p>
+          </div>
+          <div style="background:var(--surface); border-left:3px solid #22c55e; border-radius:6px; padding:8px 12px">
+            <strong style="color:#fff">2. Escolha o Horário:</strong>
+            <p style="color:var(--muted); font-size:12.5px; margin-top:2px">O sistema carrega os horários daquele dia (ex: 08h, 10h, 12h, 17h, 19h...).</p>
+          </div>
+          <div style="background:var(--surface); border-left:3px solid #22c55e; border-radius:6px; padding:8px 12px">
+            <strong style="color:#fff">3. Confirme seu Nome:</strong>
+            <p style="color:var(--muted); font-size:12.5px; margin-top:2px">Seu nome já vem pré-selecionado se você marcou "Eu sou".</p>
+          </div>
+        </div>
+        <p style="color:#86efac; font-weight:700; text-align:center; margin-top:2px">
+          Toque em "Salvar Registro ✅" e você já está oficialmente na escala!
+        </p>
+      </div>
+    `
+  },
+  {
+    tag: "Passo 5 de 6",
+    titulo: "🟠 Confirmações, Trocas & Vagas",
+    sub: "Confirme sua presença, troque de horário ou libere vagas com 1 toque!",
+    html: `
+      <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px; line-height:1.5;">
+        <div style="background:rgba(34, 197, 94, 0.1); border:1px solid rgba(34, 197, 94, 0.35); border-radius:10px; padding:10px 12px">
+          <strong style="color:#86efac">✅ Confirmar Presença com Antecedência:</strong>
+          <p style="color:var(--muted); margin-top:2px">Toque no botão <b>"✅ Confirmar"</b> ao lado do seu nome. A escala exibe o selo <b>Confirmado ✅</b> e no topo há o filtro para ver todas as confirmações!</p>
+        </div>
+        <div style="background:rgba(226, 186, 100, 0.1); border:1px solid rgba(226, 186, 100, 0.35); border-radius:10px; padding:10px 12px">
+          <strong style="color:var(--gold)">🔄 Quer trocar para outro horário?</strong>
+          <p style="color:var(--muted); margin-top:2px">Toque no botão <b>"🔄 Trocar"</b> na sua missa, escolha outro horário (do mesmo dia ou outro dia) e confirme com 1 clique!</p>
+        </div>
+        <div style="background:var(--surface); border:1px solid #7f1d1d; border-radius:10px; padding:10px 12px">
+          <strong style="color:#f87171">🚫 Teve um imprevisto e não pode ir?</strong>
+          <p style="color:var(--muted); margin-top:2px">Toque em <b>"🚫 Não posso ir"</b>. O seu lugar vira uma vaga aberta no mesmo segundo.</p>
+        </div>
+        <div style="background:var(--vaga-bg); border:1px solid var(--vaga-line); border-radius:10px; padding:10px 12px">
+          <strong style="color:var(--vaga)">🙋 Quer cobrir a vaga de um amigo?</strong>
+          <p style="color:#fed7aa; margin-top:2px">Toque na aba <b>🟠 Vagas</b>, veja quais missas têm vagas e toque em <b>"Quero servir"</b>.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    tag: "Apresentação de Domingo",
+    titulo: "🎤 Dicas para a Apresentação",
+    sub: "Roteiro prático para você mostrar no domingo e arrasar na reunião!",
+    html: `
+      <div style="display:flex; flex-direction:column; gap:8px; font-size:13px; line-height:1.45;">
+        <div style="background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:8px 10px">
+          <strong style="color:var(--gold)">1º O Atalho:</strong> Peça a todos para abrirem o link e criarem o atalho na tela inicial do celular.
+        </div>
+        <div style="background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:8px 10px">
+          <strong style="color:var(--gold)">2º O "Eu Sou":</strong> Peça para cada um escolher seu nome na lista (e novatos usam <i>"➕ Cadastrar meu nome"</i>).
+        </div>
+        <div style="background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:8px 10px">
+          <strong style="color:var(--gold)">3º A Nova Escala:</strong> Mostre o calendário: toque no dia, escolha o horário e salve com 1 clique.
+        </div>
+        <div style="background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:8px 10px">
+          <strong style="color:var(--gold)">4º Confirmação & Trocas:</strong> Mostre o botão <b>"✅ Confirmar"</b> (com o filtro no topo) e os botões <b>"🔄 Trocar"</b> e <b>"🚫 Não posso ir"</b>.
+        </div>
+        <div style="text-align:center; padding:6px; color:#86efac; font-weight:700">
+          ⛪ Boa apresentação! A coordenação e os acólitos vão adorar!
+        </div>
+      </div>
+    `
+  }
+];
+
+let slideManualAtual = 0;
+function abrirManual() {
+  slideManualAtual = 0;
+  document.getElementById('manualFundo').style.display = 'flex';
+  renderSlideManual();
+}
+function fecharManual() {
+  document.getElementById('manualFundo').style.display = 'none';
+}
+function irParaSlideManual(idx) {
+  slideManualAtual = Math.max(0, Math.min(idx, SLIDES_MANUAL.length - 1));
+  renderSlideManual();
+}
+function mudarSlideManual(delta) {
+  let novo = slideManualAtual + delta;
+  if (novo >= SLIDES_MANUAL.length) {
+    fecharManual();
+    return;
+  }
+  slideManualAtual = Math.max(0, novo);
+  renderSlideManual();
+}
+function renderSlideManual() {
+  const s = SLIDES_MANUAL[slideManualAtual];
+  const box = document.getElementById('manualConteudoSlide');
+  if (!box) return;
+
+  box.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px">
+      <span style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--gold); letter-spacing:0.04em">${esc(s.tag)}</span>
+      <span style="font-size:12px; font-weight:600; color:var(--muted)">${slideManualAtual + 1} de ${SLIDES_MANUAL.length}</span>
+    </div>
+    <h3 style="font-size:1.15rem; font-weight:700; color:#fff; margin-bottom:3px">${esc(s.titulo)}</h3>
+    <p style="font-size:12.5px; color:var(--muted); margin-bottom:12px">${esc(s.sub)}</p>
+    <div>${s.html}</div>
+  `;
+
+  const btnAnt = document.getElementById('btnManualAnt');
+  const btnProx = document.getElementById('btnManualProx');
+  if (btnAnt) btnAnt.disabled = (slideManualAtual === 0);
+  if (btnProx) {
+    btnProx.textContent = (slideManualAtual === SLIDES_MANUAL.length - 1) ? 'Concluir 🎉' : 'Próximo ▶';
+  }
+
+  const chips = document.querySelectorAll('#manualChips button');
+  chips.forEach((c, i) => c.classList.toggle('on', i === slideManualAtual));
+
+  const dotsBox = document.getElementById('manualDots');
+  if (dotsBox) {
+    dotsBox.innerHTML = SLIDES_MANUAL.map((_, i) =>
+      `<span onclick="irParaSlideManual(${i})" style="width:${i === slideManualAtual ? '16px' : '7px'}; height:7px; border-radius:999px; background:${i === slideManualAtual ? 'var(--gold)' : 'var(--line)'}; cursor:pointer; transition:all .2s ease; display:inline-block"></span>`
+    ).join('');
+  }
+}
+
+/* ---------- Menu de Opções ---------- */
+function abrirMenuOpcoes() { document.getElementById('modalMenu').style.display = 'flex'; }
+function fecharMenuOpcoes() { document.getElementById('modalMenu').style.display = 'none'; }
+function abrirInstalarApp() { document.getElementById('instFundo').style.display = 'flex'; }
+function fecharInstalarApp() { document.getElementById('instFundo').style.display = 'none'; }
+function abrirNovidades() {
+  document.getElementById('novLista').innerHTML = NOVIDADES.map(v =>
+    `<div><strong style="color:var(--gold)">Versão ${esc(v.versao)}:</strong><ul style="padding-left:1.2em; margin-top:4px; font-size:13px; color:var(--muted)">${v.itens.map(it => `<li>${esc(it)}</li>`).join('')}</ul></div>`
+  ).join('');
+  document.getElementById('novFundo').style.display = 'flex';
+}
+function fecharNovidades() { document.getElementById('novFundo').style.display = 'none'; }
+
+/* ---------- Verificação de Versão ---------- */
+const VERSAO_CARREGADA = document.body.getAttribute('data-versao') || '';
+document.getElementById('numeroVersao').textContent = VERSAO_CARREGADA || '1.0';
+/* Recarrega a página com um parâmetro novo na URL: o celular não reaproveita a versão antiga do cache. */
+function recarregarNova(v) {
+  window.location.href = "./" + '?v=' + encodeURIComponent(v) + '&t=' + Date.now();
+}
+function conferirVersao(manual) {
+  const msg = document.getElementById('msgVersao');
+  if (manual) msg.textContent = 'Verificando versão...';
+  google.script.run.withSuccessHandler(info => {
+    const v = info && info.versao;
+    if (v && v !== VERSAO_CARREGADA) {
+      // ao abrir o site: sobe a versão nova sozinho, uma vez por versão (evita laço de recarregar)
+      // se a URL já tem v=<esta versão>, a página já é a nova: não recarrega de novo (evita laço)
+      const jaNova = new URLSearchParams(window.location.search).get('v') === v;
+      if (manual || !jaNova) {
+        recarregarNova(v);
+        return;
+      }
+      document.getElementById('textoFaixaNova').textContent = info.mensagem ? `🔄 ${info.mensagem}` : `🔄 Nova versão ${v} disponível!`;
+      document.getElementById('faixaNova').style.display = 'flex';
+      if (manual) msg.textContent = '';
+    } else if (manual) {
+      msg.textContent = `✓ Você já está na versão mais recente (${VERSAO_CARREGADA}).`;
+      setTimeout(() => msg.textContent = '', 4000);
+    }
+  }).withFailureHandler(() => { if (manual) msg.textContent = 'Sem conexão. Tente de novo.'; }).versaoGithub();
+}
+function naoAtualizar() { document.getElementById('faixaNova').style.display = 'none'; }
+</script>
+</body>
+</html>
