@@ -189,7 +189,7 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
 .btn-atualizar-topo:active { transform: scale(.94); }
 </style>
 </head>
-<body data-versao="1.68">
+<body data-versao="1.69">
 <div class="atualizar-fundo" id="telaAtualizar"><div class="atualizar-caixa"><div class="ic">🔄</div><h2>Tem versão nova do app!</h2><p id="textoAtualizar">Quer atualizar agora?</p><div class="atualizar-acoes"><button onclick="naoAtualizar()">Agora não</button><a href="./?p=coord" target="_blank" rel="noopener">Atualizar</a></div></div></div>
 <div class="login oculto" id="telaLogin">
 <a class="voltar" href="./" target="_top">← Ver a escala</a>
@@ -264,6 +264,7 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
 <button class="tile" onclick="mudarAba('servindo')"><span class="ti">👥</span><b>Acólitos por missa</b><small id="subServindo">Quantos servem em cada missa</small></button>
 <button class="tile" onclick="mudarAba('limpeza')"><span class="ti">🧽</span><b>Missas que já passaram</b><small id="subLimpeza">Tirar da escala os dias que passaram</small></button>
 <button class="tile" onclick="mudarAba('discord')"><span class="ti">🔔</span><b>Notificações</b><small id="subDiscord">Discord e celular (ntfy)</small></button>
+<button class="tile" onclick="mudarAba('confirmacoes')"><span class="ti">✅</span><b>Confirmações</b><small>Quem confirmou e quem falta</small></button>
 <button class="tile" onclick="mudarAba('acessos')"><span class="ti">📈</span><b>Acessos</b><small>O que está sendo usado e o que não</small></button>
 <button class="tile oculto" id="tileChamada" onclick="mudarAba('chamada')"><span class="ti">✅</span><b>Chamada</b><small>Quem veio e quem faltou em cada missa</small></button>
 <button class="tile" onclick="mudarAba('inscricoes')"><span class="ti">📝</span><b>Inscrições</b><small>Aprovar quem se inscreveu pelo site</small><span class="badge oculto" id="badgeInscricoes"></span></button>
@@ -406,6 +407,17 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
 </ol>
 <p style="margin-top:8px;font-size:12px;color:var(--text-muted)">Quem tiver esse link consegue mandar mensagem no canal: não compartilhe. Se vazar, apague o webhook no Discord e crie outro.</p>
 </details>
+</section>
+
+<!-- Confirmações -->
+<section id="aba-confirmacoes" class="oculto">
+<div class="seg" id="segConfirmacoes" style="margin-bottom:12px">
+<button data-d="3" onclick="carregarConfirmacoes(3)">3 dias</button>
+<button class="on" data-d="7" onclick="carregarConfirmacoes(7)">7 dias</button>
+<button data-d="14" onclick="carregarConfirmacoes(14)">14 dias</button>
+</div>
+<div class="lista" id="listaConfirmacoes"><div class="carregando">Carregando...</div></div>
+<p style="margin:10px 4px 0;font-size:12px;color:var(--text-muted)">O acólito confirma no site em "✅ Confirmar presença". Na véspera, às 19h, este resumo chega no celular (ntfy) da Coord.</p>
 </section>
 
 <!-- Acessos -->
@@ -787,9 +799,9 @@ function aplicar(dados) {
 
 document.querySelectorAll(".tab-btn").forEach(b => b.onclick = () => mudarAba(b.dataset.aba));
 const TITULOS = { acolitos: "🙋 Acólitos", missas: "🕯️ Missas", gerar: "✨ Gerar escala", ajustar: "✏️ Ajustar escala", inscricoes: "📝 Inscrições", chamada: "✅ Chamada",
-  servindo: "👥 Acólitos por missa", acessos: "📈 Acessos", discord: "🔔 Notificações", limpeza: "🧽 Missas que já passaram", trocas: "🔁 Trocas", relatorio: "📊 Relatórios", coord: "⚙️ Configurações" };
+  servindo: "👥 Acólitos por missa", acessos: "📈 Acessos", confirmacoes: "✅ Confirmações", discord: "🔔 Notificações", limpeza: "🧽 Missas que já passaram", trocas: "🔁 Trocas", relatorio: "📊 Relatórios", coord: "⚙️ Configurações" };
 function mudarAba(nome) {
-  ["inicio", "acolitos", "missas", "servindo", "limpeza", "acessos", "discord", "gerar", "ajustar", "inscricoes", "chamada", "trocas", "relatorio", "coord"].forEach(a => document.getElementById("aba-" + a).classList.toggle("oculto", a !== nome));
+  ["inicio", "acolitos", "missas", "servindo", "limpeza", "acessos", "confirmacoes", "discord", "gerar", "ajustar", "inscricoes", "chamada", "trocas", "relatorio", "coord"].forEach(a => document.getElementById("aba-" + a).classList.toggle("oculto", a !== nome));
   document.getElementById("barraSecao").classList.toggle("oculto", nome === "inicio");
   document.getElementById("tituloPainel").textContent = TITULOS[nome] || "";
   document.getElementById("fabAcolito").classList.toggle("oculto", nome !== "acolitos");
@@ -802,6 +814,7 @@ function mudarAba(nome) {
   if (nome === "gerar") resumirAlvo();
   if (nome === "servindo") abrirServindo();
   if (nome === "acessos") carregarAcessos(diasAcessos);
+  if (nome === "confirmacoes") carregarConfirmacoes(diasConfirmacoes);
   if (nome === "discord") carregarDiscord();
   if (nome !== "inicio" && !abasContadas[nome]) { abasContadas[nome] = true; try { google.script.run.registrarUso("coord_" + nome); } catch (e) {} }
   window.scrollTo(0, 0);
@@ -1591,6 +1604,31 @@ function enviarEscalaDiscord() {
   const btn = document.getElementById("btnEscalaDiscord");
   ocupado(btn, "Enviando...");
   chamar("painelEnviarEscalaDiscord", [], () => { btn.disabled = false; btn.removeAttribute("data-ocupado"); btn.textContent = "Enviar a escala da semana agora"; toast("Escala enviada no Discord ✓"); });
+}
+
+/* ---------- Confirmações ---------- */
+let diasConfirmacoes = 7;
+function carregarConfirmacoes(dias) {
+  diasConfirmacoes = dias;
+  document.querySelectorAll("#segConfirmacoes button").forEach(b => b.classList.toggle("on", +b.dataset.d === dias));
+  const el = document.getElementById("listaConfirmacoes");
+  el.innerHTML = '<div class="carregando">Carregando...</div>';
+  chamar("painelConfirmacoes", [dias], lista => {
+    if (!lista.length) { el.innerHTML = '<div class="vazio">Nenhuma missa na escala nesses dias.</div>'; return; }
+    let ultimo = "";
+    el.innerHTML = lista.map(m => {
+      const cab = m.data !== ultimo ? '<div class="dia-grupo">' + esc(m.dia) + ', ' + esc(m.data.slice(0, 5)) + '</div>' : "";
+      ultimo = m.data;
+      const total = m.confirmados.length + m.faltam.length;
+      return cab + '<div class="card" style="flex-direction:column;align-items:stretch;gap:8px">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="card-title">' + esc(m.horario.replace(":00", "h")) +
+        (m.observacao ? ' <span class="tag amber">' + esc(m.observacao) + '</span>' : '') + '</span>' +
+        '<b style="color:' + (m.faltam.length ? "#fbbf24" : "#34d399") + '">' + m.confirmados.length + '/' + total + '</b></div>' +
+        '<div class="card-sub">' + m.confirmados.map(n => '<span class="tag green">✓ ' + esc(n) + '</span>').join("") +
+        m.faltam.map(n => '<span class="tag">⏳ ' + esc(n) + '</span>').join("") +
+        (m.vagas ? '<span class="tag red">' + m.vagas + ' vaga(s) aberta(s)</span>' : '') + '</div></div>';
+    }).join("");
+  });
 }
 
 /* ---------- Acessos ---------- */
