@@ -230,7 +230,7 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
 </form>
 </div>
 
-<a class="voltar" href="./" target="_top">← Ver a escala</a>
+<a class="voltar" href="./" onclick="if(location.protocol.indexOf('http')>=0){location.href='index.html';return false;}" target="_top">← Ver a escala</a>
 <div class="header">
 <div>
 <h1>Coordenadores</h1>
@@ -240,7 +240,7 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
 </div>
 
 <div class="barra-secao oculto" id="barraSecao">
-<button class="btn sec small" onclick="mudarAba('inicio')">← Início</button>
+<button class="btn sec small" onclick="mudarAba('inicio')">← Voltar ao Início</button>
 <b id="tituloPainel"></b>
 </div>
 
@@ -919,19 +919,27 @@ function aplicar(dados) {
   renderAcolitos();
   renderMissas();
   const ativos = acolitos.filter(a => a.ativo).length;
-  document.getElementById("subtitulo").textContent = ativos + " acólitos ativos • " + grade.length + " missas por semana";
+  const subtituloEl = document.getElementById("subtitulo");
+  if (subtituloEl) subtituloEl.textContent = ativos + " acólitos ativos • " + grade.length + " missas por semana";
   const coroinhas = acolitos.filter(a => a.ativo && a.grupo === "Coroinha").length;
-  document.getElementById("subAcolitos").textContent = (ativos - coroinhas) + " acólitos • " + coroinhas + " coroinhas";
+  const subAcolitosEl = document.getElementById("subAcolitos");
+  if (subAcolitosEl) subAcolitosEl.textContent = (ativos - coroinhas) + " acólitos • " + coroinhas + " coroinhas";
   const b = document.getElementById("badgeInscricoes");
-  b.textContent = dados.inscricoesPendentes || "";
-  b.classList.toggle("oculto", !dados.inscricoesPendentes);
-  document.getElementById("linkInscricao").value = dados.urlInscricao || "";
+  if (b) {
+    b.textContent = dados.inscricoesPendentes || "";
+    b.classList.toggle("oculto", !dados.inscricoesPendentes);
+  }
+  const linkIns = document.getElementById("linkInscricao");
+  if (linkIns) linkIns.value = dados.urlInscricao || "";
   mostrarChaveChamada(!!dados.chamada);
   mostrarTelaEntrada(dados.telaEntrada || "demo");
   mostrarEmailAviso(!!dados.emailAviso, dados.emailDestino || "");
-  if (dados.urlPlanilha) document.getElementById("linkPlanilha").href = dados.urlPlanilha;
-  document.getElementById("subMissas").textContent = grade.length + " por semana" + (especiais.length ? " • " + especiais.length + " especiais" : "");
-  document.getElementById("subServindo").textContent = resumoServindo();
+  const linkPlan = document.getElementById("linkPlanilha");
+  if (linkPlan && dados.urlPlanilha) linkPlan.href = dados.urlPlanilha;
+  const subMissasEl = document.getElementById("subMissas");
+  if (subMissasEl) subMissasEl.textContent = grade.length + " por semana" + (especiais.length ? " • " + especiais.length + " especiais" : "");
+  const subServindoEl = document.getElementById("subServindo");
+  if (subServindoEl) subServindoEl.textContent = resumoServindo();
   mostrarLimpeza(dados);
 }
 
@@ -1812,8 +1820,10 @@ function mostrarLimpeza(dados) {
   document.getElementById("textoPassadas").textContent = n
     ? n + (n === 1 ? " missa de dia que já passou ainda está na escala." : " missas de dias que já passaram ainda estão na escala.")
     : "Nenhuma missa de dia que já passou na escala. Está tudo em dia ✓";
-  document.getElementById("btnLimparAgora").disabled = !n;
-  document.getElementById("subLimpeza").textContent = (ativa ? "Automático ligado" : "Automático desligado") + (n ? " • " + n + " para limpar" : "");
+  const btnLimpar = document.getElementById("btnLimparAgora");
+  if (btnLimpar) btnLimpar.disabled = !n;
+  const subL = document.getElementById("subLimpeza");
+  if (subL) subL.textContent = (ativa ? "Automático ligado" : "Automático desligado") + (n ? " • " + n + " para limpar" : "");
 }
 function definirLimpeza(ativa) {
   chamar("painelDefinirLimpezaAuto", [ativa], dados => {
