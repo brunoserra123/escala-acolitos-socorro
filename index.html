@@ -326,14 +326,10 @@ footer a { color: var(--muted); text-decoration: underline; }
     </div>
   </div>
 
-  <!-- Abas Essenciais: Escala e Vagas (+ Chamada se ativa) -->
+  <!-- Navegação Principal -->
   <nav class="abas" id="barraAbas" aria-label="Seções">
     <button class="aba-btn" data-aba="escala" onclick="mudarAba('escala')" aria-current="page">
       <span>📅 Escala</span>
-    </button>
-    <button class="aba-btn" data-aba="vagas" onclick="mudarAba('vagas')">
-      <span>🟠 Vagas Abertas</span>
-      <span class="aba-badge" id="badgeVagas"></span>
     </button>
     <button class="aba-btn" data-aba="chamada" id="abaChamadaBtn" style="display:none" onclick="mudarAba('chamada')">
       <span>✅ Chamada</span>
@@ -1307,18 +1303,7 @@ function cartaoMissa(item) {
   const euAqui = estouNa(item);
 
   const linhasHtml = linhas.map((l, lIdx) => {
-    if (l.vaga) {
-      const acao = trocasLiberadas && !euAqui
-        ? `<button class="btn-vaga-pegar" onclick="quererVaga(${index})">🙋 Me escalar</button>`
-        : '';
-      return `<li class="missa-linha aberta">
-        <div class="missa-col-nome">
-          <span class="missa-papel">${esc(l.papel || 'Vaga')}</span>
-          <span class="missa-nome">Vaga Aberta</span>
-        </div>
-        ${acao}
-      </li>`;
-    }
+    if (l.vaga) return ''; // Vaga aberta desativada
     const ehMinha = (l.nome === estado.eu);
     let acao = '';
     if (trocasLiberadas) {
@@ -1344,7 +1329,7 @@ function cartaoMissa(item) {
       </div>
       ${acao}
     </li>`;
-  }).join('');
+  }).filter(h => h).join('');
 
   // Se ninguém estiver selecionado no "Eu sou", permite confirmar, trocar ou desistir escolhendo o nome na lista
   const rodapeSemNome = trocasLiberadas && !estado.eu && nomesDe(item).length
@@ -1361,7 +1346,6 @@ function cartaoMissa(item) {
         <span class="missa-hora">${esc(item.horario.replace(':00', 'h'))}</span>
         ${item.observacao ? `<span class="missa-obs">${esc(item.observacao)}</span>` : ''}
       </div>
-      ${vagas ? `<span class="missa-vagas-aviso">${vagas} ${vagas === 1 ? 'vaga aberta' : 'vagas abertas'}</span>` : ''}
     </div>
     <ul class="missa-linhas">${linhasHtml}</ul>
     ${rodapeSemNome}
@@ -1423,17 +1407,7 @@ function desfazerConfirmacaoLinha(index, nome) {
 /* Bloco "Me escalar": até 3 próximas missas com vaga em que a pessoa ainda não está */
 function desenharMeEscalar() {
   const el = document.getElementById('meEscalar');
-  if (!el) return;
-  const lista = trocasLiberadas ? escalaGeral.filter(i => vagasDe(i) > 0 && !estouNa(i)).slice(0, 3) : [];
-  if (!lista.length) { el.style.display = 'none'; return; }
-  const total = escalaGeral.filter(i => vagasDe(i) > 0).reduce((t, i) => t + vagasDe(i), 0);
-  el.innerHTML = `<h3>🙋 Precisamos de você! ${total} ${total === 1 ? 'vaga aberta' : 'vagas abertas'}</h3>` + lista.map(i => {
-    const v = vagasDe(i);
-    return `<div class="me-escalar-item"><div><b>${esc(SEM_CURTA[dataObj(i.data).getDay()])} ${esc(i.data.slice(0, 5))} às ${esc(i.horario.replace(':00', 'h'))}</b>
-      <small>${i.observacao ? esc(i.observacao) + ' • ' : ''}${v} ${v === 1 ? 'vaga' : 'vagas'}</small></div>
-      <button class="btn-me-escalar" onclick="quererVaga(${escalaGeral.indexOf(i)})">Me escalar</button></div>`;
-  }).join('');
-  el.style.display = 'flex';
+  if (el) el.style.display = 'none';
 }
 
 function quererVaga(i) {

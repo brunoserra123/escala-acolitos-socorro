@@ -262,7 +262,16 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
         <div class="item-menu-icon">👥</div>
         <div class="item-menu-corpo">
           <span class="item-menu-titulo">Acólitos por Missa</span>
-          <span class="item-menu-sub" id="subServindo">Limite e vagas de acólitos por celebração</span>
+          <span class="item-menu-sub" id="subServindo">Limite de acólitos por celebração</span>
+        </div>
+        <span class="item-menu-seta">›</span>
+      </button>
+
+      <button class="item-menu" onclick="mudarAba('senha')">
+        <div class="item-menu-icon">🔑</div>
+        <div class="item-menu-corpo">
+          <span class="item-menu-titulo">Trocar Senha</span>
+          <span class="item-menu-sub">Alterar a senha dos coordenadores</span>
         </div>
         <span class="item-menu-seta">›</span>
       </button>
@@ -313,7 +322,7 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
 <!-- Acólitos por missa -->
 <section id="aba-servindo" class="oculto">
 <div class="painel">
-<p>Quantos acólitos servem em cada missa (use − / + ou digite o número, até 99). A próxima escala gerada já sai com esse número de lugares (quem não for escalado vira vaga aberta).</p>
+<p>Quantos acólitos servem em cada missa (use − / + ou digite o número, até 99). A escala sai com esse número de lugares para cada celebração.</p>
 <label class="campo">Padrão para todas as missas</label>
 <div class="stepper"><button onclick="mudarPadrao(-1)">−</button><input type="number" inputmode="numeric" min="1" max="99" class="num-vagas" id="vagasPadrao" value="2" onchange="definirPadrao(this.value)"><button onclick="mudarPadrao(1)">+</button></div>
 <label class="marcar-todas"><input type="checkbox" id="chkTodas" onchange="marcarTodas(this.checked)"><span>Mudar <strong>todas as missas</strong> junto com o padrão</span></label>
@@ -576,7 +585,8 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
 <label class="campo" for="inEmailDestino">E-mail que recebe os avisos (vazio = dono da planilha)</label>
 <input type="email" id="inEmailDestino" placeholder="seuemail@gmail.com" autocomplete="email">
 <button class="btn sec small" style="margin-top:10px" onclick="salvarEmailDestino()">Salvar e-mail</button>
-</div>
+<!-- Trocar Senha -->
+<section id="aba-senha" class="oculto">
 <div class="painel">
 <p><strong>Trocar a senha dos coordenadores</strong><br>Quando alguém sair da coordenação, troque a senha e passe a nova só para quem continua. Todo mundo que estiver no painel sai na hora.</p>
 <label class="campo" for="senhaAtual">Senha atual</label>
@@ -586,6 +596,24 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
 <label class="campo" for="senhaNova2">Repita a nova senha</label>
 <input type="password" id="senhaNova2" autocomplete="new-password">
 <button class="btn full" style="margin-top:16px" id="btnTrocar" onclick="trocarSenha()">Trocar senha</button>
+</div>
+<div class="painel">
+<p>Esqueceu a senha? O dono da planilha pode criar outra no menu <strong>Escala Pastoral › Definir senha do painel</strong>.</p>
+<button class="btn perigo full" style="margin-top:14px" onclick="sair()">Sair do painel</button>
+</div>
+</section>
+
+<!-- Coordenadores -->
+<section id="aba-coord" class="oculto">
+<div class="painel">
+<p><strong>Trocar a senha dos coordenadores</strong><br>Quando alguém sair da coordenação, troque a senha e passe a nova só para quem continua. Todo mundo que estiver no painel sai na hora.</p>
+<label class="campo" for="senhaAtual_coord">Senha atual</label>
+<input type="password" id="senhaAtual_coord" autocomplete="current-password">
+<label class="campo" for="senhaNova_coord">Nova senha (mínimo 6 caracteres)</label>
+<input type="password" id="senhaNova_coord" autocomplete="new-password">
+<label class="campo" for="senhaNova2_coord">Repita a nova senha</label>
+<input type="password" id="senhaNova2_coord" autocomplete="new-password">
+<button class="btn full" style="margin-top:16px" onclick="trocarSenha()">Trocar senha</button>
 </div>
 <div class="painel" style="border-color:#4c1d24">
 <p><strong style="color:#f87171">🧹 Zerar dados</strong><br>Para começar do zero ou tirar os dados de teste. Antes de apagar, uma cópia fica guardada escondida na planilha.</p>
@@ -826,9 +854,9 @@ function aplicar(dados) {
 
 document.querySelectorAll(".tab-btn").forEach(b => b.onclick = () => mudarAba(b.dataset.aba));
 const TITULOS = { acolitos: "🙋 Acólitos", missas: "🕯️ Missas", gerar: "✨ Gerar escala", ajustar: "✏️ Ajustar escala", inscricoes: "📝 Inscrições", chamada: "✅ Chamada",
-  servindo: "👥 Acólitos por missa", acessos: "📈 Acessos", confirmacoes: "✅ Confirmações", discord: "🔔 Notificações", limpeza: "🧽 Missas que já passaram", trocas: "🔁 Trocas", relatorio: "📊 Relatórios", coord: "⚙️ Configurações" };
+  servindo: "👥 Acólitos por missa", senha: "🔑 Trocar Senha", acessos: "📈 Acessos", confirmacoes: "✅ Confirmações", discord: "🔔 Notificações", limpeza: "🧽 Missas que já passaram", trocas: "🔁 Trocas", relatorio: "📊 Relatórios", coord: "⚙️ Configurações" };
 function mudarAba(nome) {
-  ["inicio", "acolitos", "missas", "servindo", "limpeza", "acessos", "confirmacoes", "discord", "gerar", "ajustar", "inscricoes", "chamada", "trocas", "relatorio", "coord"].forEach(a => document.getElementById("aba-" + a).classList.toggle("oculto", a !== nome));
+  ["inicio", "acolitos", "missas", "servindo", "senha", "limpeza", "acessos", "confirmacoes", "discord", "gerar", "ajustar", "inscricoes", "chamada", "trocas", "relatorio", "coord"].forEach(a => document.getElementById("aba-" + a).classList.toggle("oculto", a !== nome));
   document.getElementById("barraSecao").classList.toggle("oculto", nome === "inicio");
   document.getElementById("tituloPainel").textContent = TITULOS[nome] || "";
   document.getElementById("fabAcolito").classList.toggle("oculto", nome !== "acolitos");
