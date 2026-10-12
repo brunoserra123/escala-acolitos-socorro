@@ -1,0 +1,36 @@
+name: Strix Pentest de Segurança
+
+on:
+  workflow_dispatch: # Permite disparar manualmente com 1 clique no GitHub
+  push:
+    branches: [main]
+    paths:
+      - '**.html'
+      - '**.js'
+
+jobs:
+  strix-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar Strix Agent
+        run: |
+          python -m pip install --upgrade pip
+          pip install strix-agent
+
+      - name: Executar auditoria de segurança com Strix
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          echo "Iniciando verificação do Strix..."
+          strix -n --target ./ --scan-mode quick || true
