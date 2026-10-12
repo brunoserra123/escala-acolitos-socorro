@@ -60,7 +60,13 @@ button { font: inherit; cursor: pointer; }
 .btn.sec { background: #1e293b; border: 1px solid #2b3a52; }
 .btn.perigo { background: transparent; color: #f87171; border: 1px solid #4c1d24; }
 .btn.small { padding: 8px 12px; font-size: 13px; }
-.btn.full { width: 100%; }
+.card-acoes { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.btn-card-acao { border: 1px solid #2b3a52; background: #182238; color: #cbd5e1; border-radius: 10px; padding: 7px 11px; font-size: 12.5px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: all .15s ease; }
+.btn-card-acao:hover { background: #233352; color: #fff; }
+.btn-card-acao.editar { border-color: #1e3a8a; color: #93c5fd; }
+.btn-card-acao.editar:hover { background: #1e3a8a; color: #fff; }
+.btn-card-acao.perigo { border-color: #4c1d24; color: #fca5a5; }
+.btn-card-acao.perigo:hover { background: #7f1d1d; color: #fff; }
 .fab { position: fixed; right: 18px; bottom: 22px; border-radius: 16px; padding: 14px 18px; box-shadow: 0 8px 24px rgba(37,99,235,0.35); z-index: 6; }
 .painel { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; margin-bottom: 14px; }
 .painel p { font-size: 13px; color: #cbd5e1; line-height: 1.5; }
@@ -1017,15 +1023,19 @@ function renderAcolitos() {
   const ordem = acolitos.map((a, i) => i).filter(i => !filtroGrupo || acolitos[i].grupo === filtroGrupo).sort((x, y) => (acolitos[y].ativo - acolitos[x].ativo) || acolitos[x].nome.localeCompare(acolitos[y].nome));
   el.innerHTML = ordem.map(i => {
     const a = acolitos[i];
-    return '<div class="card clicavel' + (a.ativo ? "" : " inativo") + '" onclick="editarAcolito(' + i + ')">' +
-      '<div class="card-info"><div class="card-title">' + esc(a.nome) + '</div>' +
+    return '<div class="card' + (a.ativo ? "" : " inativo") + '">' +
+      '<div class="card-info" style="cursor:pointer" onclick="editarAcolito(' + i + ')">' +
+      '<div class="card-title">' + esc(a.nome) + '</div>' +
       '<div class="card-sub">' + (a.registro ? '<span class="tag">Nº ' + esc(a.registro) + '</span>' : "") +
       '<span class="tag ' + (a.grupo === "Coroinha" ? "azul" : "") + '">' + esc(a.grupo || "Acólito") + '</span>' +
       '<span class="tag amber">📊 ' + ((frequencia[a.nome] || {}).mes || 0) + ' no mês • ' + ((frequencia[a.nome] || {}).total || 0) + ' no total</span>' +
       (a.repeteNoDia ? '<span class="tag green">🔁 Mais de uma por dia</span>' : "") + (a.ativo ? "" : '<span class="tag red">Inativo</span>') + resumoDisponibilidade(a.disponibilidade) + ((a.naoFaz || []).length ? '<span class="tag red">Não faz: ' + esc(a.naoFaz.join(", ")) + '</span>' : "") +
       (a.servirCom ? '<span class="tag azul">👥 Com ' + esc(a.servirCom) + '</span>' : "") +
       (a.telefone ? '<span class="tag green" onclick="event.stopPropagation()"><a href="https://wa.me/' + zap(a.telefone) + '" target="_blank">📞 ' + esc(a.telefone) + '</a></span>' : "") + '</div></div>' +
-      '<span class="chev">›</span></div>';
+      '<div class="card-acoes">' +
+      '<button class="btn-card-acao editar" onclick="event.stopPropagation();editarAcolito(' + i + ')" title="Editar dados">✏️ Editar</button>' +
+      '<button class="btn-card-acao perigo" onclick="event.stopPropagation();excluirAcolitoDireto(' + i + ')" title="Excluir acólito">🗑️ Apagar</button>' +
+      '</div></div>';
   }).join("");
 }
 
@@ -1147,9 +1157,17 @@ function salvarAcolito() {
 
 function excluirAcolito() {
   const a = acolitos[rascunho.i];
-  if (!confirm("Excluir " + a.nome + "? A escala já gerada não muda.")) return;
+  if (!confirm("Tem certeza que deseja apagar " + a.nome + "?\n\nEssa pessoa deixará de fazer parte da lista de acólitos.")) return;
   const lista = acolitos.filter((x, j) => j !== rascunho.i);
   chamar("painelSalvarAcolitos", [lista], dados => { aplicar(dados); fecharModal(); toast("Acólito excluído"); });
+}
+
+function excluirAcolitoDireto(i) {
+  const a = acolitos[i];
+  if (!a) return;
+  if (!confirm("Tem certeza que deseja apagar " + a.nome + " da lista de acólitos?\n\n(A escala que já foi publicada não muda.)")) return;
+  const lista = acolitos.filter((_, idx) => idx !== i);
+  chamar("painelSalvarAcolitos", [lista], dados => { aplicar(dados); toast("Acólito " + a.nome + " apagado com sucesso"); });
 }
 
 /** Cadastro rápido: cola uma lista de nomes (um por linha) e cria todo mundo de uma vez. */
