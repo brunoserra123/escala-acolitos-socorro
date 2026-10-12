@@ -217,9 +217,24 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
 .btn-verificar { margin-top: 8px; background: transparent; border: 1px solid #2b3a52; color: #94a3b8; border-radius: 10px; padding: 7px 12px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
 .msg-versao { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); z-index: 9999; background: #0f172a; border: 1px solid #10b981; color: #34d399; border-radius: 12px; padding: 10px 16px; font-size: 13px; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,.5); max-width: 90vw; text-align: center; }
 .msg-versao:empty { display: none; }
-.btn-atualizar-topo { width: 38px; height: 38px; flex-shrink: 0; border-radius: 12px; border: 1px solid #2b3a52; background: #0b1220; color: #cbd5e1; font-size: 17px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+.btn-atualizar-topo { width: 38px; height: 38px; flex-shrink: 0; border-radius: 12px; border: 1px solid #2b3a52; background: #0b1220; color: #cbd5e1; font-size: 17px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; transition: transform 0.5s ease; }
 .btn-atualizar-topo:active { transform: scale(.94); }
 </style>
+<script>
+let token = null;
+function deveExigirLoginF5() {
+  try { return localStorage.getItem("ativar_login_f5") !== "nao"; } catch (e) { return true; }
+}
+try {
+  if (deveExigirLoginF5()) {
+    localStorage.removeItem("painel_token");
+    sessionStorage.removeItem("painel_token");
+    token = null;
+  } else {
+    token = localStorage.getItem("painel_token") || sessionStorage.getItem("painel_token");
+  }
+} catch (e) { token = null; }
+</script>
 </head>
 <body data-versao="1.72">
 <div class="atualizar-fundo" id="telaAtualizar"><div class="atualizar-caixa"><div class="ic">🔄</div><h2>Tem versão nova do app!</h2><p id="textoAtualizar">Quer atualizar agora?</p><div class="atualizar-acoes"><button onclick="naoAtualizar()">Agora não</button><a href="./?p=coord" target="_blank" rel="noopener">Atualizar</a></div></div></div>
@@ -228,13 +243,22 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
 <form class="login-caixa" onsubmit="entrar(event)">
 <div class="header-icon">🔐</div>
 <h1>Coordenadores</h1>
-<p id="loginTexto">Carregando...</p>
+<p id="loginTexto">Digite a senha dos coordenadores para entrar.</p>
 <input type="password" id="inSenha" placeholder="Senha" autocomplete="current-password">
 <input type="password" id="inSenha2" class="oculto" style="margin-top:10px" placeholder="Repita a senha" autocomplete="new-password">
+<div style="margin: 14px 0 4px; text-align: left; display: flex; align-items: center; justify-content: center;">
+  <label style="font-size: 13px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 8px; user-select: none;">
+    <input type="checkbox" id="chkLembrarLogin" style="width: 17px; height: 17px; accent-color: var(--accent); cursor: pointer;">
+    <span>Lembrar login (não pedir no F5)</span>
+  </label>
+</div>
 <button class="btn full" style="margin-top:12px" id="btnEntrar" type="submit">Entrar</button>
 <div class="login-erro" id="loginErro"></div>
 </form>
 </div>
+<script>
+if (!token) document.getElementById("telaLogin").classList.remove("oculto");
+</script>
 
 <a class="voltar" href="./" onclick="if(location.protocol.indexOf('http')>=0){location.href='index.html';return false;}" target="_top">← Ver a escala</a>
 <div class="header">
@@ -318,6 +342,26 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
   border: 1px solid #fbbf24;
   box-shadow: 0 6px 18px rgba(217, 119, 6, 0.35);
 }
+.icon-trocas {
+  background: linear-gradient(135deg, #059669, #047857);
+  border: 1px solid #34d399;
+  box-shadow: 0 6px 18px rgba(5, 150, 105, 0.35);
+}
+.icon-limpeza {
+  background: linear-gradient(135deg, #0284c7, #0369a1);
+  border: 1px solid #38bdf8;
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.35);
+}
+.icon-gerar {
+  background: linear-gradient(135deg, #ec4899, #db2777);
+  border: 1px solid #f472b6;
+  box-shadow: 0 6px 18px rgba(236, 72, 153, 0.35);
+}
+.icon-missas {
+  background: linear-gradient(135deg, #4f46e5, #4338ca);
+  border: 1px solid #818cf8;
+  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.35);
+}
 .menu-card-content {
   flex: 1;
   min-width: 0;
@@ -374,14 +418,58 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
       </div>
     </button>
 
+    <button class="menu-card-btn" onclick="mudarAba('trocas')">
+      <div class="menu-card-icon icon-trocas">🔁</div>
+      <div class="menu-card-content">
+        <div class="menu-card-title">
+          <span>Trocas e Vagas no Site</span>
+          <span class="menu-card-arrow">›</span>
+        </div>
+        <div class="menu-card-desc">Liberar ou fechar trocas e ver desistências</div>
+      </div>
+    </button>
+
+    <button class="menu-card-btn" onclick="mudarAba('limpeza')">
+      <div class="menu-card-icon icon-limpeza">🧽</div>
+      <div class="menu-card-content">
+        <div class="menu-card-title">
+          <span>Limpar Missas Passadas</span>
+          <span class="menu-card-arrow">›</span>
+        </div>
+        <div class="menu-card-desc">Arquivar celebrações que já passaram no histórico</div>
+      </div>
+    </button>
+
+    <button class="menu-card-btn" onclick="mudarAba('gerar')">
+      <div class="menu-card-icon icon-gerar">✨</div>
+      <div class="menu-card-content">
+        <div class="menu-card-title">
+          <span>Gerar Escala</span>
+          <span class="menu-card-arrow">›</span>
+        </div>
+        <div class="menu-card-desc">Criar nova escala do mês de forma automática</div>
+      </div>
+    </button>
+
+    <button class="menu-card-btn" onclick="mudarAba('missas')">
+      <div class="menu-card-icon icon-missas">🕯️</div>
+      <div class="menu-card-content">
+        <div class="menu-card-title">
+          <span>Missas e Funções</span>
+          <span class="menu-card-arrow">›</span>
+        </div>
+        <div class="menu-card-desc">Horários da semana e celebrações especiais</div>
+      </div>
+    </button>
+
     <button class="menu-card-btn" onclick="mudarAba('senha')">
       <div class="menu-card-icon icon-senha">🔑</div>
       <div class="menu-card-content">
         <div class="menu-card-title">
-          <span>Trocar Senha</span>
+          <span>Trocar Senha & Login</span>
           <span class="menu-card-arrow">›</span>
         </div>
-        <div class="menu-card-desc">Atualizar a senha de acesso dos coordenadores</div>
+        <div class="menu-card-desc">Atualizar senha e ativar/desativar tela de login</div>
       </div>
     </button>
   </div>
@@ -696,6 +784,15 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
 <!-- Trocar Senha -->
 <section id="aba-senha" class="oculto">
 <div class="painel">
+<p><strong>🔐 Tela de Login ao recarregar (F5)</strong><br>Defina se a tela de login deve ser ativada ao recarregar a página (F5) ou se você prefere manter o acesso direto no aparelho.</p>
+<div class="seg" id="segAtivarLogin" style="margin-top:10px">
+<button id="btnPedirLoginSim" onclick="definirModoLogin(true)">🔒 Ativada (pede senha no F5)</button>
+<button id="btnPedirLoginNao" onclick="definirModoLogin(false)">⚡ Desativada (entra direto no F5)</button>
+</div>
+<p id="textoModoLogin" style="margin-top:8px;font-size:12px;color:var(--text-muted)"></p>
+</div>
+
+<div class="painel">
 <p><strong>Trocar a senha dos coordenadores</strong><br>Quando alguém sair da coordenação, troque a senha e passe a nova só para quem continua. Todo mundo que estiver no painel sai na hora.</p>
 <label class="campo" for="senhaAtual">Senha atual</label>
 <input type="password" id="senhaAtual" autocomplete="current-password">
@@ -791,19 +888,63 @@ function toast(msg, erro) {
   t._t = setTimeout(() => t.style.display = "none", erro ? 5000 : 2500);
 }
 /* ---------- senha / sessão ---------- */
-let token = null;
-// a entrada vale só enquanto a aba estiver aberta: fechou, pede a senha de novo
-try { localStorage.removeItem("painel_token"); token = sessionStorage.getItem("painel_token"); } catch (e) {}
+// token e deveExigirLoginF5 inicializados no topo do documento
 function guardarToken(t) {
   token = t;
-  try { if (t) sessionStorage.setItem("painel_token", t); else sessionStorage.removeItem("painel_token"); } catch (e) {}
+  try {
+    if (!t) {
+      localStorage.removeItem("painel_token");
+      sessionStorage.removeItem("painel_token");
+    } else if (!deveExigirLoginF5()) {
+      localStorage.setItem("painel_token", t);
+    } else {
+      localStorage.removeItem("painel_token");
+      sessionStorage.removeItem("painel_token");
+    }
+  } catch (e) {}
 }
+
+function definirModoLogin(ativar) {
+  try {
+    localStorage.setItem("ativar_login_f5", ativar ? "sim" : "nao");
+    if (!ativar && token) {
+      localStorage.setItem("painel_token", token);
+    } else if (ativar) {
+      localStorage.removeItem("painel_token");
+      sessionStorage.removeItem("painel_token");
+    }
+  } catch (e) {}
+  atualizarBotoesModoLogin();
+  toast(ativar ? "Tela de login ativada: pedirá senha ao recarregar (F5)." : "Entrar direto ativado: não pedirá senha no F5.");
+}
+
+function atualizarBotoesModoLogin() {
+  const exigir = deveExigirLoginF5();
+  const btnSim = document.getElementById("btnPedirLoginSim");
+  const btnNao = document.getElementById("btnPedirLoginNao");
+  const txt = document.getElementById("textoModoLogin");
+  const chk = document.getElementById("chkLembrarLogin");
+  if (btnSim && btnNao) {
+    btnSim.classList.toggle("on", exigir);
+    btnNao.classList.toggle("on", !exigir);
+  }
+  if (txt) {
+    txt.textContent = exigir
+      ? "🔒 Ativada: por segurança, ao recarregar a página (F5) ou reabrir o site, a tela de login pedirá a senha novamente."
+      : "⚡ Desativada: ao recarregar a página (F5), o painel abre direto sem pedir senha.";
+  }
+  if (chk) {
+    chk.checked = !exigir;
+  }
+}
+
 let criandoSenha = false;
 function mostrarLogin(msg) {
   guardarToken(null);
   fecharModal();
   document.getElementById("telaLogin").classList.remove("oculto");
   document.getElementById("loginErro").textContent = msg || "";
+  atualizarBotoesModoLogin();
   const b = document.getElementById("btnEntrar");
   b.disabled = true;
   google.script.run
@@ -833,6 +974,12 @@ function entrar(ev) {
     if (senha.trim().length < 6) { document.getElementById("loginErro").textContent = "A senha precisa ter pelo menos 6 caracteres."; return; }
     if (senha !== document.getElementById("inSenha2").value) { document.getElementById("loginErro").textContent = "As duas senhas não são iguais."; return; }
   }
+  const chk = document.getElementById("chkLembrarLogin");
+  if (chk) {
+    try {
+      localStorage.setItem("ativar_login_f5", chk.checked ? "nao" : "sim");
+    } catch (e) {}
+  }
   const b = document.getElementById("btnEntrar");
   b.disabled = true; b.textContent = "Entrando...";
   google.script.run
@@ -841,6 +988,7 @@ function entrar(ev) {
       document.getElementById("inSenha").value = "";
       document.getElementById("inSenha2").value = "";
       document.getElementById("telaLogin").classList.add("oculto");
+      atualizarBotoesModoLogin();
       iniciar();
     })
     .withFailureHandler(e => mostrarLogin(textoErro(e)))
@@ -848,6 +996,7 @@ function entrar(ev) {
 }
 function sair() {
   google.script.run.sairPainel(token);
+  guardarToken(null);
   mostrarLogin("Você saiu do painel.");
 }
 function zerar(oque, texto) {
@@ -920,6 +1069,7 @@ function resumoDisponibilidade(texto) {
 /* ---------- carregar ---------- */
 window.onload = function () {
   montarMeses();
+  atualizarBotoesModoLogin();
   if (token) iniciar(); else mostrarLogin();
 };
 function iniciar() {
@@ -970,13 +1120,14 @@ function aplicar(dados) {
 
 document.querySelectorAll(".tab-btn").forEach(b => b.onclick = () => mudarAba(b.dataset.aba));
 const TITULOS = { acolitos: "🙋 Acólitos", missas: "🕯️ Missas", gerar: "✨ Gerar escala", ajustar: "✏️ Ajustar escala", inscricoes: "📝 Inscrições", chamada: "✅ Chamada",
-  servindo: "👥 Acólitos por missa", senha: "🔑 Trocar Senha", acessos: "📈 Acessos", confirmacoes: "✅ Confirmações", discord: "🔔 Notificações", limpeza: "🧽 Missas que já passaram", trocas: "🔁 Trocas", relatorio: "📊 Relatórios", coord: "⚙️ Configurações" };
+  servindo: "👥 Acólitos por missa", senha: "🔑 Trocar Senha & Login", acessos: "📈 Acessos", confirmacoes: "✅ Confirmações", discord: "🔔 Notificações", limpeza: "🧽 Missas que já passaram", trocas: "🔁 Trocas", relatorio: "📊 Relatórios", coord: "⚙️ Configurações" };
 function mudarAba(nome) {
   ["inicio", "acolitos", "missas", "servindo", "senha", "limpeza", "acessos", "confirmacoes", "discord", "gerar", "ajustar", "inscricoes", "chamada", "trocas", "relatorio", "coord"].forEach(a => document.getElementById("aba-" + a).classList.toggle("oculto", a !== nome));
   document.getElementById("barraSecao").classList.toggle("oculto", nome === "inicio");
   document.getElementById("tituloPainel").textContent = TITULOS[nome] || "";
   document.getElementById("fabAcolito").classList.toggle("oculto", nome !== "acolitos");
   document.getElementById("fabMissa").classList.toggle("oculto", nome !== "missas");
+  if (nome === "senha") atualizarBotoesModoLogin();
   if (nome === "ajustar") carregarMes();
   if (nome === "trocas") carregarTrocas();
   if (nome === "inscricoes") carregarInscricoes();
@@ -2230,6 +2381,18 @@ function naoAtualizar() {
 function conferirVersao(manual, botao) {
   const msg = document.getElementById('msgVersao');
   clearTimeout(window.tmMsgVersao);
+  const btn = botao || document.querySelector('.btn-atualizar-topo');
+  if (btn) {
+    btn.style.transition = 'transform 0.5s ease';
+    btn.style.transform = 'rotate(360deg)';
+    setTimeout(function () {
+      if (btn) {
+        btn.style.transition = 'none';
+        btn.style.transform = '';
+        setTimeout(function () { if (btn) btn.style.transition = ''; }, 50);
+      }
+    }, 600);
+  }
   if (botao) { msg.style.top = (botao.getBoundingClientRect().bottom + window.scrollY + 8) + 'px'; window.yBotaoVersao = botao.getBoundingClientRect().top + window.scrollY; }
   if (manual) { msg.textContent = 'Verificando...'; window.tmMsgVersao = setTimeout(function () { msg.textContent = ''; }, 8000); }
   google.script.run.withSuccessHandler(function (info) {
