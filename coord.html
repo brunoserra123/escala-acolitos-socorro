@@ -248,79 +248,98 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
 .menu-cards-grid {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 6px;
+  gap: 14px;
+  margin-top: 10px;
 }
 .menu-card-btn {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 18px 18px;
-  background: linear-gradient(135deg, #131c2e, #0e1524);
-  border: 1px solid #1e2d48;
-  border-radius: 18px;
+  padding: 20px 18px;
+  background: linear-gradient(135deg, #131d31 0%, #0e1526 100%);
+  border: 1px solid #1f2e4d;
+  border-radius: 20px;
   color: #fff;
   cursor: pointer;
   text-align: left;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
   width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+.menu-card-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
 }
 .menu-card-btn:hover {
-  background: linear-gradient(135deg, #18233a, #131c2e);
+  background: linear-gradient(135deg, #192742 0%, #121c33 100%);
   border-color: #3b82f6;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 8px 26px rgba(37, 99, 235, 0.22);
 }
 .menu-card-btn:active {
   transform: scale(0.98);
 }
 .menu-card-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
+  width: 54px;
+  height: 54px;
+  border-radius: 17px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 26px;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
 }
 .icon-acolitos {
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
   border: 1px solid #60a5fa;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
 }
 .icon-servindo {
   background: linear-gradient(135deg, #7c3aed, #6d28d9);
   border: 1px solid #a78bfa;
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.35);
 }
 .icon-senha {
   background: linear-gradient(135deg, #d97706, #b45309);
   border: 1px solid #fbbf24;
+  box-shadow: 0 6px 18px rgba(217, 119, 6, 0.35);
 }
 .menu-card-content {
   flex: 1;
   min-width: 0;
 }
 .menu-card-title {
-  font-size: 16px;
+  font-size: 16.5px;
   font-weight: 700;
   color: #f8fafc;
-  margin-bottom: 3px;
+  margin-bottom: 4px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 .menu-card-desc {
-  font-size: 12.5px;
+  font-size: 13px;
   color: #94a3b8;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 .menu-card-arrow {
   color: #64748b;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 300;
-  margin-left: 4px;
+  margin-left: 6px;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+.menu-card-btn:hover .menu-card-arrow {
+  color: #93c5fd;
+  transform: translateX(3px);
 }
 </style>
 
