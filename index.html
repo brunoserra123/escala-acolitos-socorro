@@ -372,6 +372,10 @@ footer a { color: var(--muted); text-decoration: underline; }
     <h2>Opções do App</h2>
     <p>Acesso rápido da escala.</p>
     <div class="menu-lista">
+      <button class="menu-item" onclick="fecharMenuOpcoes(); abrirManual();">
+        <span class="ic">📖</span>
+        <span>Manual da Escala e Guia</span>
+      </button>
       <button class="menu-item" onclick="fecharMenuOpcoes(); abrirInstalarApp();">
         <span class="ic">📲</span>
         <span>Como adicionar à tela inicial (atalho)</span>
@@ -553,7 +557,8 @@ footer a { color: var(--muted); text-decoration: underline; }
       <button type="button" class="chip-btn" onclick="irParaSlideManual(2)">3. Escala</button>
       <button type="button" class="chip-btn" onclick="irParaSlideManual(3)">4. Nova Escala</button>
       <button type="button" class="chip-btn" onclick="irParaSlideManual(4)">5. Vagas</button>
-      <button type="button" class="chip-btn" onclick="irParaSlideManual(5)">6. Apresentação</button>
+      <button type="button" class="chip-btn" onclick="irParaSlideManual(5)">6. Coordenação</button>
+      <button type="button" class="chip-btn" onclick="irParaSlideManual(6)">7. Apresentação</button>
     </div>
 
     <!-- Conteúdo do Slide Atual -->
@@ -2157,6 +2162,27 @@ const SLIDES_MANUAL = [
         <div style="background:var(--vaga-bg); border:1px solid var(--vaga-line); border-radius:10px; padding:10px 12px">
           <strong style="color:var(--vaga)">🙋 Quer cobrir a vaga de um amigo?</strong>
           <p style="color:#fed7aa; margin-top:2px">Toque na aba <b>🟠 Vagas</b>, veja quais missas têm vagas e toque em <b>"Quero servir"</b>.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    tag: "Passo 6 de 7",
+    titulo: "🔐 Área dos Coordenadores (v1.72)",
+    sub: "Gestão completa de acólitos, vagas, segurança e limpeza da escala.",
+    html: `
+      <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px; line-height:1.5;">
+        <div style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 12px">
+          <strong style="color:#fff">🔒 Tela de Login & F5:</strong>
+          <p style="color:var(--muted); margin-top:2px">Você escolhe se deseja pedir a senha no F5 ou se prefere manter logado no aparelho pela opção <i>"Lembrar login"</i>.</p>
+        </div>
+        <div style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 12px">
+          <strong style="color:#fff">🙋 Cadastro com Edição & Exclusão Segura:</strong>
+          <p style="color:var(--muted); margin-top:2px">Edite nomes, telefone e disponibilidade. Para apagar acólitos que saíram, há confirmação com modal para evitar cliques acidentais.</p>
+        </div>
+        <div style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:10px 12px">
+          <strong style="color:#fff">🧽 Limpar Missas Passadas:</strong>
+          <p style="color:var(--muted); margin-top:2px">Arquive celebrações antigas na aba <i>Histórico</i> da planilha, mantendo o site leve e a frequência intacta.</p>
         </div>
       </div>
     `
