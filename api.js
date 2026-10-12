@@ -31,21 +31,43 @@
     var inscricao = /[?&]p=inscricao/.test(location.search);
     var guardado = null;
     try { guardado = JSON.parse(localStorage.getItem("dados_site") || "null"); } catch (e) {}
-    var comecar = function () {
-      var iniciado = false;
-      // abre na hora com a última escala guardada neste celular; quando a nova chegar, atualiza a tela
-      if (guardado && !inscricao) { DADOS_INICIAIS = guardado; iniciar(); iniciado = true; }
+    var iniciado = false;
+    // abre imediatamente se tiver escala guardada no aparelho (0ms)
+    if (guardado && guardado.escala && !inscricao) {
+      DADOS_INICIAIS = guardado;
+      iniciar();
+      iniciado = true;
+    }
+    var sincronizar = function () {
       chamar("dadosIniciaisSite", [inscricao]).then(function (d) {
         try { localStorage.setItem("dados_site", JSON.stringify(d)); } catch (e) {}
         DADOS_INICIAIS = d;
-        if (!iniciado) { iniciar(); return; }
+        if (!iniciado) {
+          iniciar();
+          iniciado = true;
+          return;
+        }
         trocasLiberadas = !!d.trocas; chamadaAtiva = !!d.chamada;
         if (Array.isArray(d.nomes)) nomesAcolitos = d.nomes;
         if (d.grade) gradeMissas = d.grade;
         carregarEscala(d.escala);
-      }, function () { if (!iniciado) iniciar(); });
+      }, function () {
+        if (!iniciado) {
+          iniciar();
+          iniciado = true;
+        }
+      });
     };
-    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", comecar); else comecar();
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", function () {
+        if (!iniciado && guardado && guardado.escala && !inscricao) {
+          DADOS_INICIAIS = guardado;
+          iniciar();
+          iniciado = true;
+        }
+      });
+    }
+    sincronizar();
   };
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function () {});
 })();

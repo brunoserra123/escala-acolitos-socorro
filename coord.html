@@ -8,6 +8,12 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Acólitos">
+<script>
+try {
+  var _g = JSON.parse(localStorage.getItem("dados_site") || "null");
+  if (_g && _g.escala && !window.DADOS_INICIAIS) { window.DADOS_INICIAIS = _g; }
+} catch(e) {}
+</script>
 <script src="api.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -221,7 +227,7 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
 .btn-atualizar-topo:active { transform: scale(.94); }
 </style>
 </head>
-<body data-versao="1.71">
+<body data-versao="1.72">
 <div class="atualizar-fundo" id="telaAtualizar"><div class="atualizar-caixa"><div class="ic">🔄</div><h2>Tem versão nova do app!</h2><p id="textoAtualizar">Quer atualizar agora?</p><div class="atualizar-acoes"><button onclick="naoAtualizar()">Agora não</button><a href="./?p=coord" target="_blank" rel="noopener">Atualizar</a></div></div></div>
 <div class="login oculto" id="telaLogin">
 <a class="voltar" href="./" target="_top">← Ver a escala</a>
