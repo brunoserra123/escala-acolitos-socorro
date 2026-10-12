@@ -32,41 +32,56 @@
     var guardado = null;
     try { guardado = JSON.parse(localStorage.getItem("dados_site") || "null"); } catch (e) {}
     var iniciado = false;
-    // abre imediatamente se tiver escala guardada no aparelho (0ms)
-    if (guardado && guardado.escala && !inscricao) {
-      DADOS_INICIAIS = guardado;
-      iniciar();
-      iniciado = true;
+
+    var comecarComCache = function () {
+      if (iniciado) return;
+      if (guardado && guardado.escala && !inscricao) {
+        DADOS_INICIAIS = guardado;
+        iniciado = true;
+        iniciar();
+      }
+    };
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", comecarComCache);
+    } else {
+      comecarComCache();
     }
+
     var sincronizar = function () {
       chamar("dadosIniciaisSite", [inscricao]).then(function (d) {
         try { localStorage.setItem("dados_site", JSON.stringify(d)); } catch (e) {}
         DADOS_INICIAIS = d;
-        if (!iniciado) {
-          iniciar();
-          iniciado = true;
-          return;
+        var aplicar = function () {
+          if (!iniciado) {
+            iniciar();
+            iniciado = true;
+            return;
+          }
+          trocasLiberadas = !!d.trocas; chamadaAtiva = !!d.chamada;
+          if (Array.isArray(d.nomes)) nomesAcolitos = d.nomes;
+          if (d.grade) gradeMissas = d.grade;
+          carregarEscala(d.escala);
+        };
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", aplicar);
+        } else {
+          aplicar();
         }
-        trocasLiberadas = !!d.trocas; chamadaAtiva = !!d.chamada;
-        if (Array.isArray(d.nomes)) nomesAcolitos = d.nomes;
-        if (d.grade) gradeMissas = d.grade;
-        carregarEscala(d.escala);
       }, function () {
-        if (!iniciado) {
-          iniciar();
-          iniciado = true;
+        var fallback = function () {
+          if (!iniciado) {
+            iniciar();
+            iniciado = true;
+          }
+        };
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", fallback);
+        } else {
+          fallback();
         }
       });
     };
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", function () {
-        if (!iniciado && guardado && guardado.escala && !inscricao) {
-          DADOS_INICIAIS = guardado;
-          iniciar();
-          iniciado = true;
-        }
-      });
-    }
     sincronizar();
   };
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function () {});

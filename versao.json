@@ -1,5 +1,5 @@
 {
   "versao": "1.72",
-  "mensagem": "Versao 1.72: Confirmacoes e remocoes instantaneas e carregamento acelerado",
+  "mensagem": "Versao 1.72: Correcao de inicializacao do DOM e atualizacao segura",
   "url_atualizacao": "https://sites.google.com/view/acolitos-socorro"
 }

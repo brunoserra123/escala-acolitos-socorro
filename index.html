@@ -8,12 +8,6 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Acólitos">
-<script>
-try {
-  var _g = JSON.parse(localStorage.getItem("dados_site") || "null");
-  if (_g && _g.escala && !window.DADOS_INICIAIS) { window.DADOS_INICIAIS = _g; }
-} catch(e) {}
-</script>
 <script src="api.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -809,21 +803,26 @@ function totalVagas() { return escalaGeral.reduce((t, i) => t + vagasDe(i), 0); 
 function carregarEscala(dados) {
   escalaGeral = dados || [];
   const prox = escalaGeral[0];
-  document.getElementById('subtitulo').textContent = prox
-    ? `Próxima: ${SEM_CURTA[dataObj(prox.data).getDay()]} ${prox.data.slice(0, 5)} às ${prox.horario.replace(':00', 'h')}`
-    : 'Nenhuma escala gerada no momento';
-  montarEuSou();
-  atualizarDestaqueMinhaMissa();
-  desenharMeEscalar();
-  atualizarAbas();
-  desenhar();
+  const sub = document.getElementById('subtitulo');
+  if (sub) {
+    sub.textContent = prox
+      ? `Próxima: ${SEM_CURTA[dataObj(prox.data).getDay()]} ${prox.data.slice(0, 5)} às ${prox.horario.replace(':00', 'h')}`
+      : 'Nenhuma escala gerada no momento';
+  }
+  try { montarEuSou(); } catch (e) { console.warn('montarEuSou:', e); }
+  try { atualizarDestaqueMinhaMissa(); } catch (e) { console.warn('destaque:', e); }
+  try { desenharMeEscalar(); } catch (e) { console.warn('meEscalar:', e); }
+  try { atualizarAbas(); } catch (e) { console.warn('atualizarAbas:', e); }
+  try { desenhar(); } catch (e) { console.error('desenhar:', e); }
 }
 function tratarErro(e) {
-  document.getElementById('tela').innerHTML = `<div class="aviso-vazio"><b>⚠️</b>Erro ao carregar a escala: ${esc(e.message || e)}</div>`;
+  const t = document.getElementById('tela');
+  if (t) t.innerHTML = `<div class="aviso-vazio"><b>⚠️</b>Erro ao carregar a escala: ${esc(e.message || e)}</div>`;
 }
 
 function montarEuSou() {
   const sel = document.getElementById('euSou');
+  if (!sel) return;
   const nomes = new Set(nomesAcolitos || []);
   escalaGeral.forEach(i => nomesDe(i).forEach(n => nomes.add(n)));
   if (estado.eu) nomes.add(estado.eu);
@@ -978,10 +977,12 @@ function atualizarDestaqueMinhaMissa() {
 /* ---------- Controle de Abas ---------- */
 function atualizarAbas() {
   const v = totalVagas();
-  document.getElementById('badgeVagas').textContent = v || '';
+  const badgeV = document.getElementById('badgeVagas');
+  if (badgeV) badgeV.textContent = v || '';
   const btnChamada = document.getElementById('abaChamadaBtn');
-  btnChamada.style.display = chamadaAtiva ? 'flex' : 'none';
-  document.getElementById('barraAbas').classList.toggle('com-chamada', chamadaAtiva);
+  if (btnChamada) btnChamada.style.display = chamadaAtiva ? 'flex' : 'none';
+  const barra = document.getElementById('barraAbas');
+  if (barra) barra.classList.toggle('com-chamada', chamadaAtiva);
 }
 
 function mudarAba(aba) {
@@ -1011,6 +1012,7 @@ function filtrarPorTexto(txt) {
 /* ---------- Renderização das Telas ---------- */
 function desenhar() {
   const tela = document.getElementById('tela');
+  if (!tela) return;
   if (estado.aba === 'vagas') {
     tela.innerHTML = renderTelaVagas();
   } else if (estado.aba === 'chamada') {
