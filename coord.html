@@ -246,37 +246,14 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
 
 <!-- Início -->
 <section id="aba-inicio">
-  <!-- Ações Principais -->
-  <div class="card-acoes-principais">
-    <div class="card-acoes-principais-header">⚡ Ações Principais</div>
-    <div class="acoes-principais-grid">
-      <button class="btn-acao-principal destaque" onclick="mudarAba('gerar')">
-        <div class="acao-topo">
-          <div class="acao-icone">✨</div>
-          <div class="acao-titulo">Gerar Escala</div>
-        </div>
-        <div class="acao-sub">Mês, semana ou datas específicas</div>
-      </button>
-
-      <button class="btn-acao-principal" onclick="mudarAba('ajustar')">
-        <div class="acao-topo">
-          <div class="acao-icone">✏️</div>
-          <div class="acao-titulo">Ajustar Escala</div>
-        </div>
-        <div class="acao-sub" id="subAjustar">Trocar quem serve e as funções</div>
-      </button>
-    </div>
-  </div>
-
-  <!-- Grupo 1: Escala & Celebrações -->
+  <!-- Opções Principais -->
   <div class="secao-grupo">
-    <div class="secao-titulo">📅 Escala & Celebrações</div>
     <div class="lista-menu">
-      <button class="item-menu" onclick="mudarAba('missas')">
-        <div class="item-menu-icon">🕯️</div>
+      <button class="item-menu" onclick="mudarAba('acolitos')">
+        <div class="item-menu-icon">🙋</div>
         <div class="item-menu-corpo">
-          <span class="item-menu-titulo">Grade de Missas</span>
-          <span class="item-menu-sub" id="subMissas">Horários, funções e datas especiais</span>
+          <span class="item-menu-titulo">Cadastro de Acólitos</span>
+          <span class="item-menu-sub" id="subAcolitos">Editar e apagar usuários, nomes e funções</span>
         </div>
         <span class="item-menu-seta">›</span>
       </button>
@@ -285,124 +262,7 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
         <div class="item-menu-icon">👥</div>
         <div class="item-menu-corpo">
           <span class="item-menu-titulo">Acólitos por Missa</span>
-          <span class="item-menu-sub" id="subServindo">Quantos servem em cada celebração</span>
-        </div>
-        <span class="item-menu-seta">›</span>
-      </button>
-
-      <button class="item-menu" onclick="mudarAba('limpeza')">
-        <div class="item-menu-icon">🧽</div>
-        <div class="item-menu-corpo">
-          <span class="item-menu-titulo">Missas que Já Passaram</span>
-          <span class="item-menu-sub" id="subLimpeza">Tirar da escala os dias passados</span>
-        </div>
-        <span class="item-menu-seta">›</span>
-      </button>
-
-      <a class="item-menu" href="./" target="_top">
-        <div class="item-menu-icon">🌐</div>
-        <div class="item-menu-corpo">
-          <span class="item-menu-titulo">Ver Escala no Site</span>
-          <span class="item-menu-sub">Como os acólitos e fiéis veem</span>
-        </div>
-        <span class="item-menu-seta">›</span>
-      </a>
-    </div>
-  </div>
-
-  <!-- Grupo 2: Pessoas & Confirmações -->
-  <div class="secao-grupo">
-    <div class="secao-titulo">🙋 Pessoas & Confirmações</div>
-    <div class="lista-menu">
-      <button class="item-menu" onclick="mudarAba('acolitos')">
-        <div class="item-menu-icon">🙋</div>
-        <div class="item-menu-corpo">
-          <span class="item-menu-titulo">Cadastro de Acólitos</span>
-          <span class="item-menu-sub" id="subAcolitos">Cadastro de acólitos e coroinhas</span>
-        </div>
-        <span class="item-menu-seta">›</span>
-      </button>
-
-      <button class="item-menu" onclick="mudarAba('confirmacoes')">
-        <div class="item-menu-icon">✅</div>
-        <div class="item-menu-corpo">
-          <span class="item-menu-titulo">Confirmações de Presença</span>
-          <span class="item-menu-sub">Quem confirmou e quem falta</span>
-        </div>
-        <span class="item-menu-seta">›</span>
-      </button>
-
-      <button class="item-menu" onclick="mudarAba('inscricoes')">
-        <div class="item-menu-icon">📝</div>
-        <div class="item-menu-corpo">
-          <span class="item-menu-titulo">Inscrições do Site <span class="badge oculto" id="badgeInscricoes"></span></span>
-          <span class="item-menu-sub">Aprovar quem se inscreveu pelo site</span>
-        </div>
-        <span class="item-menu-seta">›</span>
-      </button>
-
-      <button class="item-menu" onclick="mudarAba('trocas')">
-        <div class="item-menu-icon">🔁</div>
-        <div class="item-menu-corpo">
-          <span class="item-menu-titulo">Trocas & Desistências</span>
-          <span class="item-menu-sub">Vagas abertas e trocas de horário</span>
-        </div>
-        <span class="item-menu-seta">›</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- Grupo 3: Relatórios & Estatísticas -->
-  <div class="secao-grupo">
-    <div class="secao-titulo">📊 Relatórios & Estatísticas</div>
-    <div class="lista-menu">
-      <button class="item-menu" onclick="mudarAba('relatorio')">
-        <div class="item-menu-icon">📊</div>
-        <div class="item-menu-corpo">
-          <span class="item-menu-titulo">Relatórios de Participação</span>
-          <span class="item-menu-sub">Frequência e histórico de cada um</span>
-        </div>
-        <span class="item-menu-seta">›</span>
-      </button>
-
-      <button class="item-menu" onclick="mudarAba('acessos')">
-        <div class="item-menu-icon">📈</div>
-        <div class="item-menu-corpo">
-          <span class="item-menu-titulo">Acessos ao App</span>
-          <span class="item-menu-sub">O que está sendo usado e o que não</span>
-        </div>
-        <span class="item-menu-seta">›</span>
-      </button>
-
-      <button class="item-menu oculto" id="tileChamada" onclick="mudarAba('chamada')">
-        <div class="item-menu-icon">📋</div>
-        <div class="item-menu-corpo">
-          <span class="item-menu-titulo">Chamada de Presença</span>
-          <span class="item-menu-sub">Quem veio e quem faltou na missa</span>
-        </div>
-        <span class="item-menu-seta">›</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- Grupo 4: Ajustes & Configurações -->
-  <div class="secao-grupo">
-    <div class="secao-titulo">⚙️ Ajustes & Configurações</div>
-    <div class="lista-menu">
-      <button class="item-menu" onclick="mudarAba('discord')">
-        <div class="item-menu-icon">🔔</div>
-        <div class="item-menu-corpo">
-          <span class="item-menu-titulo">Notificações</span>
-          <span class="item-menu-sub" id="subDiscord">Discord e celular (ntfy)</span>
-        </div>
-        <span class="item-menu-seta">›</span>
-      </button>
-
-      <button class="item-menu" onclick="mudarAba('coord')">
-        <div class="item-menu-icon">⚙️</div>
-        <div class="item-menu-corpo">
-          <span class="item-menu-titulo">Configurações do Sistema</span>
-          <span class="item-menu-sub">Modos de operação, e-mail, senha e zerar</span>
+          <span class="item-menu-sub" id="subServindo">Limite e vagas de acólitos por celebração</span>
         </div>
         <span class="item-menu-seta">›</span>
       </button>
