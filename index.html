@@ -332,6 +332,9 @@ footer a { color: var(--muted); text-decoration: underline; }
     <button class="aba-btn" data-aba="escala" onclick="mudarAba('escala')" aria-current="page">
       <span>📅 Escala</span>
     </button>
+    <button class="aba-btn" data-aba="nova" onclick="mudarAba('nova')">
+      <span>🙏 Escolher Datas</span>
+    </button>
     <button class="aba-btn" data-aba="chamada" id="abaChamadaBtn" style="display:none" onclick="mudarAba('chamada')">
       <span>✅ Chamada</span>
     </button>
@@ -994,6 +997,9 @@ function desenhar() {
     tela.innerHTML = renderTelaVagas();
   } else if (estado.aba === 'chamada') {
     carregarChamadaSite();
+  } else if (estado.aba === 'nova') {
+    tela.innerHTML = renderCardNovaEscalaHtml();
+    posRenderNovaEscala();
   } else {
     tela.innerHTML = renderTelaEscala();
   }
