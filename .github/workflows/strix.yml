@@ -29,8 +29,9 @@ jobs:
 
       - name: Executar auditoria de segurança com Strix
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          STRIX_LLM: "gemini/gemini-2.5-pro"
         run: |
-          echo "Iniciando verificação do Strix..."
+          echo "Iniciando verificação do Strix com Gemini..."
           strix -n --target ./ --scan-mode quick || true
