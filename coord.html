@@ -244,38 +244,121 @@ input[type=password] { width: 100%; background: #0b1220; border: 1px solid var(-
 <b id="tituloPainel"></b>
 </div>
 
+<style>
+.menu-cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 6px;
+}
+.menu-card-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 18px;
+  background: linear-gradient(135deg, #131c2e, #0e1524);
+  border: 1px solid #1e2d48;
+  border-radius: 18px;
+  color: #fff;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  width: 100%;
+}
+.menu-card-btn:hover {
+  background: linear-gradient(135deg, #18233a, #131c2e);
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+}
+.menu-card-btn:active {
+  transform: scale(0.98);
+}
+.menu-card-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.icon-acolitos {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  border: 1px solid #60a5fa;
+}
+.icon-servindo {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  border: 1px solid #a78bfa;
+}
+.icon-senha {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  border: 1px solid #fbbf24;
+}
+.menu-card-content {
+  flex: 1;
+  min-width: 0;
+}
+.menu-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.menu-card-desc {
+  font-size: 12.5px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+.menu-card-arrow {
+  color: #64748b;
+  font-size: 22px;
+  font-weight: 300;
+  margin-left: 4px;
+}
+</style>
+
 <!-- Início -->
 <section id="aba-inicio">
-  <!-- Opções Principais -->
-  <div class="secao-grupo">
-    <div class="lista-menu">
-      <button class="item-menu" onclick="mudarAba('acolitos')">
-        <div class="item-menu-icon">🙋</div>
-        <div class="item-menu-corpo">
-          <span class="item-menu-titulo">Cadastro de Acólitos</span>
-          <span class="item-menu-sub" id="subAcolitos">Editar e apagar usuários, nomes e funções</span>
+  <div class="menu-cards-grid">
+    <button class="menu-card-btn" onclick="mudarAba('acolitos')">
+      <div class="menu-card-icon icon-acolitos">🙋</div>
+      <div class="menu-card-content">
+        <div class="menu-card-title">
+          <span>Cadastro de Acólitos</span>
+          <span class="menu-card-arrow">›</span>
         </div>
-        <span class="item-menu-seta">›</span>
-      </button>
+        <div class="menu-card-desc" id="subAcolitos">Editar e apagar acólitos e coroinhas</div>
+      </div>
+    </button>
 
-      <button class="item-menu" onclick="mudarAba('servindo')">
-        <div class="item-menu-icon">👥</div>
-        <div class="item-menu-corpo">
-          <span class="item-menu-titulo">Acólitos por Missa</span>
-          <span class="item-menu-sub" id="subServindo">Limite de acólitos por celebração</span>
+    <button class="menu-card-btn" onclick="mudarAba('servindo')">
+      <div class="menu-card-icon icon-servindo">👥</div>
+      <div class="menu-card-content">
+        <div class="menu-card-title">
+          <span>Acólitos por Missa</span>
+          <span class="menu-card-arrow">›</span>
         </div>
-        <span class="item-menu-seta">›</span>
-      </button>
+        <div class="menu-card-desc" id="subServindo">Definir o limite de vagas por celebração</div>
+      </div>
+    </button>
 
-      <button class="item-menu" onclick="mudarAba('senha')">
-        <div class="item-menu-icon">🔑</div>
-        <div class="item-menu-corpo">
-          <span class="item-menu-titulo">Trocar Senha</span>
-          <span class="item-menu-sub">Alterar a senha dos coordenadores</span>
+    <button class="menu-card-btn" onclick="mudarAba('senha')">
+      <div class="menu-card-icon icon-senha">🔑</div>
+      <div class="menu-card-content">
+        <div class="menu-card-title">
+          <span>Trocar Senha</span>
+          <span class="menu-card-arrow">›</span>
         </div>
-        <span class="item-menu-seta">›</span>
-      </button>
-    </div>
+        <div class="menu-card-desc">Atualizar a senha de acesso dos coordenadores</div>
+      </div>
+    </button>
   </div>
 </section>
 
