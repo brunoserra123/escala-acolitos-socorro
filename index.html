@@ -2164,14 +2164,19 @@ document.getElementById('numeroVersao').textContent = VERSAO_CARREGADA || '1.0';
 function recarregarNova(v) {
   window.location.href = "./" + '?v=' + encodeURIComponent(v) + '&t=' + Date.now();
 }
-function conferirVersao(manual) {
+function conferirVersao(manual, btn) {
   const msg = document.getElementById('msgVersao');
-  if (manual) msg.textContent = 'Verificando versão...';
+  const botao = btn || document.querySelector('.topo-acoes .btn-menu');
+  if (botao) botao.style.transition = 'transform 0.5s ease', botao.style.transform = 'rotate(360deg)';
+  setTimeout(() => { if (botao) botao.style.transform = ''; }, 600);
+
+  if (manual && msg) {
+    msg.textContent = 'Verificando versão...';
+    msg.style.display = 'block';
+  }
   google.script.run.withSuccessHandler(info => {
     const v = info && info.versao;
     if (v && v !== VERSAO_CARREGADA) {
-      // ao abrir o site: sobe a versão nova sozinho, uma vez por versão (evita laço de recarregar)
-      // se a URL já tem v=<esta versão>, a página já é a nova: não recarrega de novo (evita laço)
       const jaNova = new URLSearchParams(window.location.search).get('v') === v;
       if (manual || !jaNova) {
         recarregarNova(v);
@@ -2179,12 +2184,17 @@ function conferirVersao(manual) {
       }
       document.getElementById('textoFaixaNova').textContent = info.mensagem ? `🔄 ${info.mensagem}` : `🔄 Nova versão ${v} disponível!`;
       document.getElementById('faixaNova').style.display = 'flex';
-      if (manual) msg.textContent = '';
-    } else if (manual) {
+      if (manual && msg) msg.textContent = '';
+    } else if (manual && msg) {
       msg.textContent = `✓ Você já está na versão mais recente (${VERSAO_CARREGADA}).`;
-      setTimeout(() => msg.textContent = '', 4000);
+      setTimeout(() => { msg.textContent = ''; msg.style.display = ''; }, 4000);
     }
-  }).withFailureHandler(() => { if (manual) msg.textContent = 'Sem conexão. Tente de novo.'; }).versaoGithub();
+  }).withFailureHandler(() => {
+    if (manual && msg) {
+      msg.textContent = 'Sem conexão. Tente de novo.';
+      setTimeout(() => { msg.textContent = ''; msg.style.display = ''; }, 4000);
+    }
+  }).versaoGithub();
 }
 function naoAtualizar() { document.getElementById('faixaNova').style.display = 'none'; }
 </script>
