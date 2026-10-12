@@ -954,12 +954,12 @@ function atualizarDestaqueMinhaMissa() {
 
     const btnDes = document.getElementById('btnDesistirDestaque');
     if (btnDes) {
-      btnDes.style.display = 'inline-block';
+      btnDes.style.display = trocasLiberadas ? 'inline-block' : 'none';
       btnDes.onclick = () => naoPossoIr(index);
     }
     const btnTrocar = document.getElementById('btnTrocarDestaque');
     if (btnTrocar) {
-      btnTrocar.style.display = 'inline-block';
+      btnTrocar.style.display = trocasLiberadas ? 'inline-block' : 'none';
       btnTrocar.onclick = () => trocarHorarioLinha(index, -1, estado.eu);
     }
     box.classList.add('mostrar');
