@@ -243,48 +243,160 @@ footer a { color: var(--muted); text-decoration: underline; }
 .caixa-lembrete code { display: block; margin: 8px 0; padding: 10px 12px; background: #0c1330; border: 1px solid #2c3a6e; border-radius: 10px; font-size: 15px; word-break: break-all; user-select: all; }
 .caixa-lembrete a { color: #93b4ff; font-weight: 700; }
 
-/* ---------- Tela de entrada (em teste, liga na Coord.) ---------- */
-/* No Google Sites a página fica dentro de um quadro bem alto: por isso a tela começa no topo (e não no meio),
-   senão o conteúdo ficava lá embaixo e só aparecia o fundo azul */
-.entrada { position: fixed; inset: 0; z-index: 200; display: none; align-items: flex-start; justify-content: center; padding: 36px 18px 24px;
-  background: radial-gradient(ellipse 520px 420px at 50% 140px, rgba(226,186,100,.20), transparent 70%), linear-gradient(180deg, #0b1633 0px, #0a1024 700px, #070b18 1400px); overflow-y: auto; }
+/* ---------- Tela de entrada ("Quem é você?") ---------- */
+.entrada {
+  position: fixed; inset: 0; z-index: 200; display: none; align-items: flex-start; justify-content: center;
+  padding: 36px 18px 24px;
+  background: radial-gradient(ellipse 520px 420px at 50% 140px, rgba(226,186,100,.18), transparent 70%), linear-gradient(180deg, #0b1633 0px, #0a1024 700px, #070b18 1400px);
+  overflow-y: auto;
+  animation: entradaFadeIn .22s ease-out;
+}
+@keyframes entradaFadeIn {
+  from { opacity: 0; transform: scale(.98); }
+  to { opacity: 1; transform: scale(1); }
+}
 .entrada.aberta { display: flex; }
-.entrada-caixa { width: 100%; max-width: 380px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
-.entrada-selo { width: 112px; height: 112px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 52px;
-  background: radial-gradient(circle at 50% 35%, #1b2a55, #0d1530); border: 3px solid var(--gold); box-shadow: 0 0 0 6px rgba(226,186,100,.12), 0 0 40px rgba(226,186,100,.35); overflow: hidden; }
+.entrada-caixa { width: 100%; max-width: 390px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+.entrada-selo {
+  width: 112px; height: 112px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 52px;
+  background: radial-gradient(circle at 50% 35%, #1b2a55, #0d1530); border: 3px solid var(--gold);
+  box-shadow: 0 0 0 6px rgba(226,186,100,.12), 0 0 40px rgba(226,186,100,.35); overflow: hidden;
+}
 .entrada-selo img { width: 100%; height: 100%; object-fit: cover; }
 .entrada h2 { font: 400 1.9rem/1.15 var(--display); color: #fff; letter-spacing: .02em; }
 .entrada .sub { color: #c9cfe3; font-size: .9rem; margin-top: -6px; }
 .entrada .lema { font: italic 400 1rem var(--display); color: var(--gold); opacity: .9; }
-.entrada-form { width: 100%; background: rgba(15,22,45,.75); border: 1px solid #263361; border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
-.entrada-form label { text-align: left; font-size: .8rem; font-weight: 600; color: #aab3d3; }
-.entrada-form select { width: 100%; background: #0c1330; border: 1px solid #2c3a6e; border-radius: 12px; padding: 12px 14px; font-size: 16px; font-weight: 600; color: #fff; }
-.entrada-entrar { width: 100%; border: none; border-radius: 12px; padding: 13px; font-size: 16px; font-weight: 700; color: #fff; background: linear-gradient(135deg, #2563eb, #4f46e5); box-shadow: 0 6px 20px rgba(37,99,235,.35); }
-.entrada-entrar:disabled { opacity: .5; }
-.entrada-link { background: none; border: none; color: #93b4ff; font-size: .88rem; font-weight: 600; padding: 4px; }
-.entrada-rodape { color: #6f7896; font-size: .75rem; margin-top: 6px; }
+
+.entrada-form {
+  width: 100%; background: rgba(15,22,45,.82); border: 1px solid #263361; border-radius: 18px;
+  padding: 18px 16px; display: flex; flex-direction: column; gap: 12px; margin-top: 4px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.4);
+}
+.entrada-form label { text-align: left; font-size: .95rem; font-weight: 700; color: #f1f4fb; display: flex; align-items: center; gap: 6px; }
+.entrada-subrotulo { text-align: left; font-size: .78rem; color: #9ba1b8; margin-top: -6px; line-height: 1.35; }
+.entrada-form select {
+  width: 100%; background: #0c1330; border: 1.5px solid #2c3a6e; border-radius: 12px; padding: 13px 14px;
+  font-size: 16px; font-weight: 600; color: #fff; outline: none; transition: border-color .15s ease;
+}
+.entrada-form select:focus { border-color: var(--gold); }
+
+/* Card de perfil para quem já entrou anteriormente */
+.entrada-card-perfil {
+  background: linear-gradient(135deg, rgba(30,58,95,.4), rgba(15,22,45,.6));
+  border: 1px solid rgba(226,186,100,.35); border-radius: 14px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 14px; text-align: left;
+}
+.entrada-perfil-icone {
+  width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle, #2563eb, #1e3a5f);
+  border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0; box-shadow: 0 0 12px rgba(96,165,250,.25);
+}
+.entrada-perfil-info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.entrada-perfil-sub { font-size: .74rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--gold); }
+.entrada-perfil-nome { font-size: 1.15rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+
+/* Botões de Ação da Entrada */
+.entrada-btn-continuar {
+  width: 100%; border: none; border-radius: 12px; padding: 14px 16px; font-size: 16px; font-weight: 700;
+  color: #fff; background: linear-gradient(135deg, #15803d, #16a34a); box-shadow: 0 6px 20px rgba(22,163,74,.35);
+  display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform .1s ease, filter .15s ease; cursor: pointer;
+}
+.entrada-btn-continuar:hover { filter: brightness(1.08); }
+.entrada-btn-continuar:active { transform: scale(.98); }
+
+.entrada-btn-trocar {
+  background: rgba(255,255,255,.05); border: 1px solid var(--line); border-radius: 12px; padding: 11px 14px;
+  font-size: 13.5px; font-weight: 600; color: #cbd5e1; transition: background .15s ease; cursor: pointer;
+}
+.entrada-btn-trocar:hover { background: rgba(255,255,255,.1); }
+.entrada-btn-trocar:active { transform: scale(.98); }
+
+.entrada-entrar {
+  width: 100%; border: none; border-radius: 12px; padding: 14px 16px; font-size: 16px; font-weight: 700;
+  color: #fff; background: linear-gradient(135deg, #2563eb, #4f46e5); box-shadow: 0 6px 20px rgba(37,99,235,.35);
+  display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform .1s ease, opacity .15s ease; cursor: pointer;
+}
+.entrada-entrar:hover:not(:disabled) { filter: brightness(1.08); }
+.entrada-entrar:active:not(:disabled) { transform: scale(.98); }
+.entrada-entrar:disabled { opacity: .45; cursor: not-allowed; }
+
+.entrada-btn-visitante {
+  width: 100%; background: rgba(30,58,95,.25); border: 1px dashed #2b426f; border-radius: 12px;
+  padding: 11px 14px; font-size: 13.5px; font-weight: 600; color: #93c5fd; cursor: pointer;
+  transition: all .15s ease; margin-top: 4px;
+}
+.entrada-btn-visitante:hover { background: rgba(30,58,95,.45); border-color: #3b82f6; }
+.entrada-btn-visitante:active { transform: scale(.98); }
+
+.entrada-link { background: none; border: none; color: #93b4ff; font-size: .86rem; font-weight: 600; padding: 4px; cursor: pointer; }
+.entrada-link:hover { text-decoration: underline; }
+.entrada-rodape { color: #6f7896; font-size: .75rem; margin-top: 4px; }
 .entrada-demo { display: none; color: #fbbf24; border: 1px solid #fbbf24; border-radius: 999px; padding: 3px 12px; font-size: .72rem; font-weight: 700; letter-spacing: .12em; margin-top: 4px; }
 .entrada.demo .entrada-demo { display: inline-block; }
+
+.btn-trocar-eu {
+  background: var(--surface-2); border: 1px solid var(--line); color: var(--gold);
+  border-radius: 8px; padding: 8px 12px; font-size: 13px; font-weight: 700; white-space: nowrap;
+  transition: all .12s ease; cursor: pointer;
+}
+.btn-trocar-eu:hover { background: rgba(226,186,100,.1); border-color: var(--gold); }
+.btn-trocar-eu:active { transform: scale(.95); }
+
 .toast-msg { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(30px); background: #181b26; color: #f1f4fb; border: 1px solid var(--me); border-radius: 14px; padding: 12px 20px; font-size: 13.5px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.6); z-index: 9999; opacity: 0; pointer-events: none; transition: all .25s ease; max-width: 90vw; text-align: center; }
 .toast-msg.visivel { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
-<body data-versao="1.73">
+<body data-versao="1.74">
 <div class="entrada" id="telaEntrada" role="dialog" aria-label="Entrar">
   <div class="entrada-caixa">
     <div class="entrada-selo"><img src="data:image/webp;base64,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" alt="Símbolo da escala"></div>
     <h2>Escala de Acólitos</h2>
     <p class="sub">Paróquia Nossa Senhora do Perpétuo Socorro</p>
     <p class="lema">Servir com alegria</p>
-    <div class="entrada-form">
-      <label for="entradaNome">Quem é você?</label>
-      <select id="entradaNome" onchange="document.getElementById('btnEntrar').disabled=!this.value"><option value="">Escolha seu nome...</option></select>
-      <button class="entrada-entrar" id="btnEntrar" disabled onclick="entrarComNome()">Entrar</button>
-      <button class="entrada-link" onclick="fecharEntrada();abrirModalCadastro()">Ainda não está na lista? Cadastre-se</button>
+    <!-- BLOCO 1: Usuário já identificado anteriormente ("Continuar como...") -->
+    <div class="entrada-form" id="blocoEntradaLembrado" style="display:none">
+      <div class="entrada-card-perfil">
+        <div class="entrada-perfil-icone">👤</div>
+        <div class="entrada-perfil-info">
+          <span class="entrada-perfil-sub">Entrar como acólito:</span>
+          <span class="entrada-perfil-nome" id="txtNomeLembrado">--</span>
+        </div>
+      </div>
+      <button class="entrada-btn-continuar" id="btnContinuar" type="button" onclick="continuarComoLembrado()">
+        <span>Continuar como <span id="btnNomeCurto">Você</span></span>
+        <span>➔</span>
+      </button>
+      <button class="entrada-btn-trocar" type="button" onclick="mostrarSeletorOutroNome()">
+        🔄 Não é você? Trocar de acólito
+      </button>
     </div>
-    <button class="entrada-link" onclick="fecharEntrada()">Só ver a escala</button>
+
+    <!-- BLOCO 2: Seleção de nome (Primeiro acesso ou trocou de pessoa) -->
+    <div class="entrada-form" id="blocoEntradaSelecao">
+      <label for="entradaNome">👋 Quem é você?</label>
+      <p class="entrada-subrotulo">Selecione seu nome para ver suas missas e confirmar presença.</p>
+      <select id="entradaNome" onchange="aoMudarEntradaNome(this.value)">
+        <option value="">Carregando nomes dos acólitos...</option>
+      </select>
+      <button class="entrada-entrar" id="btnEntrar" disabled onclick="entrarComNome()" type="button">
+        <span>Entrar na Escala</span>
+        <span>➔</span>
+      </button>
+      <button class="entrada-link" id="btnVoltarLembrado" style="display:none" type="button" onclick="voltarParaLembrado()">
+        ◀ Voltar para <span id="txtVoltarLembrado"></span>
+      </button>
+      <button class="entrada-link" type="button" onclick="fecharEntrada();abrirModalCadastro()">
+        ➕ Ainda não está na lista? Cadastre-se
+      </button>
+    </div>
+
+    <!-- BLOCO 3: Visitante / Apenas ver escala -->
+    <button class="entrada-btn-visitante" type="button" onclick="entrarComoVisitante()">
+      👁️ Apenas ver a escala geral (Visitante)
+    </button>
+
     <p class="entrada-demo" id="entradaDemo">DEMONSTRAÇÃO</p>
-    <p class="entrada-rodape">Versão 1.73</p>
+    <p class="entrada-rodape">Versão 1.74</p>
   </div>
 </div>
 <div class="app">
@@ -315,6 +427,7 @@ footer a { color: var(--muted); text-decoration: underline; }
       <select id="euSou" onchange="escolherEu(this.value)">
         <option value="">Selecione seu nome...</option>
       </select>
+      <button class="btn-trocar-eu" id="btnTrocarEu" type="button" onclick="abrirEntrada(true, true)" title="Trocar quem está usando o app">Trocar</button>
     </div>
     <div class="destaque-missa" id="destaqueMissa">
       <span class="destaque-tag">⭐ SUA PRÓXIMA MISSA</span>
@@ -584,6 +697,12 @@ footer a { color: var(--muted); text-decoration: underline; }
 <script>
 let DADOS_INICIAIS = null;
 const NOVIDADES = [
+  { versao: "1.74", itens: [
+    "Identificação ao entrar (\"Quem é você?\"): o app agora pergunta seu nome logo na primeira tela ao abrir o site.",
+    "Entrada rápida com 1 toque: se você já se identificou no celular, pode tocar em 'Continuar como [Nome]' direto para a sua escala.",
+    "Troca fácil de acólito: botão para trocar de pessoa a qualquer momento na entrada ou no cabeçalho.",
+    "Acesso para visitantes: botão 'Apenas ver a escala' para pais, padres e visitantes consultarem a escala normalmente."
+  ] },
   { versao: "1.73", itens: [
     "Opção de tela de login: escolha se deseja pedir a senha no F5 ou manter o login salvo no aparelho.",
     "Botão de atualização animado: giro suave de 360° ao verificar novas versões.",
@@ -767,6 +886,9 @@ function dataObj(d) { const p = partesData(d); return new Date(p.a, p.m, p.d); }
 
 function iniciarSite() {
   mostrarBotaoLembrete();
+  // Abre a tela de identificação ("Quem é você?") como primeira ação ao entrar no site
+  abrirEntrada(DADOS_INICIAIS ? DADOS_INICIAIS.telaEntrada : true);
+
   if (DADOS_INICIAIS) {
     trocasLiberadas = !!DADOS_INICIAIS.trocas;
     chamadaAtiva = !!DADOS_INICIAIS.chamada;
@@ -774,14 +896,21 @@ function iniciarSite() {
     if (DADOS_INICIAIS.grade) gradeMissas = DADOS_INICIAIS.grade;
     carregarEscala(DADOS_INICIAIS.escala);
     montarEuSou();
-    abrirEntrada(DADOS_INICIAIS.telaEntrada);
   } else {
     google.script.run.withSuccessHandler(carregarEscala).withFailureHandler(tratarErro).obterEscalaParaWeb();
-    google.script.run.withSuccessHandler(c => { trocasLiberadas = !!c.trocas; chamadaAtiva = !!c.chamada; atualizarAbas(); abrirEntrada(c.telaEntrada); }).obterConfigSite();
+    google.script.run.withSuccessHandler(c => {
+      trocasLiberadas = !!c.trocas;
+      chamadaAtiva = !!c.chamada;
+      atualizarAbas();
+      if (c && c.telaEntrada === 'nao') fecharEntrada();
+    }).obterConfigSite();
     if (!gradeMissas) {
       google.script.run.withSuccessHandler(g => { if (g) gradeMissas = g; }).obterGradeMissas();
     }
-    google.script.run.withSuccessHandler(n => { nomesAcolitos = n || []; montarEuSou(); }).obterNomesAcolitos();
+    google.script.run.withSuccessHandler(n => {
+      nomesAcolitos = n || [];
+      montarEuSou();
+    }).obterNomesAcolitos();
   }
   if (!(DADOS_INICIAIS && DADOS_INICIAIS.abrirInscricao)) setTimeout(() => { try { google.script.run.avisarAcessoSite(); } catch (e) {} }, 2500);
 }
@@ -847,8 +976,14 @@ function montarEuSou() {
   const selEntrada = document.getElementById('entradaNome');
   if (selEntrada) {
     const atual = selEntrada.value;
-    selEntrada.innerHTML = '<option value="">Escolha seu nome...</option>' + lista.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
-    selEntrada.value = atual;
+    selEntrada.innerHTML = '<option value="">Escolha seu nome na lista...</option>' +
+      '<option value="__NOVO__" style="color:#22c55e;font-weight:700">➕ Cadastrar meu nome...</option>' +
+      lista.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+    if (atual && (lista.includes(atual) || atual === '__NOVO__')) {
+      selEntrada.value = atual;
+    }
+    const btn = document.getElementById('btnEntrar');
+    if (btn) btn.disabled = !selEntrada.value || selEntrada.value === '__NOVO__';
   }
 
   const dl = document.getElementById('listaAcolitos');
@@ -857,27 +992,127 @@ function montarEuSou() {
   }
 }
 
-/* Tela de entrada (em teste): aparece só para quem ainda não escolheu o nome neste celular */
-function abrirEntrada(modo) {
-  if (estado.eu || !modo || modo === 'nao' || modo === false) return;
+/* Tela de entrada ("Quem é você?"): primeira coisa ao abrir o site */
+function abrirEntrada(modo, forcarSelecao) {
+  if (modo === 'nao' || modo === false) return;
   const t = document.getElementById('telaEntrada');
-  t.classList.toggle('demo', modo !== 'sim' && modo !== true);
+  if (!t) return;
+  t.classList.toggle('demo', modo === 'demo');
+
+  const lembrado = !forcarSelecao ? (estado.eu || lembrar.get('eu') || '') : '';
+  const bLembrado = document.getElementById('blocoEntradaLembrado');
+  const bSelecao = document.getElementById('blocoEntradaSelecao');
+  const btnVoltar = document.getElementById('btnVoltarLembrado');
+
+  if (lembrado) {
+    if (bLembrado) bLembrado.style.display = 'flex';
+    if (bSelecao) bSelecao.style.display = 'none';
+    const txtNome = document.getElementById('txtNomeLembrado');
+    const btnNome = document.getElementById('btnNomeCurto');
+    if (txtNome) txtNome.textContent = lembrado;
+    if (btnNome) {
+      const primeiroNome = lembrado.split(' ')[0] || lembrado;
+      btnNome.textContent = primeiroNome;
+    }
+  } else {
+    if (bLembrado) bLembrado.style.display = 'none';
+    if (bSelecao) bSelecao.style.display = 'flex';
+    if (btnVoltar) {
+      const tinhaLembrado = estado.eu || lembrar.get('eu');
+      btnVoltar.style.display = (forcarSelecao && tinhaLembrado) ? 'block' : 'none';
+      const txtV = document.getElementById('txtVoltarLembrado');
+      if (txtV) txtV.textContent = tinhaLembrado || '';
+    }
+    const selEntrada = document.getElementById('entradaNome');
+    if (selEntrada && estado.eu && Array.from(selEntrada.options).some(o => o.value === estado.eu)) {
+      selEntrada.value = estado.eu;
+      aoMudarEntradaNome(estado.eu);
+    }
+  }
+
   t.classList.add('aberta');
   t.scrollTop = 0;
   window.scrollTo(0, 0);
   document.body.style.overflow = 'hidden';
 }
+
 function fecharEntrada() {
-  document.getElementById('telaEntrada').classList.remove('aberta');
+  const t = document.getElementById('telaEntrada');
+  if (t) t.classList.remove('aberta');
   document.body.style.overflow = '';
 }
+
+function continuarComoLembrado() {
+  const lembrado = estado.eu || lembrar.get('eu');
+  if (!lembrado) {
+    mostrarSeletorOutroNome();
+    return;
+  }
+  fecharEntrada();
+  escolherEu(lembrado);
+  const sel = document.getElementById('euSou');
+  if (sel) sel.value = lembrado;
+}
+
+function mostrarSeletorOutroNome() {
+  const bLembrado = document.getElementById('blocoEntradaLembrado');
+  const bSelecao = document.getElementById('blocoEntradaSelecao');
+  const btnVoltar = document.getElementById('btnVoltarLembrado');
+  const lembrado = estado.eu || lembrar.get('eu');
+  if (bLembrado) bLembrado.style.display = 'none';
+  if (bSelecao) bSelecao.style.display = 'flex';
+  if (btnVoltar) {
+    btnVoltar.style.display = lembrado ? 'block' : 'none';
+    const txt = document.getElementById('txtVoltarLembrado');
+    if (txt) txt.textContent = lembrado || '';
+  }
+  const sel = document.getElementById('entradaNome');
+  if (sel) {
+    if (lembrado && Array.from(sel.options).some(o => o.value === lembrado)) {
+      sel.value = lembrado;
+      aoMudarEntradaNome(lembrado);
+    }
+    sel.focus();
+  }
+}
+
+function voltarParaLembrado() {
+  const lembrado = estado.eu || lembrar.get('eu');
+  if (lembrado) {
+    const bLembrado = document.getElementById('blocoEntradaLembrado');
+    const bSelecao = document.getElementById('blocoEntradaSelecao');
+    if (bLembrado) bLembrado.style.display = 'flex';
+    if (bSelecao) bSelecao.style.display = 'none';
+  }
+}
+
+function aoMudarEntradaNome(val) {
+  const btn = document.getElementById('btnEntrar');
+  if (btn) btn.disabled = !val || val === '__NOVO__';
+  if (val === '__NOVO__') {
+    fecharEntrada();
+    abrirModalCadastro();
+  }
+}
+
 function entrarComNome() {
-  const nome = document.getElementById('entradaNome').value;
-  if (!nome) return;
+  const sel = document.getElementById('entradaNome');
+  const nome = sel ? sel.value : '';
+  if (!nome || nome === '__NOVO__') return;
   fecharEntrada();
   escolherEu(nome);
-  const sel = document.getElementById('euSou');
-  if (sel) sel.value = nome;
+  const selEu = document.getElementById('euSou');
+  if (selEu) selEu.value = nome;
+}
+
+function entrarComoVisitante() {
+  fecharEntrada();
+  if (!estado.eu) {
+    const sel = document.getElementById('euSou');
+    if (sel) sel.value = '';
+    atualizarDestaqueMinhaMissa();
+    desenhar();
+  }
 }
 
 /* resumo diário dos coordenadores: conta quem entrou hoje com o nome do "Eu sou" (uma vez por dia por celular) */

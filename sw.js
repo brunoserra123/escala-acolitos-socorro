@@ -1,5 +1,5 @@
-/* Gerado por gerar-github.py — versão 1.73 */
-const CACHE = "acolitos-1.73";
+/* Gerado por gerar-github.py — versão 1.74 */
+const CACHE = "acolitos-1.74";
 self.addEventListener("install", e => { self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(c => c.addAll(["./", "coord.html", "api.js", "icon-192.png"]).catch(() => {}))); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener("fetch", e => {
